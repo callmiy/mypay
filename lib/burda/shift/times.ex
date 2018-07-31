@@ -5,10 +5,11 @@ defmodule Burda.Shift.Times do
 
   @night_shift_start ~T[21:45:00]
   @morning_shift_start ~T[05:45:00]
+  @midnight ~T[23:59:59.999999]
   @twenty_four_hrs_in_secs 24 * 60 * 60
   @one_hr_in_secs 1 * 60 * 60
   # one hour
-  @valid_work_duration_secs 1 * 60 * 60
+  @invalid_shift_duration_secs 1 * 60 * 60
   # 2 hours
   @work_secs_half_break 2 * 60 * 60
   # 4 hours
@@ -18,12 +19,19 @@ defmodule Burda.Shift.Times do
     Calculates hours grossed, normal hours (net of break time), night hours
     and sunday hours
   """
-  @spec times(start_time :: Time.t(), end_time :: Time.t(), break_time_secs :: Integer.t()) :: %{
+  @spec times(
+          date :: Date.t(),
+          start_time :: Time.t(),
+          end_time :: Time.t(),
+          break_time_secs :: Integer.t()
+        ) :: %{
           hours_gross: Float.t(),
           normal_hours: Float.t(),
-          night_hours: Float.t()
+          night_hours: Float.t(),
+          sunday_hours: Float.t()
         }
   def times(
+        %Date{} = date,
         %Time{} = start_time,
         %Time{} = end_time,
         break_time_secs
@@ -33,7 +41,7 @@ defmodule Burda.Shift.Times do
       end_time
       |> Time.diff(start_time)
       |> correct_seconds()
-      |> to_valid_work_duration()
+      |> to_valid_shift_duration()
 
     %{
       hours_gross: secs_to_hrs(duration),
@@ -45,13 +53,16 @@ defmodule Burda.Shift.Times do
         duration
         |> night_secs(start_time, end_time)
         |> subtract_break(break_time_secs)
-        |> to_valid_work_duration()
+        |> to_valid_shift_duration()
+        |> secs_to_hrs(),
+      sunday_hours:
+        duration
+        |> sunday_secs(date, start_time, end_time)
+        |> subtract_break(break_time_secs)
+        |> to_valid_shift_duration()
         |> secs_to_hrs()
     }
   end
-
-  def morning_shift_start, do: @morning_shift_start
-  def night_shift_start, do: @night_shift_start
 
   def secs_to_hrs(secs),
     do:
@@ -59,8 +70,34 @@ defmodule Burda.Shift.Times do
       |> Kernel./(@one_hr_in_secs)
       |> Float.round(2)
 
+  def morning_shift_start, do: @morning_shift_start
+  def night_shift_start, do: @night_shift_start
+  def work_secs_half_break, do: @work_secs_half_break
+  def work_secs_full_break, do: @work_secs_full_break
+  def invalid_shift_duration_secs, do: @invalid_shift_duration_secs
   def correct_seconds(secs) when secs < 0, do: @twenty_four_hrs_in_secs + secs
   def correct_seconds(secs), do: secs
+
+  defp sunday_secs(duration, _, _, _) when duration <= 0, do: 0.0
+
+  defp sunday_secs(
+         duration,
+         %Date{} = date,
+         %Time{} = start_time,
+         %Time{} = end_time
+       ) do
+    case Date.day_of_week(date) do
+      day when day < 7 ->
+        0.00
+
+      _ ->
+        case Time.compare(end_time, start_time) do
+          :gt -> duration
+          :eq -> duration
+          _ -> Time.diff(@midnight, start_time)
+        end
+    end
+  end
 
   defp night_secs(duration, _start, _end_) when duration <= 0, do: 0.00
 
@@ -159,6 +196,6 @@ defmodule Burda.Shift.Times do
 
   defp subtract_break(time, break), do: time - break
 
-  defp to_valid_work_duration(secs) when secs <= @valid_work_duration_secs, do: 0
-  defp to_valid_work_duration(secs), do: secs
+  defp to_valid_shift_duration(secs) when secs <= @invalid_shift_duration_secs, do: 0
+  defp to_valid_shift_duration(secs), do: secs
 end
