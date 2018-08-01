@@ -2,8 +2,6 @@ defmodule Burda.Shift.Wages do
   @moduledoc ~S"""
     The various wages earned by a shift worker are computed
   """
-  alias Burda.Shift.Times
-  alias Burda.Meta
 
   @type t :: %{
           normal_pay: Decimal.t(),
@@ -14,8 +12,8 @@ defmodule Burda.Shift.Wages do
 
   @scale 2
 
-  @spec wages(shift_times :: Times.t(), pay_info :: %Meta{}) :: t
-  def wages(%Times{} = times, %Meta{} = pay_info) do
+  @spec wages(shift_times :: Map.t(), pay_info :: Map.t()) :: t
+  def wages(%{} = times, %{} = pay_info) do
     normal_pay =
       times.normal_hours
       |> to_string()

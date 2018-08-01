@@ -7,6 +7,9 @@ defmodule Burda.Shift.Api do
   alias Burda.Repo
 
   alias Burda.Shift
+  alias Burda.Shift.Wages
+  alias Burda.Shift.Times
+  alias Burda.Meta
 
   @doc """
   Returns the list of ShiftApi.
@@ -49,7 +52,20 @@ defmodule Burda.Shift.Api do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_(attrs) do
+  def create_(%Meta{} = meta, %{} = attrs) do
+    times =
+      Times.times(
+        attrs.date,
+        attrs.start_time,
+        attrs.end_time,
+        meta.break_time_secs
+      )
+
+    attrs =
+      attrs
+      |> Map.merge(Wages.wages(times, meta))
+      |> Map.merge(times)
+
     %Shift{}
     |> Shift.changeset(attrs)
     |> Repo.insert()

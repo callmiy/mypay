@@ -17,10 +17,10 @@ defmodule Burda.Shift do
     field(:normal_hours, :float)
     field(:night_hours, :float)
     field(:sunday_hours, :float)
-    field(:normal_pay, :float)
-    field(:night_suppl_pay, :float)
-    field(:sunday_suppl_pay, :float)
-    field(:total_pay, :float)
+    field(:normal_pay, :decimal)
+    field(:night_suppl_pay, :decimal)
+    field(:sunday_suppl_pay, :decimal)
+    field(:total_pay, :decimal)
 
     belongs_to(:meta, Meta)
 
@@ -33,8 +33,18 @@ defmodule Burda.Shift do
     |> cast(attrs, [
       :date,
       :start_time,
-      :end_time
+      :end_time,
+      :hours_gross,
+      :normal_hours,
+      :night_hours,
+      :sunday_hours,
+      :normal_pay,
+      :night_suppl_pay,
+      :sunday_suppl_pay,
+      :total_pay,
+      :meta_id
     ])
+    |> assoc_constraint(:meta)
     |> validate_required([
       :date,
       :start_time,
@@ -46,7 +56,8 @@ defmodule Burda.Shift do
       :normal_pay,
       :night_suppl_pay,
       :sunday_suppl_pay,
-      :total_pay
+      :total_pay,
+      :meta_id
     ])
     |> unique_constraint(:date, name: :shifts_date_start_time_index)
   end

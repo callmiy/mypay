@@ -1,47 +1,83 @@
 defmodule Burda.Factory.Shift do
   use ExMachina
 
-  alias ExMachina.Ecto, as: ExMachinaEcto
+  alias Burda.Meta
+  alias Burda.MetaApi
   alias Burda.Factory
-  alias Burda.Shift
+  alias Burda.Shift.Api
+  alias Burda.Factory.Utils
 
-  @name __MODULE__
   @start_date ~D[1900-01-01]
-  @range_24 -24..24
   @null_time ~T[00:00:00.000000]
-  @one_hr_secs 3_600
-  @one_min_sec 60
+  @one_hr_millsecs 3_600_000_000
   @date_offset 0..30_000
 
-  def shift_factory do
-    time_offset =
-      @range_24
-      |> Enum.random()
-      |> Kernel.*(@one_hr_secs)
+  def insert(params \\ %{}) do
+    {:ok, meta} =
+      :meta
+      |> Factory.params_for()
+      |> MetaApi.create_()
 
-    start_time = Time.add(@null_time, time_offset)
+    insert(params, meta)
+  end
 
-    end_time =
-      start_time
-      |> Time.add(Enum.random(1..15) * @one_hr_secs + Enum.random(-5..5) * @one_min_sec)
+  def insert(params, %Meta{} = meta) do
+    attrs = params(params)
 
-    %Shift{
-      date: random_date(),
-      start_time: start_time,
-      end_time: end_time,
-      meta: Factory.build(:meta)
-    }
+    {:ok, shift} =
+      meta
+      |> Api.create_(Map.put(attrs, :meta_id, meta.id))
+
+    shift
   end
 
   def params(attrs \\ %{})
 
-  def params(attrs),
+  def params(attrs) when is_list(attrs),
     do:
-      ExMachinaEcto.params_for(
-        @name,
-        :shift,
+      attrs
+      |> Map.new()
+      |> params()
+
+  def params(attrs) do
+    start_time =
+      attrs
+      |> Map.get(:start_time)
+      |> start_time()
+
+    %{
+      date: random_date(),
+      start_time: start_time,
+      end_time:
         attrs
-      )
+        |> Map.get(:end_time)
+        |> end_time(start_time)
+    }
+  end
 
   def random_date, do: Date.add(@start_date, Enum.random(@date_offset))
+
+  defp start_time(nil) do
+    time_offset =
+      0.0
+      |> Utils.random_float_between(23.99, 6)
+      |> Kernel.*(@one_hr_millsecs)
+      |> trunc()
+
+    Time.add(@null_time, time_offset, :millisecond)
+  end
+
+  defp start_time(val), do: val
+
+  defp end_time(nil, %Time{} = start_time) do
+    time_offset =
+      0.4
+      |> Utils.random_float_between(15.99, 6)
+      |> Kernel.*(@one_hr_millsecs)
+      |> trunc()
+
+    Time.add(start_time, time_offset, :millisecond)
+  end
+
+  defp end_time(val, _), do: val
 end
