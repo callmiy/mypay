@@ -3,7 +3,7 @@ defmodule Burda.Shift.TimeTest do
 
   alias Burda.Shift.Times, as: Times
   alias Burda.Factory.Shift, as: ShiftFactory
-  alias Burda.Factory.Utils, as: FactoryUtils
+  alias Burda.Factory, as: FactoryUtils
 
   @one_hour_secs 60 * 60
   @break_time_secs 1_800

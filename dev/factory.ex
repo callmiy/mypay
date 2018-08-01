@@ -1,16 +1,51 @@
 defmodule Burda.Factory do
-  use ExMachina.Ecto, repo: Burda.Repo
-  @dialyzer {:no_return, fields_for: 1}
+  @ten 10
 
-  alias Burda.Meta
-  alias Burda.Factory.Utils
+  def random_float_between(lower, upper, scale \\ 0)
+      when lower < upper and is_integer(scale) do
+    low_exponent = to_exponent_ten(lower)
+    upper_exponent = to_exponent_ten(upper)
+    random_float_between(lower, upper, low_exponent..upper_exponent, scale)
+  end
 
-  def meta_factory do
-    %Meta{
-      break_time_secs: Enum.random([nil, Faker.random_between(100, 5000)]),
-      pay_per_hr: Utils.random_float_decimal_between(1.0, 15.9, 2),
-      night_suppl_pay_pct: Utils.random_float_decimal_between(1.0, 25, 2),
-      sunday_suppl_pay_pct: Utils.random_float_decimal_between(25, 65, 2)
-    }
+  def random_float_between(lower, upper, exponent_range, scale) do
+    case :rand.uniform()
+         |> Kernel.*(Enum.random(exponent_range))
+         |> Float.round(scale) do
+      z when z <= upper and z >= lower -> z
+      _ -> random_float_between(lower, upper, scale)
+    end
+  end
+
+  def random_float_decimal_between(lower, upper, scale \\ 0)
+      when lower < upper and is_integer(scale),
+      do:
+        lower
+        |> random_float_between(upper, scale)
+        |> Decimal.from_float()
+        |> Decimal.round(scale)
+
+  def next_sunday_date(%Date{} = date) do
+    case Date.day_of_week(date) do
+      7 -> date
+      x -> Date.add(date, 7 - x)
+    end
+  end
+
+  defp to_exponent_ten(num) when is_float(num),
+    do:
+      num
+      |> trunc()
+      |> to_exponent_ten()
+
+  defp to_exponent_ten(num) when is_integer(num) do
+    len =
+      num
+      |> to_string()
+      |> String.length()
+
+    @ten
+    |> :math.pow(len)
+    |> trunc()
   end
 end

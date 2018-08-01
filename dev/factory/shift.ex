@@ -1,9 +1,9 @@
 defmodule Burda.Factory.Shift do
   alias Burda.Meta
   alias Burda.Meta.Api, as: MetaApi
-  alias Burda.Factory
   alias Burda.Shift.Api
-  alias Burda.Factory.Utils
+  alias Burda.Factory, as: FactoryUtils
+  alias Burda.Factory.Meta, as: MetaFactory
 
   @start_date ~D[1900-01-01]
   @null_time ~T[00:00:00.000000]
@@ -12,8 +12,7 @@ defmodule Burda.Factory.Shift do
 
   def insert(params \\ %{}) do
     {:ok, meta} =
-      :meta
-      |> Factory.params_for()
+      MetaFactory.params()
       |> MetaApi.create_()
 
     insert(params, meta)
@@ -58,7 +57,7 @@ defmodule Burda.Factory.Shift do
   defp start_time(nil) do
     time_offset =
       0.0
-      |> Utils.random_float_between(23.99, 6)
+      |> FactoryUtils.random_float_between(23.99, 6)
       |> Kernel.*(@one_hr_millsecs)
       |> trunc()
 
@@ -70,7 +69,7 @@ defmodule Burda.Factory.Shift do
   defp end_time(nil, %Time{} = start_time) do
     time_offset =
       0.4
-      |> Utils.random_float_between(15.99, 6)
+      |> FactoryUtils.random_float_between(15.99, 6)
       |> Kernel.*(@one_hr_millsecs)
       |> trunc()
 

@@ -1,22 +1,17 @@
 defmodule Burda.Shift.WagesTest do
   use ExUnit.Case, async: true
-  import Burda.Factory
 
   alias Burda.Shift.Wages
   alias Burda.Factory.Shift, as: ShiftFactory
+  alias Burda.Factory.Meta, as: MetaFactory
   alias Burda.Shift.Times
-  alias Burda.Meta
 
   test "wages/2" do
     meta =
-      Meta
-      |> struct(
-        params_for(
-          :meta,
-          pay_per_hr: Decimal.new("9.49"),
-          night_suppl_pay_pct: Decimal.new("25.00"),
-          sunday_suppl_pay_pct: Decimal.new("50.00")
-        )
+      MetaFactory.params(
+        pay_per_hr: Decimal.new("9.49"),
+        night_suppl_pay_pct: Decimal.new("25.00"),
+        sunday_suppl_pay_pct: Decimal.new("50.00")
       )
 
     shift = ShiftFactory.params()

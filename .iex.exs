@@ -6,5 +6,5 @@ alias Burda.Shift
 alias Burda.Shift.Api, as: ShiftApi
 alias Burda.Meta
 alias Burda.Meta.Api, as: MetaApi
-alias Burda.Factory.Utils, as: FactoryUtils
+alias Burda.Factory, as: FactoryUtils
 alias Burda.Factory.Meta, as: MetaFactory

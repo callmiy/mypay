@@ -1,5 +1,5 @@
 defmodule Burda.Factory.Meta do
-  alias Burda.Factory.Utils
+  alias Burda.Factory, as: FactoryUtils
   alias Burda.Meta.Api
   alias Burda.Meta
 
@@ -55,9 +55,9 @@ defmodule Burda.Factory.Meta do
 
   def break_time_secs(), do: Enum.random([nil, Enum.random(100..5000)])
 
-  def pay_per_hr(), do: Utils.random_float_decimal_between(1.0, 15.9, 2)
+  def pay_per_hr(), do: FactoryUtils.random_float_decimal_between(1.0, 15.9, 2)
 
-  def night_suppl_pay_pct(), do: Utils.random_float_decimal_between(1.0, 25, 2)
+  def night_suppl_pay_pct(), do: FactoryUtils.random_float_decimal_between(1.0, 25, 2)
 
-  def sunday_suppl_pay_pct(), do: Utils.random_float_decimal_between(25, 65, 2)
+  def sunday_suppl_pay_pct(), do: FactoryUtils.random_float_decimal_between(25, 65, 2)
 end
