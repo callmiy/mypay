@@ -2,6 +2,21 @@ defmodule Burda.Shift.Times do
   @moduledoc ~S"""
     Compute the various times involved with shift work
   """
+  alias __MODULE__
+
+  defstruct [
+    :hours_gross,
+    :normal_hours,
+    :night_hours,
+    :sunday_hours
+  ]
+
+  @type t :: %Times{
+          hours_gross: Float.t(),
+          normal_hours: Float.t(),
+          night_hours: Float.t(),
+          sunday_hours: Float.t()
+        }
 
   @night_shift_start ~T[21:45:00]
   @morning_shift_start ~T[05:45:00]
@@ -24,12 +39,7 @@ defmodule Burda.Shift.Times do
           start_time :: Time.t(),
           end_time :: Time.t(),
           break_time_secs :: Integer.t()
-        ) :: %{
-          hours_gross: Float.t(),
-          normal_hours: Float.t(),
-          night_hours: Float.t(),
-          sunday_hours: Float.t()
-        }
+        ) :: t
   def times(
         %Date{} = date,
         %Time{} = start_time,
@@ -43,7 +53,7 @@ defmodule Burda.Shift.Times do
       |> correct_seconds()
       |> to_valid_shift_duration()
 
-    %{
+    %Times{
       hours_gross: secs_to_hrs(duration),
       normal_hours:
         duration

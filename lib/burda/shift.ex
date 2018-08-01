@@ -33,15 +33,7 @@ defmodule Burda.Shift do
     |> cast(attrs, [
       :date,
       :start_time,
-      :end_time,
-      :hours_gross,
-      :normal_hours,
-      :night_hours,
-      :sunday_hours,
-      :normal_pay,
-      :night_suppl_pay,
-      :sunday_suppl_pay,
-      :total_pay
+      :end_time
     ])
     |> validate_required([
       :date,
