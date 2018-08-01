@@ -64,7 +64,7 @@ defmodule Burda.DataCase do
     {:ok, meta} =
       :meta
       |> Burda.Factory.params_for(params)
-      |> Burda.MetaApi.create_()
+      |> Burda.Meta.Api.create_()
 
     meta
   end

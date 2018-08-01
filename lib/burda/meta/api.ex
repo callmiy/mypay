@@ -1,4 +1,4 @@
-defmodule Burda.MetaApi do
+defmodule Burda.Meta.Api do
   @moduledoc """
   The Metas context.
   """
