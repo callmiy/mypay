@@ -22,8 +22,9 @@ defmodule Burda.Factory.Shift do
     attrs = params(params)
 
     {:ok, shift} =
-      meta
-      |> Api.create_(Map.put(attrs, :meta_id, meta.id))
+      attrs
+      |> Map.put(:meta_id, meta.id)
+      |> Api.create_(meta)
 
     shift
   end

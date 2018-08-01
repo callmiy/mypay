@@ -57,6 +57,7 @@ defmodule Burda.Repo.Migrations.CreateShifts do
         :sunday_suppl_pay,
         :decimal,
         precision: 9,
+        scale: 2,
         null: false,
         comment: "Supplemental earning for sunday ShiftApi."
       )

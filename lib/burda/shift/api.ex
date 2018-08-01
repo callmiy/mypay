@@ -52,7 +52,7 @@ defmodule Burda.Shift.Api do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_(%Meta{} = meta, %{} = attrs) do
+  def create_(%{} = attrs, %Meta{} = meta) do
     times =
       Times.times(
         attrs.date,
