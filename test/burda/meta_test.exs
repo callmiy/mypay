@@ -1,21 +1,22 @@
 defmodule Burda.MetaApiTest do
   use Burda.DataCase
 
-  alias Burda.MetaApi, as: Api
+  alias Burda.Meta.Api
   alias Burda.Meta
+  alias Burda.Factory.Meta, as: Factory
 
   test "list/0 returns all metas" do
-    meta = insert_meta()
+    meta = Factory.insert()
     assert Api.list() == [meta]
   end
 
   test "get/1 returns the meta with given id" do
-    meta = insert_meta()
+    meta = Factory.insert()
     assert Api.get(meta.id) == meta
   end
 
   test "create_/1 with valid data creates a meta" do
-    attrs = params_for(:meta)
+    attrs = Factory.params()
 
     assert {:ok, %Meta{} = meta} = Api.create_(attrs)
     assert meta.break_time_secs == Map.get(attrs, :break_time_secs) || Api.default_break_time()
@@ -26,14 +27,13 @@ defmodule Burda.MetaApiTest do
 
   test "create_/1 with invalid data returns error changeset" do
     assert {:error, %Ecto.Changeset{}} =
-             :meta
-             |> params_for(pay_per_hr: nil)
+             Factory.params(pay_per_hr: nil)
              |> Api.create_()
   end
 
   test "update_/2 with valid data updates the meta" do
-    meta = insert_meta()
-    attrs = params_for(:meta)
+    meta = Factory.insert()
+    attrs = Factory.params()
     assert {:ok, meta} = Api.update_(meta, attrs)
     assert %Meta{} = meta
     assert meta.break_time_secs == Map.get(attrs, :break_time_secs) || Api.default_break_time()
@@ -43,7 +43,7 @@ defmodule Burda.MetaApiTest do
   end
 
   test "update_/2 with invalid data returns error changeset" do
-    meta = insert_meta()
+    meta = Factory.insert()
 
     assert {:error, %Ecto.Changeset{}} =
              Api.update_(
@@ -55,26 +55,26 @@ defmodule Burda.MetaApiTest do
   end
 
   test "delete_/1 deletes the meta" do
-    meta = insert(:meta)
+    meta = Factory.insert()
     assert {:ok, %Meta{}} = Api.delete_(meta)
     assert Api.get(meta.id) == nil
   end
 
   test "change_/1 returns a meta changeset" do
-    meta = insert(:meta)
+    meta = Factory.insert()
     assert %Ecto.Changeset{} = Api.change_(meta)
   end
 
   test "get_latest/0 returns latest meta" do
-    insert(:meta)
-    meta = insert(:meta, break_time_secs: 50)
+    Factory.insert()
+    meta = Factory.insert(break_time_secs: 50)
     latest = Api.get_latest()
     assert meta.id == latest.id
   end
 
   test "fields must be unique" do
-    params = params_for(:meta, break_time_secs: 50)
-    insert(:meta, params)
+    params = Factory.params(break_time_secs: 50)
+    Factory.insert(params)
     msg = Meta.all_fields_uniqueness_error()
 
     assert {:error,

@@ -22,7 +22,6 @@ defmodule Burda.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import Burda.DataCase
-      import Burda.Factory
     end
   end
 
@@ -50,22 +49,5 @@ defmodule Burda.DataCase do
         String.replace(acc, "%{#{key}}", to_string(value))
       end)
     end)
-  end
-
-  def insert_meta(params \\ %{})
-
-  def insert_meta(params) when is_list(params),
-    do:
-      params
-      |> Map.new()
-      |> insert_meta()
-
-  def insert_meta(params) do
-    {:ok, meta} =
-      :meta
-      |> Burda.Factory.params_for(params)
-      |> Burda.Meta.Api.create_()
-
-    meta
   end
 end

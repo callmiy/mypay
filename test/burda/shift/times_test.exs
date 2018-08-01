@@ -3,6 +3,7 @@ defmodule Burda.Shift.TimeTest do
 
   alias Burda.Shift.Times, as: Times
   alias Burda.Factory.Shift, as: ShiftFactory
+  alias Burda.Factory.Utils, as: FactoryUtils
 
   @one_hour_secs 60 * 60
   @break_time_secs 1_800
@@ -37,7 +38,7 @@ defmodule Burda.Shift.TimeTest do
     # between 2.1 and 3.9 hours before morning shift starts
     secs_before_morning_shift =
       2.1
-      |> random_float_between(3.9, 1)
+      |> FactoryUtils.random_float_between(3.9, 1)
       |> trunc()
       |> Kernel.*(@one_hour_secs)
 
@@ -66,7 +67,7 @@ defmodule Burda.Shift.TimeTest do
     # between 4.2 and 4.9 hours before morning shift starts
     secs_before_morning_shift =
       4.2
-      |> random_float_between(4.9, 1)
+      |> FactoryUtils.random_float_between(4.9, 1)
       |> Kernel.*(@one_hour_secs)
       |> trunc()
 
@@ -92,7 +93,7 @@ defmodule Burda.Shift.TimeTest do
     # between 5.1 and 5.74 hours before morning shift starts
     secs_before_morning_shift =
       5.1
-      |> random_float_between(5.74, 1)
+      |> FactoryUtils.random_float_between(5.74, 1)
       |> Kernel.*(@one_hour_secs)
       |> trunc()
 
@@ -126,7 +127,7 @@ defmodule Burda.Shift.TimeTest do
     # between 3.1 and 3.8 hours before morning shift starts
     secs_before_morning_shift =
       3.1
-      |> random_float_between(3.8, 1)
+      |> FactoryUtils.random_float_between(3.8, 1)
       |> Kernel.*(@one_hour_secs)
       |> trunc()
 
@@ -156,7 +157,7 @@ defmodule Burda.Shift.TimeTest do
     # between 0 and 1.9 hours before/after morning shift starts
     secs_before_morning_shift =
       0.0
-      |> random_float_between(1.9, 1)
+      |> FactoryUtils.random_float_between(1.9, 1)
       |> Kernel.*(@one_hour_secs * Enum.random([1, +1]))
       |> trunc()
 
@@ -189,7 +190,7 @@ defmodule Burda.Shift.TimeTest do
     # between 0 and 0.9 hours before/after morning shift starts
     secs_before_morning_shift =
       0.0
-      |> random_float_between(0.9, 1)
+      |> FactoryUtils.random_float_between(0.9, 1)
       |> Kernel.*(@one_hour_secs * Enum.random([1, +1]))
       |> trunc()
 
@@ -200,7 +201,7 @@ defmodule Burda.Shift.TimeTest do
     # between 1.5 and 1.9 hours after night shift - means no break
     end_secs_after_night_shift_start =
       1.5
-      |> random_float_between(1.9, 1)
+      |> FactoryUtils.random_float_between(1.9, 1)
       |> Kernel.*(@one_hour_secs)
       |> trunc()
 
@@ -291,7 +292,7 @@ defmodule Burda.Shift.TimeTest do
     # between 0 and 1 hour before morning shift start
     end_secs_bf_morning_shift =
       0.0
-      |> random_float_between(1.0, 1)
+      |> FactoryUtils.random_float_between(1.0, 1)
       |> Kernel.*(@one_hour_secs)
       |> trunc()
 
@@ -325,7 +326,7 @@ defmodule Burda.Shift.TimeTest do
     # between 0 and 5 hours after morning shift start
     end_secs_after_morning_shift =
       0.0
-      |> random_float_between(5.0, 1)
+      |> FactoryUtils.random_float_between(5.0, 1)
       |> Kernel.*(@one_hour_secs)
       |> trunc()
 
@@ -351,11 +352,11 @@ defmodule Burda.Shift.TimeTest do
   test "times/4 starting on sunday and ending on sunday" do
     date =
       ShiftFactory.random_date()
-      |> next_sunday_date()
+      |> FactoryUtils.next_sunday_date()
 
     assert Date.day_of_week(date) == 7
 
-    start_hrs_bf_midnight = random_float_between(2.0, 22.9, 2)
+    start_hrs_bf_midnight = FactoryUtils.random_float_between(2.0, 22.9, 2)
 
     start_time =
       @midnight
@@ -369,7 +370,7 @@ defmodule Burda.Shift.TimeTest do
       start_time
       |> Time.add(
         2.0
-        |> random_float_between(start_hrs_bf_midnight, 2)
+        |> FactoryUtils.random_float_between(start_hrs_bf_midnight, 2)
         |> Kernel.*(@one_hour_secs)
         |> trunc()
       )
@@ -409,21 +410,4 @@ defmodule Burda.Shift.TimeTest do
       end_time
       |> Time.diff(start_time)
       |> Times.correct_seconds()
-
-  defp random_float_between(lower, upper, precision)
-       when is_float(lower) and is_float(upper) and lower < upper and is_integer(precision) do
-    case :rand.uniform()
-         |> Kernel.*(10)
-         |> Float.round(precision) do
-      z when z <= upper and z >= lower -> z
-      _ -> random_float_between(lower, upper, precision)
-    end
-  end
-
-  defp next_sunday_date(%Date{} = date) do
-    case Date.day_of_week(date) do
-      7 -> date
-      x -> Date.add(date, 7 - x)
-    end
-  end
 end

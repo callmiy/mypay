@@ -1,6 +1,4 @@
 defmodule Burda.Factory.Shift do
-  use ExMachina
-
   alias Burda.Meta
   alias Burda.Meta.Api, as: MetaApi
   alias Burda.Factory

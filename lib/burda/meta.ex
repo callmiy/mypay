@@ -42,4 +42,6 @@ defmodule Burda.Meta do
   end
 
   def all_fields_uniqueness_error, do: @all_fields_uniqueness_error
+
+  def non_required_keys, do: [:break_time_secs]
 end
