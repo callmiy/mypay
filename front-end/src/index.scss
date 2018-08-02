@@ -1,0 +1,57 @@
+[role="button"],
+a,
+area,
+button,
+input,
+label,
+select,
+summary,
+textarea {
+  touch-action: manipulation;
+}
+
+.header {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
+.header__text {
+  position: relative;
+  bottom: -5px;
+}
+
+.header__side-bar-trigger {
+  outline: 5px auto green;
+  color: green;
+  border-color: green;
+  width: 40px;
+  padding: 10px;
+  font-size: 16px;
+  background: transparent;
+  border: 1px solid green;
+  border-radius: 0.25rem;
+  cursor: pointer;
+
+  &:before {
+    display: block;
+    content: "";
+    width: 100%;
+    padding-bottom: 0.125em;
+    border-top: 0.375em double;
+    border-bottom: 0.125em solid;
+    border-color: green;
+  }
+}
+
+.header__side-bar-trigger__inner {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+  border: 0;
+}

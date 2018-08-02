@@ -9,9 +9,18 @@ use Mix.Config
 config :burda, BurdaWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,
-  code_reloader: false,
+  code_reloader: true,
   check_origin: false,
-  watchers: []
+  watchers: [
+    node: [
+      "node_modules/webpack-dev-server/bin/webpack-dev-server.js",
+      "--config",
+      "webpacks/dev.js",
+      "--colors",
+      "--watch-stdin",
+      cd: Path.expand("../front-end", __DIR__)
+    ]
+  ]
 
 # ## SSL Support
 #
@@ -30,15 +39,15 @@ config :burda, BurdaWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-# config :burda, BurdaWeb.Endpoint,
-#   live_reload: [
-#     patterns: [
-#       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
-#       ~r{priv/gettext/.*(po)$},
-#       ~r{lib/burda_web/views/.*(ex)$},
-#       ~r{lib/burda_web/templates/.*(eex)$}
-#     ]
-#   ]
+config :burda, BurdaWeb.Endpoint,
+  live_reload: [
+    patterns: [
+      ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
+      ~r{priv/gettext/.*(po)$},
+      ~r{lib/burda_web/views/.*(ex)$},
+      ~r{lib/burda_web/templates/.*(eex)$}
+    ]
+  ]
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"

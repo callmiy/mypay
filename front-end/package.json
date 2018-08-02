@@ -1,0 +1,48 @@
+{
+  "name": "burda",
+  "version": "0.0.1",
+  "description": "Shift work times and wages",
+  "main": "src/index.js",
+  "directories": {
+    "lib": "src",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "webpack --config=webpacks/prod.js",
+    "start": "yarn run watch",
+    "watch": "webpack-dev-server --config=webpacks/dev.js --colors --watch-stdin"
+  },
+  "keywords": [
+    "shift",
+    "work time",
+    "wages",
+    "elixir",
+    "phoenix",
+    "websocket"
+  ],
+  "author": "maneptha@gmail.com",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^9.0.2",
+    "css-loader": "^1.0.0",
+    "file-loader": "^1.1.11",
+    "less": "^3.8.0",
+    "less-loader": "^4.1.0",
+    "mini-css-extract-plugin": "^0.4.1",
+    "node-sass": "^4.9.2",
+    "optimize-css-assets-webpack-plugin": "^5.0.0",
+    "postcss": "^7.0.2",
+    "postcss-loader": "^2.1.6",
+    "sass-loader": "^7.1.0",
+    "semantic-ui-less": "^2.3.3",
+    "style-loader": "^0.21.0",
+    "uglifyjs-webpack-plugin": "^1.2.7",
+    "url-loader": "^1.0.1",
+    "webpack": "^4.16.3",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.5",
+    "webpack-merge": "^4.1.4"
+  },
+  "dependencies": {}
+}
