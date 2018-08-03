@@ -5,17 +5,18 @@ const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const baseConfig = require("./base");
+const paths = require("./../paths");
 
 module.exports = merge(baseConfig, {
   mode: "production",
 
   entry: {
-    app: "./src/index.js",
-    styles: ["./src/index.scss", "./semantic-theme/semantic.less"]
+    app: paths.appEntries.app,
+    styles: paths.appEntries.styles
   },
 
   output: {
-    path: path.resolve(__dirname, "./../priv/static/js"),
+    path: paths.appBuild,
     filename: "[name].js",
     publicPath: "/"
   },

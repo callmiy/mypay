@@ -2,6 +2,7 @@ const path = require("path");
 const merge = require("webpack-merge");
 const webpack = require("webpack");
 const baseConfig = require("./base");
+const paths = require("./../paths");
 
 module.exports = merge(baseConfig, {
   mode: "development",
@@ -10,15 +11,19 @@ module.exports = merge(baseConfig, {
     app: [
       "webpack-dev-server/client?http://localhost:8080", // bundle the client for webpack-dev-server and connect to the provided endpoint
       "webpack/hot/only-dev-server", // bundle the client for hot reloading, only- means to only hot reload for successful updates
-      "./src/index.js" // the entry point of our app
+      paths.appEntries.app // the entry point of our app
     ],
-    styles: ["./src/index.scss", "./semantic-theme/semantic.less"]
+
+    styles: paths.appEntries.styles
   },
 
   output: {
-    path: path.resolve(__dirname, "public"),
+    path: paths.appPublic,
     filename: "[name].js",
-    publicPath: "http://localhost:8080/"
+    publicPath: "http://localhost:8080/",
+    // Point sourcemap entries to original disk location (format as URL on Windows)
+    devtoolModuleFilenameTemplate: info =>
+      path.resolve(info.absoluteResourcePath).replace(/\\/g, "/")
   },
 
   devServer: {
@@ -33,5 +38,9 @@ module.exports = merge(baseConfig, {
   plugins: [
     new webpack.HotModuleReplacementPlugin(), // enable HMR globally
     new webpack.NamedModulesPlugin() // prints more readable module names in the browser console on HMR updates
-  ]
+  ],
+
+  performance: {
+    hints: false
+  }
 });

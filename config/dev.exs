@@ -15,7 +15,7 @@ config :burda, BurdaWeb.Endpoint,
     node: [
       "node_modules/webpack-dev-server/bin/webpack-dev-server.js",
       "--config",
-      "webpacks/dev.js",
+      "config/webpacks/dev.js",
       "--colors",
       "--watch-stdin",
       cd: Path.expand("../front-end", __DIR__)

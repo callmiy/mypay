@@ -1,8 +1,12 @@
 const webpack = require("webpack");
 const path = require("path");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const paths = require("./../paths");
 
 module.exports = {
   module: {
+    strictExportPresence: true,
+
     rules: [
       {
         test: /\.less$/,
@@ -53,6 +57,29 @@ module.exports = {
       },
 
       {
+        test: /\.(js|jsx|mjs)$/,
+        include: paths.appSrc,
+        loader: require.resolve("babel-loader"),
+        options: {
+          compact: true
+        }
+      },
+
+      {
+        test: /\.(ts|tsx)$/,
+        include: paths.appSrc,
+        use: [
+          {
+            loader: require.resolve("ts-loader"),
+            options: {
+              // disable type checker - we will use it in fork plugin
+              transpileOnly: true
+            }
+          }
+        ]
+      },
+
+      {
         test: /\.otf(\?.*)?$/,
         use:
           "file-loader?name=/fonts/[name].[ext]&mimetype=application/font-otf"
@@ -60,20 +87,32 @@ module.exports = {
     ]
   },
 
-  plugins: [],
+  plugins: [
+    // Perform type checking and linting in a separate process to speed up compilation
+    new ForkTsCheckerWebpackPlugin({
+      async: false,
+      watch: paths.appSrc,
+      tsconfig: paths.appTsConfig,
+      tslint: paths.appTsLint
+    })
+  ],
 
   resolve: {
-    modules: ["node_modules", path.resolve(__dirname, "../src")],
-    extensions: [".js"],
-    alias: {
-      "../../theme.config$": path.resolve(
-        __dirname,
-        "../semantic-theme/theme.config"
-      )
-    }
-  },
+    modules: ["node_modules", paths.appSrc],
 
-  performance: {
-    hints: false
+    extensions: [
+      ".mjs",
+      ".web.ts",
+      ".ts",
+      ".web.tsx",
+      ".tsx",
+      ".web.js",
+      ".js",
+      ".json"
+    ],
+
+    alias: {
+      "../../theme.config$": paths.semanticThemeConfig
+    }
   }
 };

@@ -1,0 +1,18 @@
+{
+  "extends": ["tslint:recommended", "tslint-config-prettier"],
+  "linterOptions": {
+    "exclude": ["webpacks/**/*.js", "node_modules/**/*.ts"]
+  },
+  "rules": {
+    "member-access": false,
+    "object-literal-sort-keys": false,
+    "indent": [true, "spaces", 2],
+    "interface-name": [true, "never-prefix"],
+    "no-any": true,
+    "no-arg": true,
+    "ordered-imports": false,
+    "arrow-parens": false,
+    "trailing-comma": false,
+    "object-literal-key-quotes": false
+  }
+}

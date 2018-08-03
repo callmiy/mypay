@@ -5,8 +5,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="wages shift work clocks">
-  <meta name="author" content="">
+  <meta name="description" content="wages shift work clocks clock wage">
+  <meta name="author" content="maneptha@gmail.com">
 
   <title>Hello Burda!</title>
   <%= css_link_tag(@conn) %>
@@ -14,22 +14,47 @@
 </head>
 
 <body>
-  <div class="container">
-    <h2 class="ui header green block">
-      <button class="header__side-bar-trigger" type="button">
-        <span class="header__side-bar-trigger__inner">
-          Toggle nav
-        </span>
-      </button>
 
-      <span class="header__text">Burda</span>
-    </h2>
+  <!-- APP SIDEBAR -->
+  <div id="app-sidebar" class="ui left vertical inverted sidebar labeled icon menu">
+    <a class="item">
+      <i class="home icon"></i>
+      Home
+    </a>
+    <a class="item">
+      <i class="block layout icon"></i>
+      Topics
+    </a>
+    <a class="item">
+      <i class="smile icon"></i>
+      Friends
+    </a>
+  </div>
+  <!-- /APP SIDEBAR -->
+
+
+
+  <div id="app-container" class="app-container">
+
+    <!-- TOP MENU -->
+    <div class="ui inverted main menu">
+      <div class="ui container">
+        <a id="sidebar-trigger" class="item">
+          <i class="content icon"></i>
+        </a>
+
+        <div class="item main-menu__title">Burda</div>
+      </div>
+    </div>
+    <!-- /TOP MENU -->
 
     <main role="main">
       <%= render @view_module, @view_template, assigns %>
     </main>
 
   </div>
+
+
 
   <%= js_script_tag(@conn) %>
 </body>
