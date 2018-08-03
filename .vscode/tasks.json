@@ -23,7 +23,9 @@
         "$mixTestFailure"
       ],
       "options": {
-        "env": {}
+        "env": {
+          "PORT": "4018"
+        }
       }
     },
 
