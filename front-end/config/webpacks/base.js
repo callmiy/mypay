@@ -48,12 +48,20 @@ module.exports = {
 
       {
         test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: "url-loader?limit=10000&mimetype=application/font-woff"
+        loader: "url-loader?limit=10000&mimetype=",
+        options: {
+          limit: 10000,
+          mimetype: "application/font-woff",
+          name: "fonts/[name].[ext]"
+        }
       },
 
       {
         test: /\.(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: "file-loader"
+        loader: "file-loader",
+        options: {
+          name: "fonts/[name].[ext]"
+        }
       },
 
       {
