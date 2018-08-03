@@ -11,8 +11,12 @@ module.exports = merge(baseConfig, {
   mode: "production",
 
   entry: {
-    app: paths.appEntries.app,
-    styles: paths.appEntries.styles
+    [paths.appEntries.commons.name]: paths.appEntries.commons.path,
+
+    [paths.appEntries.commonsStyles.name]:
+      paths.appEntries.commonsStyles.styles,
+
+    [paths.appEntries.indexRouteJs.name]: paths.appEntries.indexRouteJs.path
   },
 
   output: {
