@@ -8,13 +8,16 @@ module.exports = merge(baseConfig, {
   mode: "development",
 
   entry: {
-    app: [
+    [paths.appEntries.commons.name]: [
       "webpack-dev-server/client?http://localhost:8080", // bundle the client for webpack-dev-server and connect to the provided endpoint
       "webpack/hot/only-dev-server", // bundle the client for hot reloading, only- means to only hot reload for successful updates
-      paths.appEntries.app // the entry point of our app
+      paths.appEntries.commons.path // the entry point of our app
     ],
 
-    styles: paths.appEntries.styles
+    [paths.appEntries.commonsStyles.name]:
+      paths.appEntries.commonsStyles.styles,
+
+    [paths.appEntries.indexRouteJs.name]: paths.appEntries.indexRouteJs.path
   },
 
   output: {

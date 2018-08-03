@@ -5,26 +5,34 @@ const fs = require("fs");
 
 const appDirectory = fs.realpathSync(process.cwd());
 const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
+const entryJs = (name, entry) => ({
+  name: "js/" + name,
+  path: resolveApp(entry ? "src/" + name + "/" + entry : "src/index.ts")
+});
+const entryCss = (name, styles) => ({
+  name: "css/" + name,
+  styles
+});
 
 // we're in ./config/
 module.exports = {
   dotenv: resolveApp(".env"),
 
-  appBuild: resolveApp("../priv/static/js"),
+  appBuild: resolveApp("../priv/static"),
 
   appPublic: resolveApp("public"),
 
   appHtml: resolveApp("public/index.html"),
 
   appEntries: {
-    app: resolveApp("src/index.ts"),
+    commons: entryJs("commons"),
 
-    shift: resolveApp("src/shift/index.ts"),
+    indexRouteJs: entryJs("routes/index", "index.ts"),
 
-    styles: [
+    commonsStyles: entryCss("commons", [
       resolveApp("semantic-theme/semantic.less"),
       resolveApp("src/index.scss")
-    ]
+    ])
   },
 
   appPackageJson: resolveApp("package.json"),

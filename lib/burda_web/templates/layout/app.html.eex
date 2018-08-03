@@ -9,7 +9,7 @@
   <meta name="author" content="maneptha@gmail.com">
 
   <title>Hello Burda!</title>
-  <%= css_link_tag(@conn) %>
+  <%= page_css(@conn, :index) %>
 
 </head>
 
@@ -56,7 +56,8 @@
 
 
 
-  <%= js_script_tag(@conn) %>
+  <%= page_js(@conn, :index) %>
+  <%= page_js(@conn, assigns[:page_js] ) %>
 </body>
 
 </html>
