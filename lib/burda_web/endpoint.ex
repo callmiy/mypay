@@ -12,7 +12,7 @@ defmodule BurdaWeb.Endpoint do
     # from: {:app_name, "priv/app/path"},
     at: "/",
     from: :burda,
-    gzip: false,
+    gzip: true,
     only: ~w(css fonts img images js favicon.ico robots.txt)
   )
 

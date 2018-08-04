@@ -30,6 +30,26 @@
     },
 
     {
+      "label": "iex -S mix phx.server prod local",
+      "type": "shell",
+      "command": "mix phx.digest && iex -S mix phx.server",
+      "windows": {
+        "command": "mix phx.digest && iex --werl -S mix phx.server"
+      },
+      "problemMatcher": [
+        "$mixCompileError",
+        "$mixCompileWarning",
+        "$mixTestFailure"
+      ],
+      "options": {
+        "env": {
+          "PORT": "8018",
+          "MIX_ENV": "prod_local"
+        }
+      }
+    },
+
+    {
       "label": "iex -S mix",
       "type": "shell",
       "command": "iex -S mix",

@@ -6,13 +6,29 @@ defmodule BurdaWeb.LayoutView do
   @index_css_js_path "commons.js"
   @index_css_path "commons.css"
 
+  # EXPORTS FOR TEST
+  @spec webpack_server_url() :: <<_::168>>
   def webpack_server_url, do: @webpack_server_url
-  def index_css_path, do: @index_css_path
-  def index_css_js_path, do: @index_css_js_path
 
+  @spec index_css_path() :: <<_::88>>
+  def index_css_path, do: @index_css_path
+
+  @spec index_css_js_path() :: <<_::80>>
+  def index_css_js_path, do: @index_css_js_path
+  # / EXPORTS FOR TEST
+
+  @spec page_js(Plug.Conn.t(), any()) ::
+          <<>>
+          | {:safe,
+             String.t()
+             | maybe_improper_list(
+                 String.t() | maybe_improper_list(any(), String.t() | []) | byte(),
+                 String.t() | []
+               )}
   def page_js(conn, :index),
     do:
       Mix.env()
+      |> get_mix_env()
       |> script_tag(conn, @index_js_path)
 
   def page_js(_, nil), do: ""
@@ -20,6 +36,7 @@ defmodule BurdaWeb.LayoutView do
   def page_js(conn, path),
     do:
       Mix.env()
+      |> get_mix_env()
       |> script_tag(conn, path)
 
   defp script_tag(:prod, conn, path),
@@ -34,9 +51,18 @@ defmodule BurdaWeb.LayoutView do
   defp script_tag(src), do: raw(~s(<script src="#{src}"></script>))
 
   # -------------------------------------------PAGE CSS---------------------
+  @spec page_css(Plug.Conn.t(), Atom.t() | String.t()) ::
+          <<>>
+          | {:safe,
+             String.t()
+             | maybe_improper_list(
+                 String.t() | maybe_improper_list(any(), String.t() | []) | byte(),
+                 String.t() | []
+               )}
   def page_css(conn, :index),
     do:
       Mix.env()
+      |> get_mix_env()
       |> link_tag(conn, :index)
 
   def page_css(_conn, nil), do: link_tag(nil)
@@ -44,6 +70,7 @@ defmodule BurdaWeb.LayoutView do
   def page_css(conn, path),
     do:
       Mix.env()
+      |> get_mix_env()
       |> link_tag(conn, path)
 
   def link_tag(:prod, conn, :index), do: link_tag(:prod, conn, @index_css_path)
@@ -67,4 +94,8 @@ defmodule BurdaWeb.LayoutView do
   def link_tag(href),
     do:
       raw(~s(<link rel="stylesheet" type="text/css" href="#{href}" media="screen,projection" />))
+
+  defp get_mix_env(:prod), do: :prod
+  defp get_mix_env(:prod_local), do: :prod
+  defp get_mix_env(env), do: env
 end
