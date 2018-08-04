@@ -21,7 +21,9 @@ config :burda, BurdaWeb.Endpoint,
     port: 443
   ],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
-  secret_key_base: System.get_env("SECRET_KEY_BASE"),
+  secret_key_base:
+    System.get_env()
+    |> Map.fetch!("SECRET_KEY_BASE"),
   check_origin: [
     "https://burda.herokuapp.com/"
   ],

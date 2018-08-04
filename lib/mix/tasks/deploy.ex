@@ -19,11 +19,8 @@ defmodule Mix.Tasks.Deploy do
     "config/webpacks/prod.js"
   ]
 
+  @spec run(any()) :: :ok
   def run(_args) do
-    invoke_webpack()
-  end
-
-  defp invoke_webpack do
     case File.exists?(@static_folder) do
       true -> File.rm_rf!(@static_folder)
       _ -> :ok
@@ -40,6 +37,15 @@ defmodule Mix.Tasks.Deploy do
 
     :ok = run_cmd("git", ["checkout", "master"])
     :ok = run_cmd("git", ["merge", "dev"])
+
+    :ok =
+      run_cmd("cmd.exe", [
+        "heroku",
+        "run",
+        ~s("POOL_SIZE=2 mix ecto.migrate")
+      ])
+
+    :ok = run_cmd("git", ["push", "heroku", "master"])
   end
 
   # defp run_cmd(command), do: run_cmd(command, [], [])
