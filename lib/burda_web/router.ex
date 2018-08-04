@@ -18,4 +18,17 @@ defmodule BurdaWeb.Router do
 
     get("/", IndexController, :index)
   end
+
+  if Mix.env() == :dev do
+    scope "/" do
+      pipe_through(:api)
+
+      forward(
+        "/graphql",
+        Absinthe.Plug.GraphiQL,
+        schema: BurdaWeb.Schema,
+        context: %{pubsub: BurdaWeb.Endpoint}
+      )
+    end
+  end
 end

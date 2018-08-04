@@ -14,8 +14,9 @@ config :burda, BurdaWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "xVKtZA1LYNSQpRmMByNnmELmTYxHfOEaQk+KrlmuPZt9CmT9fEjdOrXBZsu1YgGw",
   render_errors: [view: BurdaWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Burda.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Burda.PubSub, adapter: Phoenix.PubSub.PG2]
+
+config :absinthe, schema: BurdaWeb.Schema
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -24,4 +25,4 @@ config :logger, :console,
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"

@@ -24,6 +24,12 @@ defmodule Burda.Shift.Api do
     Repo.all(Shift)
   end
 
+  def list_by_date,
+    do:
+      Shift
+      |> order_by([s], desc: s.date)
+      |> Repo.all()
+
   @doc """
   Gets a single shift.
 

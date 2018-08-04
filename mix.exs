@@ -42,11 +42,11 @@ defmodule Burda.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:absinthe, "~> 1.4"},
-      {:absinthe_plug, "~> 1.4"},
+      {:absinthe_plug, "~> 1.4", only: [:dev]},
       {:timex, "~> 3.3"},
       {:timex_ecto, "~> 3.3"},
       {:decimal, "~> 1.5"},
-      {:phoenix_live_reload, "~> 1.0", only: :dev},
+      {:phoenix_live_reload, "~> 1.0", only: [:dev]},
       {:hound, "~> 1.0", only: [:test]}
     ]
   end

@@ -5,6 +5,19 @@
     }
   ],
   "settings": {
-    "elixirLS.dialyzerWarnOpts": []
+    "elixirLS.dialyzerWarnOpts": [],
+    "advancedNewFile.exclude": {
+      "node_modules": true,
+      "node_modules_electron": true,
+      "rls": true,
+      "target": true,
+      "dist": true,
+      "__pycache__": true,
+      "bower_components": true,
+      "deps": true,
+      "_build": true,
+      "build": true,
+      ".elixir_ls": true
+    }
   }
 }

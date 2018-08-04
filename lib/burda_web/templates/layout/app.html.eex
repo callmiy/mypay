@@ -37,16 +37,34 @@
   <div id="app-container" class="app-container">
 
     <!-- TOP MENU -->
-    <div class="ui inverted main menu">
+    <div class="ui inverted menu">
       <div class="ui container">
         <a id="sidebar-trigger" class="item">
           <i class="content icon"></i>
         </a>
 
-        <div class="item main-menu__title">Burda</div>
+        <div class="item main-menu__title">
+          <%= assigns[:current_month] || "Burda" %>
+        </div>
+
+        <div class="right menu">
+          <div class="ui right aligned category search item">
+            <div class="ui transparent icon input ">
+              <input class="prompt" type="text" placeholder="Search dates...">
+              <i class="search link icon inverted"></i>
+            </div>
+            <div class="results"></div>
+          </div>
+        </div>
       </div>
     </div>
     <!-- /TOP MENU -->
+
+    <!-- NEW -->
+    <div class="new-shift-button">
+      <span class="">&plus;</span>
+    </div>
+    <!-- /NEW -->
 
     <main role="main">
       <%= render @view_module, @view_template, assigns %>
@@ -57,7 +75,7 @@
 
 
   <%= page_js(@conn, :index) %>
-  <%= page_js(@conn, assigns[:page_js] ) %>
+    <%= page_js(@conn, assigns[:page_js] ) %>
 </body>
 
 </html>

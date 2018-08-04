@@ -1,1 +1,61 @@
-<div>Index view</div>
+<div class="main-index">
+
+  <%= for shift <- assigns.all_shifts do %>
+    <div class="shift-detail-row">
+      <div class="date-times">
+        <%= Timex.format!(shift.date, "{WDshort}, {D}") %>
+
+          &nbsp;&nbsp;
+
+          <span>
+            <%=
+            shift.start_time
+              |> Timex.format!( "{ISOtime}")
+              |> String.slice(0, 8)
+          %>
+          </span>
+          -
+          <span>
+            <%=
+                shift.end_time
+                  |> Timex.format!( "{ISOtime}")
+                  |> String.slice(0, 8)
+              %>
+          </span>
+      </div>
+
+      <div class="hours">
+        <div>Hours:</div>
+        <div> Gross:
+          <%= shift.hours_gross %>
+        </div>
+        <div> Net shift:
+          <%= shift.normal_hours %>
+        </div>
+        <div> Night Net:
+          <%= shift.night_hours %>
+        </div>
+        <div> Sunday Net:
+          <%= shift.sunday_hours %>
+        </div>
+      </div>
+
+      <div class="earnings">
+        <div>Earning:</div>
+        <div> Net shift: &euro;
+          <%= shift.normal_pay %>
+        </div>
+        <div> Night Net: &euro;
+          <%= shift.night_suppl_pay %>
+        </div>
+        <div> Sunday Net: &euro;
+          <%= shift.sunday_suppl_pay %>
+        </div>
+        <div> Total: &euro;
+          <%= shift.total_pay %>
+        </div>
+      </div>
+    </div>
+    <% end %>
+
+</div>
