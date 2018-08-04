@@ -32,9 +32,9 @@
     {
       "label": "iex -S mix phx.server prod local",
       "type": "shell",
-      "command": "mix phx.digest && iex -S mix phx.server",
+      "command": "mix deploy local && iex -S mix phx.server",
       "windows": {
-        "command": "mix phx.digest && iex --werl -S mix phx.server"
+        "command": "mix deploy local && iex --werl -S mix phx.server"
       },
       "problemMatcher": [
         "$mixCompileError",
