@@ -13,7 +13,7 @@
     {
       "label": "iex -S mix phx.server",
       "type": "shell",
-      "command": "iex -S mix phx.server",
+      "command": "pg_ctl start && iex -S mix phx.server",
       "windows": {
         "command": "iex --werl -S mix phx.server"
       },
@@ -32,7 +32,7 @@
     {
       "label": "iex -S mix phx.server prod local",
       "type": "shell",
-      "command": "mix deploy local && iex -S mix phx.server",
+      "command": "pg_ctl start && mix deploy local && iex -S mix phx.server",
       "windows": {
         "command": "mix deploy local && iex --werl -S mix phx.server"
       },
@@ -52,7 +52,7 @@
     {
       "label": "iex -S mix",
       "type": "shell",
-      "command": "iex -S mix",
+      "command": "pg_ctl start && iex -S mix",
       "windows": {
         "command": "iex --werl -S mix"
       },
