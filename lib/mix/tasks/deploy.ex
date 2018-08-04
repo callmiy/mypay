@@ -39,8 +39,7 @@ defmodule Mix.Tasks.Deploy do
     :ok = run_cmd("git", ["merge", "dev"])
 
     :ok =
-      run_cmd("cmd.exe", [
-        "heroku",
+      run_cmd("heroku", [
         "run",
         ~s("POOL_SIZE=2 mix ecto.migrate")
       ])
