@@ -9,10 +9,17 @@ const entryJs = (name, entry) => ({
   name: "js/" + name,
   path: resolveApp(entry ? "src/" + name + "/" + entry : "src/index.ts")
 });
-const entryCss = (name, styles) => ({
-  name: "css/" + name,
-  styles
-});
+const entryCss = (name, styles) => {
+  if (styles.map === undefined) {
+    // it's a string
+    styles = resolveApp("src/" + styles);
+  }
+
+  return {
+    name: "css/" + name,
+    styles
+  };
+};
 
 // we're in ./config/
 module.exports = {
@@ -28,6 +35,8 @@ module.exports = {
     commons: entryJs("commons"),
 
     indexRouteJs: entryJs("routes/index", "index.ts"),
+
+    indexRouteCss: entryCss("routes/styles", "routes/index/styles.scss"),
 
     commonsStyles: entryCss("commons", [
       resolveApp("semantic-theme/semantic.less"),

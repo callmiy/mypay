@@ -42,6 +42,7 @@ textarea {
   background: green;
   color: white;
   cursor: pointer;
+  z-index: 101;
 
   & > span {
     font-weight: 900;

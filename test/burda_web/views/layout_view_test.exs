@@ -27,4 +27,21 @@ defmodule BurdaWeb.LayoutViewTest do
   test "page_link_tag/2 for pages with no css" do
     assert View.link_tag(nil) == ""
   end
+
+  test "page_link_tag/2 for pages with css dev", %{conn: conn} do
+    conn = put_private(conn, :phoenix_endpoint, @endpoint)
+
+    assert View.link_tag(:dev, conn, "routes/styles.css") ==
+             raw(~s(<script src="#{@webpack_server_url}/css/routes/styles.js"></script>))
+  end
+
+  test "page_link_tag/2 for pages with css prod", %{conn: conn} do
+    conn = put_private(conn, :phoenix_endpoint, @endpoint)
+    path = "routes/styles.css"
+
+    assert View.link_tag(:prod, conn, path) ==
+             raw(
+               ~s(<link rel="stylesheet" type="text/css" href="/css/#{path}" media="screen,projection" />)
+             )
+  end
 end

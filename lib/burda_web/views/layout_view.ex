@@ -84,8 +84,10 @@ defmodule BurdaWeb.LayoutView do
   def link_tag(:dev, conn, :index),
     do: link_tag(:dev, conn, @index_css_js_path)
 
-  def link_tag(:dev, _conn, path),
-    do: raw(~s(<script src="http://localhost:8080/css/#{path}"></script>))
+  def link_tag(:dev, _conn, path) do
+    path = String.replace(path, ~r/\.css$/, ".js")
+    raw(~s(<script src="http://localhost:8080/css/#{path}"></script>))
+  end
 
   def link_tag(_, conn, path), do: link_tag(:dev, conn, path)
 

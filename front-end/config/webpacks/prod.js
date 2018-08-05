@@ -16,7 +16,9 @@ module.exports = merge(baseConfig, {
     [paths.appEntries.commonsStyles.name]:
       paths.appEntries.commonsStyles.styles,
 
-    [paths.appEntries.indexRouteJs.name]: paths.appEntries.indexRouteJs.path
+    [paths.appEntries.indexRouteJs.name]: paths.appEntries.indexRouteJs.path,
+
+    [paths.appEntries.indexRouteCss.name]: paths.appEntries.indexRouteCss.styles
   },
 
   output: {

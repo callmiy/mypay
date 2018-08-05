@@ -10,6 +10,7 @@
 
   <title>Hello Burda!</title>
   <%= page_css(@conn, :index) %>
+    <%= page_css(@conn, assigns[:page_css] ) %>
 
 </head>
 

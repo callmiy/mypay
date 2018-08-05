@@ -3,58 +3,67 @@
   <%= for shift <- assigns.all_shifts do %>
     <div class="shift-detail-row">
       <div class="date-times">
-        <%= Timex.format!(shift.date, "{WDshort}, {D}") %>
+        <span>
+          <%= Timex.format!(shift.date, "{WDshort}, {D}") %>
+        </span>
 
-          &nbsp;&nbsp;
-
+        <div class="times">
           <span>
-            <%=
-            shift.start_time
-              |> Timex.format!( "{ISOtime}")
-              |> String.slice(0, 8)
-          %>
+            <%= format_time_iso(shift.start_time) %>
           </span>
           -
           <span>
-            <%=
-                shift.end_time
-                  |> Timex.format!( "{ISOtime}")
-                  |> String.slice(0, 8)
-              %>
+            <%= format_time_iso(shift.end_time) %>
           </span>
+        </div>
+
+        <span>
+          <%= shift.hours_gross %> hours &nbsp;&nbsp; (gross)
+        </span>
       </div>
 
-      <div class="hours">
-        <div>Hours:</div>
-        <div> Gross:
-          <%= shift.hours_gross %>
+      <div class="hours-earnings-container">
+        <div class="hours-earnings header">
+          <span>Type (Net)</span>
+          <span>Hours worked</span>
+          <span>Earning</span>
         </div>
-        <div> Net shift:
-          <%= shift.normal_hours %>
+
+        <div class="hours-earnings">
+          <span>Shift</span>
+          <span>
+            <%= shift.normal_hours %>
+          </span>
+          <span>&euro;
+            <%= shift.normal_pay %>
+          </span>
         </div>
-        <div> Night Net:
-          <%= shift.night_hours %>
+
+        <div class="hours-earnings">
+          <span>Night</span>
+          <span>
+            <%= shift.night_hours %>
+          </span>
+          <span>&euro;
+            <%= shift.night_suppl_pay %>
+          </span>
         </div>
-        <div> Sunday Net:
-          <%= shift.sunday_hours %>
+
+        <div class="hours-earnings">
+          <span>Sunday</span>
+          <span>
+            <%= shift.sunday_hours %>
+          </span>
+          <span>&euro;
+            <%= shift.sunday_suppl_pay %>
+          </span>
         </div>
       </div>
 
-      <div class="earnings">
-        <div>Earning:</div>
-        <div> Net shift: &euro;
-          <%= shift.normal_pay %>
-        </div>
-        <div> Night Net: &euro;
-          <%= shift.night_suppl_pay %>
-        </div>
-        <div> Sunday Net: &euro;
-          <%= shift.sunday_suppl_pay %>
-        </div>
-        <div> Total: &euro;
-          <%= shift.total_pay %>
-        </div>
+      <div class="total-earning"> Total: &euro;
+        <%= shift.total_pay %>
       </div>
+
     </div>
     <% end %>
 

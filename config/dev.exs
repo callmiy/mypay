@@ -42,7 +42,7 @@ config :burda, BurdaWeb.Endpoint,
 config :burda, BurdaWeb.Endpoint,
   live_reload: [
     patterns: [
-      ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
+      ~r{priv/static/.*(ts|scss|js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
       ~r{lib/burda_web/views/.*(ex)$},
       ~r{lib/burda_web/templates/.*(eex)$}
