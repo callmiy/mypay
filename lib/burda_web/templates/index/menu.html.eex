@@ -1,0 +1,21 @@
+<div class="ui inverted menu index-route-menu ">
+  <div class="ui container">
+    <a id="sidebar-trigger" class="item">
+      <i class="content icon"></i>
+    </a>
+
+    <div class="item index-route-menu__title">
+      <%= assigns.current_month %>
+    </div>
+
+    <div class="right menu">
+      <div class="ui right aligned category search item">
+        <div class="ui transparent icon input ">
+          <input class="prompt" type="text" placeholder="Search dates...">
+          <i class="search link icon inverted"></i>
+        </div>
+        <div class="results"></div>
+      </div>
+    </div>
+  </div>
+</div>

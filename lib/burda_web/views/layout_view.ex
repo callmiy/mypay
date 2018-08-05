@@ -17,6 +17,20 @@ defmodule BurdaWeb.LayoutView do
   def index_css_js_path, do: @index_css_js_path
   # / EXPORTS FOR TEST
 
+  # ---------------------------------------PAGE TOP MENU---------------------
+
+  @spec top_menu(module, map()) :: Plug.Conn.t() | String.t()
+  def top_menu(view_module, %{} = assigns) do
+    case :erlang.function_exported(view_module, :top_menu, 1) do
+      true ->
+        apply(view_module, :top_menu, [assigns])
+
+      _ ->
+        ""
+    end
+  end
+
+  # -------------------------------------------PAGE JS---------------------
   @spec page_js(Plug.Conn.t(), any()) ::
           <<>>
           | {:safe,

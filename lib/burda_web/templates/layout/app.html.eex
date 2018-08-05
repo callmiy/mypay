@@ -37,35 +37,17 @@
 
   <div id="app-container" class="app-container">
 
-    <!-- TOP MENU -->
-    <div class="ui inverted menu">
-      <div class="ui container">
-        <a id="sidebar-trigger" class="item">
-          <i class="content icon"></i>
-        </a>
+    <!-- TOP MENU (if exported by child) -->
 
-        <div class="item main-menu__title">
-          <%= assigns[:current_month] || "Burda" %>
-        </div>
 
-        <div class="right menu">
-          <div class="ui right aligned category search item">
-            <div class="ui transparent icon input ">
-              <input class="prompt" type="text" placeholder="Search dates...">
-              <i class="search link icon inverted"></i>
-            </div>
-            <div class="results"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- /TOP MENU -->
+    <%= top_menu(@view_module, %{} = assigns) %>
+      <!-- /TOP MENU -->
 
 
 
-    <main role="main">
-      <%= render @view_module, @view_template, assigns %>
-    </main>
+      <main role="main">
+        <%= render @view_module, @view_template, assigns %>
+      </main>
 
   </div>
 
