@@ -1,5 +1,44 @@
 $border-color: #034c035c;
 
+.main-index {
+  height: 100%;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.shift-summaries {
+  margin-top: 3px;
+}
+
+.shift-details {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.earnings-summary {
+  border: 1px solid #034803;
+  color: white;
+  display: grid;
+  grid-template-columns: 1fr minmax(auto, 25%);
+  margin-bottom: 1px;
+
+  & > span {
+    padding: 5px;
+  }
+
+  & > :first-child {
+    background: #039e03;
+  }
+
+  & > :last-child {
+    background: #029602;
+    text-align: right;
+    font-weight: 900;
+    border-left: 3px solid green;
+  }
+}
+
 .shift-detail-row {
   position: relative;
   border: 1px solid $border-color;
@@ -7,13 +46,22 @@ $border-color: #034c035c;
   border-radius: 5px;
   padding: 5px;
   box-shadow: 2px 5px $border-color;
+
+  &:first-of-type {
+    margin-top: 15px;
+  }
+
+  &:last-of-type {
+    margin-bottom: 25px;
+  }
 }
+
 .date-times {
   display: flex;
   justify-content: space-between;
   font-weight: bold;
   position: absolute;
-  left: 27px;
+  left: 22px;
   top: -10px;
   margin-bottom: 10px;
   background: white;
@@ -23,6 +71,10 @@ $border-color: #034c035c;
     text-decoration-line: underline;
     text-decoration-style: initial;
     text-decoration-color: green;
+  }
+
+  & > :last-child {
+    margin-left: 5px;
   }
 }
 
@@ -42,6 +94,22 @@ $border-color: #034c035c;
     color: white;
     font-weight: 900;
     font-size: 1.03em;
+    text-align: center;
+
+    & > span {
+      border-right: 3px solid $border-color;
+    }
+  }
+
+  &.detail {
+    & > span {
+      border-right: 1px solid $border-color;
+
+      &:not(:first-child) {
+        padding-right: 8px;
+        text-align: right;
+      }
+    }
   }
 
   &:last-child {
@@ -49,14 +117,10 @@ $border-color: #034c035c;
   }
 
   & > span {
-    border-right: 1px solid $border-color;
     padding: 3px;
 
     &:last-child {
       border-right: none;
-    }
-    &:not(:first-child) {
-      text-align: right;
     }
   }
 }

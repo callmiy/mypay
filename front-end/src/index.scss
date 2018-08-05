@@ -19,6 +19,8 @@ textarea {
   height: 100%;
   display: grid;
   grid-template-rows: auto 1fr;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 .ui.menu {
@@ -51,7 +53,5 @@ textarea {
 }
 
 main {
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding: 0 5px 0 5px;
+  overflow: hidden;
 }

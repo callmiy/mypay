@@ -1,70 +1,88 @@
-<div class="main-index">
+<% all_shifts = assigns.all_shifts  %>
 
-  <%= for shift <- assigns.all_shifts do %>
-    <div class="shift-detail-row">
-      <div class="date-times">
-        <span>
-          <%= Timex.format!(shift.date, "{WDshort}, {D}") %>
+  <div class="main-index">
+    <div class="shift-summaries">
+      <div class="earnings-summary">
+        <span class="label">
+          Total Eranings &nbsp; &nbsp;
+          <%= assigns.current_month %>
         </span>
 
-        <div class="times">
-          <span>
-            <%= format_time_iso(shift.start_time) %>
-          </span>
-          -
-          <span>
-            <%= format_time_iso(shift.end_time) %>
-          </span>
-        </div>
-
-        <span>
-          <%= shift.hours_gross %> hours &nbsp;&nbsp; (gross)
+        <span class="amount">
+          &euro;
+          <%= total_earnings(all_shifts) %>
         </span>
       </div>
 
-      <div class="hours-earnings-container">
-        <div class="hours-earnings header">
-          <span>Type (Net)</span>
-          <span>Hours worked</span>
-          <span>Earning</span>
-        </div>
-
-        <div class="hours-earnings">
-          <span>Shift</span>
-          <span>
-            <%= shift.normal_hours %>
-          </span>
-          <span>&euro;
-            <%= shift.normal_pay %>
-          </span>
-        </div>
-
-        <div class="hours-earnings">
-          <span>Night</span>
-          <span>
-            <%= shift.night_hours %>
-          </span>
-          <span>&euro;
-            <%= shift.night_suppl_pay %>
-          </span>
-        </div>
-
-        <div class="hours-earnings">
-          <span>Sunday</span>
-          <span>
-            <%= shift.sunday_hours %>
-          </span>
-          <span>&euro;
-            <%= shift.sunday_suppl_pay %>
-          </span>
-        </div>
-      </div>
-
-      <div class="total-earning"> Total: &euro;
-        <%= shift.total_pay %>
+      <div class="hours-earnings header">
+        <span>Type (Net)</span>
+        <span>Hours worked</span>
+        <span>Earning</span>
       </div>
 
     </div>
-    <% end %>
 
-</div>
+    <div class="shift-details">
+      <%= for shift <- all_shifts do %>
+        <div class="shift-detail-row">
+          <div class="date-times">
+            <span>
+              <%= Timex.format!(shift.date, "{WDshort}, {D}") %>
+            </span>
+
+            <div class="times">
+              <span>
+                <%= format_time_iso(shift.start_time) %>
+              </span>
+              -
+              <span>
+                <%= format_time_iso(shift.end_time) %>
+              </span>
+            </div>
+
+            <span>
+              <%= shift.hours_gross %> hours &nbsp;&nbsp; (gross)
+            </span>
+          </div>
+
+          <div class="hours-earnings-container">
+            <div class="hours-earnings detail">
+              <span>Shift</span>
+              <span>
+                <%= shift.normal_hours %>
+              </span>
+              <span>&euro;
+                <%= shift.normal_pay %>
+              </span>
+            </div>
+
+            <div class="hours-earnings detail">
+              <span>Night</span>
+              <span>
+                <%= shift.night_hours %>
+              </span>
+              <span>&euro;
+                <%= shift.night_suppl_pay %>
+              </span>
+            </div>
+
+            <div class="hours-earnings detail">
+              <span>Sunday</span>
+              <span>
+                <%= shift.sunday_hours %>
+              </span>
+              <span>&euro;
+                <%= shift.sunday_suppl_pay %>
+              </span>
+            </div>
+          </div>
+
+          <div class="total-earning"> Total: &euro;
+            <%= shift.total_pay %>
+          </div>
+
+        </div>
+        <% end %>
+    </div>
+
+  </div>
