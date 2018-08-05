@@ -24,9 +24,11 @@ defmodule Burda.Shift.Api do
     Repo.all(Shift)
   end
 
-  def list_by_date,
+  def shifts_for_current_month(year, month),
     do:
       Shift
+      |> where([s], fragment("extract(month from date) = ?", ^month))
+      |> where([s], fragment("extract(year from date) = ?", ^year))
       |> order_by([s], desc: s.date)
       |> Repo.all()
 
@@ -51,13 +53,22 @@ defmodule Burda.Shift.Api do
 
   ## Examples
 
-      iex> create_(%{field: value})
+      iex> create_(%{date: ~D[2018-07-03], start_time: ~T[05:08:49.000], end_time: ~T[15:17:08.000] }, %Meta{})
       {:ok, %Shift{}}
 
-      iex> create_(%{field: bad_value})
+      iex> create_(%{date: invalid_date})
       {:error, %Ecto.Changeset{}}
 
   """
+  @spec create_(
+          %{
+            date: Date.t(),
+            end_time: Time.t(),
+            start_time: Time.t(),
+            meta_id: Integer.t() | String.t()
+          },
+          Burda.Meta.t()
+        ) :: {:ok, %Shift{}} | {:error, %Ecto.Changeset{}}
   def create_(%{} = attrs, %Meta{} = meta) do
     times =
       Times.times(

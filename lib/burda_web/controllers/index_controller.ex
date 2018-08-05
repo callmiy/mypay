@@ -9,26 +9,25 @@ defmodule BurdaWeb.IndexController do
 
   plug(:assign_defaults)
 
-  def index(conn, _),
-    do:
-      render(
-        conn,
-        "index.html",
-        all_shifts: Api.list_by_date()
-      )
+  @spec index(Plug.Conn.t(), any()) :: Plug.Conn.t()
+  def index(conn, _) do
+    today = conn.assigns.today
 
-  def assign_defaults(conn, _),
-    do:
-      merge_assigns(
-        conn,
-        page_js: @page_js,
-        current_month:
-          Timex.now()
-          |> Timex.format!("{Mshort}/{YYYY}")
-      )
+    render(
+      conn,
+      "index.html",
+      all_shifts: Api.shifts_for_current_month(today.year, today.month)
+    )
+  end
 
-  # defp run_query(query, opts \\ []) do
-  #   {:ok, result} = Absinthe.run(query, Schema, opts)
-  #   result
-  # end
+  def assign_defaults(conn, _) do
+    today = Date.utc_today()
+
+    merge_assigns(
+      conn,
+      page_js: @page_js,
+      current_month: Timex.format!(today, "{Mshort}/{YYYY}"),
+      today: today
+    )
+  end
 end

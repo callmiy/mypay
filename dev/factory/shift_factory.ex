@@ -44,7 +44,7 @@ defmodule Burda.Factory.Shift do
       |> start_time()
 
     %{
-      date: random_date(),
+      date: date(attrs[:date]),
       start_time: start_time,
       end_time:
         attrs
@@ -54,6 +54,29 @@ defmodule Burda.Factory.Shift do
   end
 
   def random_date, do: Date.add(@start_date, Enum.random(@date_offset))
+
+  @spec unique_random_day_of_month(
+          days_range :: %Range{},
+          selected_days :: [Integer.t()]
+        ) :: {Integer.t(), [Integer.t()]}
+  def unique_random_day_of_month(%Range{} = days_range, [] = _selected_days) do
+    day = Enum.random(days_range)
+    {day, [day]}
+  end
+
+  def unique_random_day_of_month(%Range{} = days_range, selected_days)
+      when is_list(selected_days) do
+    day = Enum.random(days_range)
+
+    case Enum.member?(selected_days, day) do
+      true -> unique_random_day_of_month(days_range, selected_days)
+      _ -> {day, [day | selected_days]}
+    end
+  end
+
+  defp date(nil), do: random_date()
+
+  defp date(val), do: val
 
   defp start_time(nil) do
     time_offset =

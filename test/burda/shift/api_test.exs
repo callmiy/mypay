@@ -31,4 +31,30 @@ defmodule Burda.Shift.ApiTest do
     assert {:ok, shift} = Api.delete_(shift)
     assert Api.get(shift.id) == nil
   end
+
+  test "shifts_for_current_month/2" do
+    today = Date.utc_today()
+    this_year = today.year
+    this_month = today.month
+    days_for_month = 1..Timex.days_in_month(this_year, this_month)
+
+    created_shifts =
+      1..3
+      |> Enum.reduce([[], []], fn _, [shifts, selected_days] ->
+        {day, selected_days} = Factory.unique_random_day_of_month(days_for_month, selected_days)
+
+        shift =
+          Factory.insert(%{
+            date: Date.from_erl!({this_year, this_month, day})
+          })
+
+        [[shift | shifts], selected_days]
+      end)
+      |> hd()
+
+    query_shifts = Api.shifts_for_current_month(this_year, this_month)
+
+    assert length(created_shifts) == 3
+    assert Enum.all?(query_shifts, &Enum.member?(created_shifts, &1))
+  end
 end
