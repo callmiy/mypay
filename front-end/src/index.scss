@@ -31,27 +31,6 @@ textarea {
   }
 }
 
-.new-shift-button {
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: green;
-  color: white;
-  cursor: pointer;
-  z-index: 101;
-
-  & > span {
-    font-weight: 900;
-    font-size: 1.5em;
-  }
-}
-
 main {
   overflow: hidden;
 }

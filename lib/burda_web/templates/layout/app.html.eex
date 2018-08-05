@@ -61,11 +61,7 @@
     </div>
     <!-- /TOP MENU -->
 
-    <!-- NEW -->
-    <div class="new-shift-button">
-      <span class="">&plus;</span>
-    </div>
-    <!-- /NEW -->
+
 
     <main role="main">
       <%= render @view_module, @view_template, assigns %>

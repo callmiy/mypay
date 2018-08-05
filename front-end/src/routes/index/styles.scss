@@ -4,7 +4,7 @@ $border-color: #034c035c;
   height: 100%;
   overflow: hidden;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 1fr auto;
 }
 
 .shift-summaries {
@@ -130,4 +130,28 @@ $border-color: #034c035c;
   font-weight: 900;
   font-size: 1.14em;
   padding: 8px 5px 0;
+}
+
+.new-container {
+  display: flex;
+  flex-direction: row-reverse;
+  padding: 0 20px 15px;
+
+  & > div {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: green;
+    color: white;
+    cursor: pointer;
+    z-index: 101;
+
+    & > span {
+      font-weight: 900;
+      font-size: 1.5em;
+    }
+  }
 }
