@@ -6,7 +6,7 @@ defmodule BurdaWeb.IndexController do
   alias Burda.Shift.Api
 
   @page_js "routes/index.js"
-  @page_css "routes/styles.css"
+  @page_css "routes/index.css"
 
   plug(:assign_defaults)
 

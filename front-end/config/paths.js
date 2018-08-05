@@ -36,11 +36,11 @@ module.exports = {
 
     indexRouteJs: entryJs("routes/index", "index.ts"),
 
-    indexRouteCss: entryCss("routes/styles", "routes/index/styles.scss"),
+    indexRouteCss: entryCss("routes/index", "routes/index/index.scss"),
 
     commonsStyles: entryCss("commons", [
       resolveApp("semantic-theme/semantic.less"),
-      resolveApp("src/index.scss")
+      resolveApp("src/app.scss")
     ])
   },
 
