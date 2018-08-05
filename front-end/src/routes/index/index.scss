@@ -47,6 +47,8 @@ $border-color: unquote("#034c035c");
   position: relative;
   border: 1px solid $border-color;
   margin-top: 25px;
+  margin-left: 5px;
+  margin-right: 5px;
   border-radius: 5px;
   padding: 5px;
   box-shadow: 2px 5px $border-color;
@@ -141,7 +143,8 @@ $border-color: unquote("#034c035c");
   flex-direction: row-reverse;
   padding: 0 20px 15px;
 
-  & > div {
+  & > a {
+    display: block;
     border-radius: 50%;
     width: 50px;
     height: 50px;

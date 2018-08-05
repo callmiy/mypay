@@ -87,9 +87,9 @@
 
     <!-- NEW -->
     <div class="new-container">
-      <div>
+      <a>
         <span class="">&plus;</span>
-      </div>
+      </a>
     </div>
     <!-- /NEW -->
 
