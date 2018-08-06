@@ -33,7 +33,7 @@ const attachNewFormToDOM = (data: JsonResponseNewMetaForm) => {
   bodyModalInsertEl.innerHTML = data.html;
 };
 
-const getNewMetaForm = () => {
+const getNewMetaForm = async () => {
   const newMetaFormUrl = window.appInterface.newMetaFormUrl;
 
   if (!newMetaFormUrl) {
@@ -49,14 +49,34 @@ const getNewMetaForm = () => {
     attachNewFormToDOM(response);
   });
 };
+getNewMetaForm();
 
-// tslint:disable-next-line:only-arrow-functions
-(function() {
-  getNewMetaForm();
-})();
+const fetchNewMetaBtn = document.getElementById("get-new-meta-form-button");
 
-// const fetchNewMetaBtn = document.getElementById("get-new-meta-form-button");
+if (fetchNewMetaBtn) {
+  fetchNewMetaBtn.addEventListener(
+    "click",
+    async () => {
+      const bodyModalInsertEl = window.appInterface.bodyModalInsertEl;
 
-// if (fetchNewMetaBtn) {
-//   fetchNewMetaBtn.addEventListener("click", fetchNewMetaForm, false);
-// }
+      if (!bodyModalInsertEl) {
+        return;
+      }
+
+      const modalParent = bodyModalInsertEl.parentElement;
+
+      if (!modalParent) {
+        return;
+      }
+
+      if (!window.appInterface.newMetaFormData) {
+        await getNewMetaForm();
+      }
+
+      document.body.classList.add("dimmed", "dimmable");
+      modalParent.classList.add("animating", "visible", "active");
+      bodyModalInsertEl.classList.add("animating", "visible", "active");
+    },
+    false
+  );
+}
