@@ -56,7 +56,7 @@
       <div id="body-modal-content" class="content"></div>
 
       <div class="actions">
-        <div class="ui cancel button">Dismiss</div>
+        <div id="body-modal-dismiss" class="ui cancel button">Dismiss</div>
       </div>
     </div>
   </div>
