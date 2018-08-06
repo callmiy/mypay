@@ -100,8 +100,19 @@ defmodule Burda.Meta.Api do
       %Ecto.Changeset{source: %Meta{}}
 
   """
-  def change_(%Meta{} = meta) do
-    Meta.changeset(meta, %{})
+
+  @spec change_(meta :: Burda.Meta.t()) :: Ecto.Changeset.t()
+  def change_(meta \\ %Meta{}), do: change_(meta, %{})
+
+  @spec change_(
+          meta :: Burda.Meta.t(),
+          params :: %{
+            optional(:__struct__) => none(),
+            optional(atom() | binary()) => any()
+          }
+        ) :: Ecto.Changeset.t()
+  def change_(%Meta{} = meta, %{} = attrs) do
+    Meta.changeset(meta, attrs)
   end
 
   def get_latest,
