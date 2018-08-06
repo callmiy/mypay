@@ -1,4 +1,6 @@
 import { ajax } from "rxjs/ajax";
+import { insertModalContent } from "../../components/modals";
+import { showModal } from "../../components/modals";
 
 interface JsonResponseTag {
   name: string;
@@ -22,15 +24,9 @@ const makeTag = ({ name, attrs }: JsonResponseTag) => {
 };
 
 const attachNewFormToDOM = (data: JsonResponseNewMetaForm) => {
-  const bodyModalInsertEl = window.appInterface.bodyModalInsertEl;
-
-  if (!bodyModalInsertEl) {
-    return;
-  }
-
   const css = makeTag(data.css);
   document.head.appendChild(css);
-  bodyModalInsertEl.innerHTML = data.html;
+  insertModalContent(data.html);
 };
 
 const getNewMetaForm = async () => {
@@ -57,25 +53,11 @@ if (fetchNewMetaBtn) {
   fetchNewMetaBtn.addEventListener(
     "click",
     async () => {
-      const bodyModalInsertEl = window.appInterface.bodyModalInsertEl;
-
-      if (!bodyModalInsertEl) {
-        return;
-      }
-
-      const modalParent = bodyModalInsertEl.parentElement;
-
-      if (!modalParent) {
-        return;
-      }
-
       if (!window.appInterface.newMetaFormData) {
         await getNewMetaForm();
       }
 
-      document.body.classList.add("dimmed", "dimmable");
-      modalParent.classList.add("animating", "visible", "active");
-      bodyModalInsertEl.classList.add("animating", "visible", "active");
+      showModal();
     },
     false
   );

@@ -52,8 +52,12 @@
   <div id="body-modal-dimmer" class="ui dimmer modals page transition body-modal-dimmer">
     <!-- body is .dimmed.dimmable -->
     <!-- .visible.active.animating -->
-    <div id="body-modal-insert" class="ui modal transition">
-      <!-- visible active  -->
+    <div id="body-modal" class="ui modal transition">
+      <div id="body-modal-content" class="content"></div>
+
+      <div class="actions">
+        <div class="ui cancel button">Dismiss</div>
+      </div>
     </div>
   </div>
   <!-- /MODAL CONTAINER -->
@@ -61,9 +65,6 @@
   <script>
     window.appInterface = {};
     window.appInterface.newMetaFormUrl = "<%= meta_path(@conn, :new) %>";
-    window.appInterface.bodyModalInsertEl = document.getElementById(
-      "body-modal-insert"
-    );
   </script>
   <%= page_js(:index) %>
     <%= page_js(assigns[:page_js] ) %>
