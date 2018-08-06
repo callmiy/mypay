@@ -47,7 +47,13 @@
       </main>
       <!-- /MAIN CHILD TEMPLATE INSERT -->
 
-      <div class="body-modal-insert hidden" id="body-modal-insert"></div>
+      <div class="ui dimmer modals page transition body-modal-dimmer">
+        <!-- body is .dimmed.dimmable -->
+        <!-- .visible.active.animating -->
+        <div id="body-modal-insert" class="ui modal transition">
+          <!-- visible active  -->
+        </div>
+      </div>
 
   </div>
 
