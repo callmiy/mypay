@@ -15,6 +15,10 @@ textarea {
   touch-action: manipulation;
 }
 
+form {
+  margin: 0 !important;
+}
+
 .app-container {
   height: 100%;
   display: grid;
@@ -31,6 +35,23 @@ main {
   overflow: hidden;
 }
 
+.ui.dimmer {
+  padding: 15px 8px;
+}
+
 .ui.modal {
   width: 100%;
+
+  & > .content {
+    padding: 2px !important;
+  }
+
+  .actions {
+    padding: 5px !important;
+
+    & > .buttons,
+    .button {
+      margin: 0 !important;
+    }
+  }
 }
