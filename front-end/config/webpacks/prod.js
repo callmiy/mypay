@@ -15,21 +15,18 @@ module.exports = merge(baseConfig, {
   entry: {
     [paths.appEntries.commons.name]: paths.appEntries.commons.path,
 
-    [paths.appEntries.commonsStyles.name]:
-      paths.appEntries.commonsStyles.styles,
+    [paths.appEntries.commonsStyles.name]: paths.appEntries.commonsStyles.path,
 
     [paths.appEntries.indexRouteJs.name]: paths.appEntries.indexRouteJs.path,
 
-    [paths.appEntries.indexRouteCss.name]:
-      paths.appEntries.indexRouteCss.styles,
+    [paths.appEntries.indexRouteCss.name]: paths.appEntries.indexRouteCss.path,
 
     [paths.appEntries.shiftRouteJs.name]: paths.appEntries.shiftRouteJs.path,
 
-    [paths.appEntries.shiftRouteCss.name]:
-      paths.appEntries.shiftRouteCss.styles,
+    [paths.appEntries.shiftRouteCss.name]: paths.appEntries.shiftRouteCss.path,
 
     [paths.appEntries.newMetaFormComponentCss.name]:
-      paths.appEntries.newMetaFormComponentCss.styles,
+      paths.appEntries.newMetaFormComponentCss.path,
 
     [paths.appEntries.newMetaFormComponentJs.name]:
       paths.appEntries.newMetaFormComponentJs.path

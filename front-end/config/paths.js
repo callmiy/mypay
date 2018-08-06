@@ -9,15 +9,15 @@ const entryJs = (name, entry) => ({
   name: "js/" + name,
   path: resolveApp(entry ? "src/" + name + "/" + entry : "src/app.ts")
 });
-const entryCss = (name, styles) => {
-  if (styles.map === undefined) {
+const entryCss = (name, path) => {
+  if (path.map === undefined) {
     // it's a string
-    styles = resolveApp("src/" + styles);
+    path = resolveApp(`src/${name}/${path}`);
   }
 
   return {
     name: "css/" + name,
-    styles
+    path
   };
 };
 
@@ -31,30 +31,21 @@ module.exports = {
   appPublic: resolveApp("public"),
 
   appHtml: resolveApp("public/index.html"),
-  /*  Naming convention:
-      CSS
-      ===
-        name = path to scss file without extension
-        styles = path to scss file with extension
-      JS
-      ==
-        name = path to folder containing .ts entry
-        entry = entry .ts filename
-  */
+
   appEntries: {
     commons: entryJs("commons"),
 
     indexRouteJs: entryJs("routes/index", "index.ts"),
 
-    indexRouteCss: entryCss("routes/index", "routes/index/index.scss"),
+    indexRouteCss: entryCss("routes/index", "index.scss"),
 
     shiftRouteJs: entryJs("routes/shift", "shift.ts"),
 
-    shiftRouteCss: entryCss("routes/shift", "routes/shift/shift.scss"),
+    shiftRouteCss: entryCss("routes/shift", "shift.scss"),
 
     newMetaFormComponentCss: entryCss(
-      "components/new-meta-form/new-meta-form",
-      "components/new-meta-form/new-meta-form.scss"
+      "components/new-meta-form",
+      "new-meta-form.scss"
     ),
 
     newMetaFormComponentJs: entryJs(
