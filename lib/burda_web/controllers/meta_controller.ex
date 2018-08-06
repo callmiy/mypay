@@ -24,7 +24,11 @@ defmodule BurdaWeb.MetaController do
       |> String.split()
       |> Enum.map(fn
         string ->
-          [attr, val] = String.split(string, "=")
+          [attr, val] =
+            string
+            |> String.split("=")
+            |> Enum.take(2)
+
           {attr, String.replace(val, ~s("), "")}
       end)
       |> Enum.into(%{})
