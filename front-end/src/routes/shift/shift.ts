@@ -7,7 +7,8 @@ interface JsonResponseTag {
 
 interface JsonResponse {
   html: string;
-  tag: JsonResponseTag;
+  css: JsonResponseTag;
+  js: JsonResponseTag;
 }
 
 const makeTag = ({ name, attrs }: JsonResponseTag) => {
@@ -36,8 +37,8 @@ const makeTag = ({ name, attrs }: JsonResponseTag) => {
     // tslint:disable-next-line:no-console
     .subscribe(json => {
       const response = json.response as JsonResponse;
-      const tag = makeTag(response.tag);
-      document.head.appendChild(tag);
+      const css = makeTag(response.css);
+      document.head.appendChild(css);
       bodyModalInsertEl.innerHTML = response.html;
     });
 })();
