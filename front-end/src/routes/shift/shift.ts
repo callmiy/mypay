@@ -21,8 +21,7 @@ const makeTag = ({ name, attrs }: JsonResponseTag) => {
   return tagEl;
 };
 
-// tslint:disable-next-line:only-arrow-functions
-(function() {
+const getNewMetaForm = () => {
   const newMetaFormUrl = window.appInterface.newMetaFormUrl;
   const bodyModalInsertEl = window.appInterface.bodyModalInsertEl;
 
@@ -41,6 +40,11 @@ const makeTag = ({ name, attrs }: JsonResponseTag) => {
       document.head.appendChild(css);
       bodyModalInsertEl.innerHTML = response.html;
     });
+};
+
+// tslint:disable-next-line:only-arrow-functions
+(function() {
+  getNewMetaForm();
 })();
 
 // const fetchNewMetaBtn = document.getElementById("get-new-meta-form-button");
