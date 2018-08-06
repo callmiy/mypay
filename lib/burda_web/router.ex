@@ -17,6 +17,9 @@ defmodule BurdaWeb.Router do
     pipe_through(:browser)
 
     get("/", IndexController, :index)
+
+    resources("/shifts", ShiftController)
+    resources("/metas", MetaController)
   end
 
   if Mix.env() == :dev do

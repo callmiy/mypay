@@ -1,10 +1,28 @@
 defmodule BurdaWeb.LayoutView do
   use BurdaWeb, :view
 
+  require EEx
+
+  alias BurdaWeb.Endpoint
+
   @webpack_server_url "http://localhost:8080"
   @index_js_path "commons.js"
   @index_css_js_path "commons.js"
   @index_css_path "commons.css"
+
+  EEx.function_from_string(
+    :defp,
+    :css_tag_eex,
+    ~s(<link rel="stylesheet" type="text/css" href="<%= @href %>" media="screen,projection" />),
+    [:assigns]
+  )
+
+  EEx.function_from_string(
+    :defp,
+    :js_tag_eex,
+    ~s(<script src="<%= @src %>"></script>),
+    [:assigns]
+  )
 
   # EXPORTS FOR TEST
   @spec webpack_server_url() :: <<_::168>>
@@ -31,7 +49,7 @@ defmodule BurdaWeb.LayoutView do
   end
 
   # -------------------------------------------PAGE JS---------------------
-  @spec page_js(Plug.Conn.t(), any()) ::
+  @spec page_js(any()) ::
           <<>>
           | {:safe,
              String.t()
@@ -39,33 +57,33 @@ defmodule BurdaWeb.LayoutView do
                  String.t() | maybe_improper_list(any(), String.t() | []) | byte(),
                  String.t() | []
                )}
-  def page_js(conn, :index),
+  def page_js(:index),
     do:
       Mix.env()
       |> get_mix_env()
-      |> script_tag(conn, @index_js_path)
+      |> script_tag(@index_js_path)
 
-  def page_js(_, nil), do: ""
+  def page_js(nil), do: ""
 
-  def page_js(conn, path),
+  def page_js(path),
     do:
       Mix.env()
       |> get_mix_env()
-      |> script_tag(conn, path)
+      |> script_tag(path)
 
-  defp script_tag(:prod, conn, path),
+  defp script_tag(:prod, path),
     do:
-      conn
-      |> static_path("/js/#{path}")
+      "/js/#{path}"
+      |> Endpoint.static_path()
       |> script_tag()
 
-  defp script_tag(:dev, _conn, path),
+  defp script_tag(:dev, path),
     do: script_tag("#{@webpack_server_url}/js/#{path}")
 
-  defp script_tag(src), do: raw(~s(<script src="#{src}"></script>))
+  defp script_tag(src), do: js_tag_eex(src: src) |> raw()
 
   # -------------------------------------------PAGE CSS---------------------
-  @spec page_css(Plug.Conn.t(), Atom.t() | String.t()) ::
+  @spec page_css(Atom.t() | String.t(), :raw | :safe) ::
           <<>>
           | {:safe,
              String.t()
@@ -73,43 +91,59 @@ defmodule BurdaWeb.LayoutView do
                  String.t() | maybe_improper_list(any(), String.t() | []) | byte(),
                  String.t() | []
                )}
-  def page_css(conn, :index),
+  def page_css(path, type \\ :raw)
+
+  def page_css(:index, type),
     do:
       Mix.env()
       |> get_mix_env()
-      |> link_tag(conn, :index)
+      |> link_tag(:index, type)
 
-  def page_css(_conn, nil), do: link_tag(nil)
+  def page_css(nil, _), do: ""
 
-  def page_css(conn, path),
+  def page_css(path, type),
     do:
       Mix.env()
       |> get_mix_env()
-      |> link_tag(conn, path)
+      |> link_tag(path, type)
 
-  def link_tag(:prod, conn, :index), do: link_tag(:prod, conn, @index_css_path)
+  @spec link_tag(:dev | :prod, any(), Atom.t()) ::
+          <<>>
+          | {:safe,
+             binary()
+             | maybe_improper_list(
+                 binary() | maybe_improper_list(any(), binary() | []) | byte(),
+                 binary() | []
+               )}
+  def link_tag(:prod, :index, type), do: link_tag(:prod, @index_css_path, type)
 
-  def link_tag(:prod, conn, path),
-    do:
-      conn
-      |> static_path("/css/#{path}")
-      |> link_tag()
+  def link_tag(:prod, href, type) do
+    href = Endpoint.static_path("/css/#{href}")
 
-  def link_tag(:dev, conn, :index),
-    do: link_tag(:dev, conn, @index_css_js_path)
-
-  def link_tag(:dev, _conn, path) do
-    path = String.replace(path, ~r/\.css$/, ".js")
-    raw(~s(<script src="http://localhost:8080/css/#{path}"></script>))
+    css_tag_eex(href: href)
+    |> link_tag(type)
   end
 
-  def link_tag(_, conn, path), do: link_tag(:dev, conn, path)
+  def link_tag(:dev, :index, type),
+    do: link_tag(:dev, @index_css_js_path, type)
 
-  def link_tag(nil), do: ""
+  def link_tag(:dev, src, type) do
+    src = String.replace(src, ~r/\.css$/, ".js")
 
-  def link_tag(href),
-    do:
-      raw(~s(<link rel="stylesheet" type="text/css" href="#{href}" media="screen,projection" />))
+    js_tag_eex(src: "http://localhost:8080/css/#{src}")
+    |> link_tag(type)
+  end
+
+  def link_tag(href, :raw), do: raw(href)
+  def link_tag(href, :safe), do: href
+
+  @spec encode_www_form(any()) :: binary()
+  def encode_www_form(nil), do: ""
+
+  def encode_www_form(path) do
+    {:safe, text} = page_css(path)
+    URI.encode_www_form(text)
+  end
 
   defp get_mix_env(:prod), do: :prod
   defp get_mix_env(:prod_local), do: :prod

@@ -19,7 +19,16 @@ module.exports = merge(baseConfig, {
 
     [paths.appEntries.indexRouteJs.name]: paths.appEntries.indexRouteJs.path,
 
-    [paths.appEntries.indexRouteCss.name]: paths.appEntries.indexRouteCss.styles
+    [paths.appEntries.indexRouteCss.name]:
+      paths.appEntries.indexRouteCss.styles,
+
+    [paths.appEntries.shiftRouteJs.name]: paths.appEntries.shiftRouteJs.path,
+
+    [paths.appEntries.shiftRouteCss.name]:
+      paths.appEntries.shiftRouteCss.styles,
+
+    [paths.appEntries.newMetaFormComponentCss.name]:
+      paths.appEntries.newMetaFormComponentCss.styles
   },
 
   output: {

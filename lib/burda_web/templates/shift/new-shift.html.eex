@@ -1,0 +1,6 @@
+<div new-shift-main>
+  <div class="new-shift-new-meta-container" id="new-shift-new-meta-container"></div>
+  <button id="get-new-meta-form-button" class="ui primary loadingx button">
+    New Meta
+  </button>
+</div>

@@ -7,7 +7,7 @@ const appDirectory = fs.realpathSync(process.cwd());
 const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
 const entryJs = (name, entry) => ({
   name: "js/" + name,
-  path: resolveApp(entry ? "src/" + name + "/" + entry : "src/index.ts")
+  path: resolveApp(entry ? "src/" + name + "/" + entry : "src/app.ts")
 });
 const entryCss = (name, styles) => {
   if (styles.map === undefined) {
@@ -21,8 +21,9 @@ const entryCss = (name, styles) => {
   };
 };
 
-// we're in ./config/
 module.exports = {
+  phoenixTemplatePath: path.resolve(appDirectory, "../lib/burda_web/templates"),
+
   dotenv: resolveApp(".env"),
 
   appBuild: resolveApp("../priv/static"),
@@ -37,6 +38,15 @@ module.exports = {
     indexRouteJs: entryJs("routes/index", "index.ts"),
 
     indexRouteCss: entryCss("routes/index", "routes/index/index.scss"),
+
+    shiftRouteJs: entryJs("routes/shift", "shift.ts"),
+
+    shiftRouteCss: entryCss("routes/shift", "routes/shift/shift.scss"),
+
+    newMetaFormComponentCss: entryCss(
+      "components/new-meta-form",
+      "components/new-meta-form.scss"
+    ),
 
     commonsStyles: entryCss("commons", [
       resolveApp("semantic-theme/semantic.less"),

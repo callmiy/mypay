@@ -1,3 +1,11 @@
+import AppInterface from "./app_interface";
+
+declare global {
+  interface Window {
+    appInterface: AppInterface;
+  }
+}
+
 // tslint:disable-next-line:no-empty
 // tslint:disable-next-line:only-arrow-functions
 (function() {

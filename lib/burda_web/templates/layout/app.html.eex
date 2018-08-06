@@ -9,8 +9,8 @@
   <meta name="author" content="maneptha@gmail.com">
 
   <title>Hello Burda!</title>
-  <%= page_css(@conn, :index) %>
-    <%= page_css(@conn, assigns[:page_css] ) %>
+  <%= page_css(:index) %>
+    <%= page_css(assigns[:page_css] ) %>
 
 </head>
 
@@ -38,23 +38,28 @@
   <div id="app-container" class="app-container">
 
     <!-- TOP MENU (if exported by child) -->
-
-
     <%= top_menu(@view_module, %{} = assigns) %>
       <!-- /TOP MENU -->
 
-
-
+      <!-- MAIN CHILD TEMPLATE INSERT -->
       <main role="main">
         <%= render @view_module, @view_template, assigns %>
       </main>
+      <!-- /MAIN CHILD TEMPLATE INSERT -->
+
+      <div class="body-modal-insert hidden" id="body-modal-insert"></div>
 
   </div>
 
-
-
-  <%= page_js(@conn, :index) %>
-    <%= page_js(@conn, assigns[:page_js] ) %>
+  <script>
+    window.appInterface = {};
+    window.appInterface.newMetaFormUrl = "<%= meta_path(@conn, :new) %>";
+    window.appInterface.modalParentEl = document.getElementById(
+      "body-modal-insert"
+    );
+  </script>
+  <%= page_js(:index) %>
+    <%= page_js(assigns[:page_js] ) %>
 </body>
 
 </html>

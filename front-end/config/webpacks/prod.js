@@ -4,6 +4,8 @@ const path = require("path");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const PurifyCSSPlugin = require("purifycss-webpack");
+const glob = require("glob-all");
 const baseConfig = require("./base");
 const paths = require("./../paths");
 
@@ -18,7 +20,16 @@ module.exports = merge(baseConfig, {
 
     [paths.appEntries.indexRouteJs.name]: paths.appEntries.indexRouteJs.path,
 
-    [paths.appEntries.indexRouteCss.name]: paths.appEntries.indexRouteCss.styles
+    [paths.appEntries.indexRouteCss.name]:
+      paths.appEntries.indexRouteCss.styles,
+
+    [paths.appEntries.shiftRouteJs.name]: paths.appEntries.shiftRouteJs.path,
+
+    [paths.appEntries.shiftRouteCss.name]:
+      paths.appEntries.shiftRouteCss.styles,
+
+    [paths.appEntries.newMetaFormComponentCss.name]:
+      paths.appEntries.newMetaFormComponentCss.styles
   },
 
   output: {
@@ -57,6 +68,10 @@ module.exports = merge(baseConfig, {
     new MiniCssExtractPlugin({
       filename: "[name].css",
       chunkFilename: "[id].css"
+    }),
+
+    new PurifyCSSPlugin({
+      paths: glob.sync([`${paths.phoenixTemplatePath}/**/*.html.eex`])
     })
   ],
 

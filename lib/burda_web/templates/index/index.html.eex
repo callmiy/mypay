@@ -87,7 +87,7 @@
 
     <!-- NEW -->
     <div class="new-container">
-      <a>
+      <a href="<%= shift_path(@conn, :new) %>">
         <span class="">&plus;</span>
       </a>
     </div>

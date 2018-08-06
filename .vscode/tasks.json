@@ -17,11 +17,7 @@
       "windows": {
         "command": "iex --werl -S mix phx.server"
       },
-      "problemMatcher": [
-        "$mixCompileError",
-        "$mixCompileWarning",
-        "$mixTestFailure"
-      ],
+      "problemMatcher": [],
       "options": {
         "env": {
           "PORT": "4018"
@@ -36,11 +32,7 @@
       "windows": {
         "command": "mix deploy local && iex --werl -S mix phx.server"
       },
-      "problemMatcher": [
-        "$mixCompileError",
-        "$mixCompileWarning",
-        "$mixTestFailure"
-      ],
+      "problemMatcher": [],
       "options": {
         "env": {
           "PORT": "8018",
@@ -56,11 +48,7 @@
       "windows": {
         "command": "iex --werl -S mix"
       },
-      "problemMatcher": [
-        "$mixCompileError",
-        "$mixCompileWarning",
-        "$mixTestFailure"
-      ],
+      "problemMatcher": [],
       "options": {
         "env": {}
       }
