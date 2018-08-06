@@ -4,14 +4,19 @@ defmodule BurdaWeb.MetaController do
   plug(:put_layout, false when action in [:new])
 
   @new_form_css_path "components/new-meta-form/new-meta-form.css"
-  # @new_form_js_path "components/new-meta-form/new-meta-form.js"
+  @new_form_js_path "components/new-meta-form/new-meta-form.js"
 
   @spec new(Plug.Conn.t(), any()) :: Plug.Conn.t()
   def new(conn, _params) do
     html = Phoenix.View.render_to_string(BurdaWeb.MetaView, "new-meta.html", [])
-    tag = BurdaWeb.LayoutView.page_css(@new_form_css_path, :safe)
+    css = BurdaWeb.LayoutView.page_css(@new_form_css_path, :safe)
+    js = BurdaWeb.LayoutView.page_js(@new_form_js_path, :safe)
 
-    json(conn, %{html: html, tag: parse_html(tag)})
+    json(conn, %{
+      html: html,
+      css: parse_html(css),
+      js: parse_html(js)
+    })
   end
 
   defp parse_html(text) do
