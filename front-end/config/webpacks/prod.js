@@ -29,7 +29,10 @@ module.exports = merge(baseConfig, {
       paths.appEntries.shiftRouteCss.styles,
 
     [paths.appEntries.newMetaFormComponentCss.name]:
-      paths.appEntries.newMetaFormComponentCss.styles
+      paths.appEntries.newMetaFormComponentCss.styles,
+
+    [paths.appEntries.newMetaFormComponentJs.name]:
+      paths.appEntries.newMetaFormComponentJs.path
   },
 
   output: {

@@ -47,7 +47,7 @@
       </main>
       <!-- /MAIN CHILD TEMPLATE INSERT -->
 
-      <div class="ui dimmer modals page transition body-modal-dimmer">
+      <div id="body-modal-dimmer" class="ui dimmer modals page transition body-modal-dimmer">
         <!-- body is .dimmed.dimmable -->
         <!-- .visible.active.animating -->
         <div id="body-modal-insert" class="ui modal transition">
@@ -60,7 +60,7 @@
   <script>
     window.appInterface = {};
     window.appInterface.newMetaFormUrl = "<%= meta_path(@conn, :new) %>";
-    window.appInterface.modalParentEl = document.getElementById(
+    window.appInterface.bodyModalInsertEl = document.getElementById(
       "body-modal-insert"
     );
   </script>

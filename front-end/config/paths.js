@@ -31,7 +31,16 @@ module.exports = {
   appPublic: resolveApp("public"),
 
   appHtml: resolveApp("public/index.html"),
-
+  /*  Naming convention:
+      CSS
+      ===
+        name = path to scss file without extension
+        styles = path to scss file with extension
+      JS
+      ==
+        name = path to folder containing .ts entry
+        entry = entry .ts filename
+  */
   appEntries: {
     commons: entryJs("commons"),
 
@@ -44,8 +53,13 @@ module.exports = {
     shiftRouteCss: entryCss("routes/shift", "routes/shift/shift.scss"),
 
     newMetaFormComponentCss: entryCss(
+      "components/new-meta-form/new-meta-form",
+      "components/new-meta-form/new-meta-form.scss"
+    ),
+
+    newMetaFormComponentJs: entryJs(
       "components/new-meta-form",
-      "components/new-meta-form.scss"
+      "new-meta-form.ts"
     ),
 
     commonsStyles: entryCss("commons", [

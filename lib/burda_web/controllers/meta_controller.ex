@@ -3,7 +3,8 @@ defmodule BurdaWeb.MetaController do
 
   plug(:put_layout, false when action in [:new])
 
-  @new_form_css_path "components/new-meta-form.css"
+  @new_form_css_path "components/new-meta-form/new-meta-form.css"
+  # @new_form_js_path "components/new-meta-form/new-meta-form.js"
 
   @spec new(Plug.Conn.t(), any()) :: Plug.Conn.t()
   def new(conn, _params) do

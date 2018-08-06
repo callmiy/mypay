@@ -23,9 +23,9 @@ const makeTag = ({ name, attrs }: JsonResponseTag) => {
 // tslint:disable-next-line:only-arrow-functions
 (function() {
   const newMetaFormUrl = window.appInterface.newMetaFormUrl;
-  const modalParentEl = window.appInterface.modalParentEl;
+  const bodyModalInsertEl = window.appInterface.bodyModalInsertEl;
 
-  if (!newMetaFormUrl || !modalParentEl) {
+  if (!newMetaFormUrl || !bodyModalInsertEl) {
     return;
   }
 
@@ -38,7 +38,7 @@ const makeTag = ({ name, attrs }: JsonResponseTag) => {
       const response = json.response as JsonResponse;
       const tag = makeTag(response.tag);
       document.head.appendChild(tag);
-      modalParentEl.innerHTML = response.html;
+      bodyModalInsertEl.innerHTML = response.html;
     });
 })();
 
