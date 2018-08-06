@@ -1,6 +1,8 @@
 defmodule BurdaWeb.MetaController do
   use Phoenix.Controller
 
+  alias Burda.Meta.Api
+
   plug(:put_layout, false when action in [:new])
 
   @new_form_css_path "components/new-meta-form/new-meta-form.css"
@@ -8,7 +10,14 @@ defmodule BurdaWeb.MetaController do
 
   @spec new(Plug.Conn.t(), any()) :: Plug.Conn.t()
   def new(conn, _params) do
-    html = Phoenix.View.render_to_string(BurdaWeb.MetaView, "new-meta.html", [])
+    html =
+      Phoenix.View.render_to_string(
+        BurdaWeb.MetaView,
+        "new-meta.html",
+        changeset: Api.change_(),
+        conn: conn
+      )
+
     css = BurdaWeb.LayoutView.page_css(@new_form_css_path, :safe)
     js = BurdaWeb.LayoutView.page_js(@new_form_js_path, :safe)
 
