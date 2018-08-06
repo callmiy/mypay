@@ -3,8 +3,16 @@ const dimmer = document.getElementById("body-modal-dimmer");
 const modal = document.getElementById("body-modal");
 const dismissBtn = document.getElementById("body-modal-dismiss");
 
-const dismissModalListener = () => {
+const dismissModalListener = (evt: MouseEvent) => {
   if (!(modal && dimmer && dismissBtn)) {
+    return;
+  }
+
+  evt.stopPropagation();
+
+  const evtSrc = evt.srcElement;
+
+  if (evtSrc && !evtSrc.classList.contains("body-modal-dismisser")) {
     return;
   }
 
