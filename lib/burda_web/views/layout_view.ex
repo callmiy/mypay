@@ -49,7 +49,7 @@ defmodule BurdaWeb.LayoutView do
   end
 
   # -------------------------------------------PAGE JS---------------------
-  @spec page_js(any()) ::
+  @spec page_js(Atom.t() | String.t(), :safe | :raw) ::
           <<>>
           | {:safe,
              String.t()
@@ -57,30 +57,33 @@ defmodule BurdaWeb.LayoutView do
                  String.t() | maybe_improper_list(any(), String.t() | []) | byte(),
                  String.t() | []
                )}
-  def page_js(:index),
+  def page_js(path, type \\ :raw)
+
+  def page_js(:index, type),
     do:
       Mix.env()
       |> get_mix_env()
-      |> script_tag(@index_js_path)
+      |> script_tag(@index_js_path, type)
 
-  def page_js(nil), do: ""
+  def page_js(nil, _), do: ""
 
-  def page_js(path),
+  def page_js(path, type),
     do:
       Mix.env()
       |> get_mix_env()
-      |> script_tag(path)
+      |> script_tag(path, type)
 
-  defp script_tag(:prod, path),
+  defp script_tag(:prod, path, type),
     do:
       "/js/#{path}"
       |> Endpoint.static_path()
-      |> script_tag()
+      |> script_tag(type)
 
-  defp script_tag(:dev, path),
-    do: script_tag("#{@webpack_server_url}/js/#{path}")
+  defp script_tag(:dev, path, type),
+    do: script_tag("#{@webpack_server_url}/js/#{path}", type)
 
-  defp script_tag(src), do: js_tag_eex(src: src) |> raw()
+  defp script_tag(src, :raw), do: js_tag_eex(src: src) |> raw()
+  defp script_tag(src, :safe), do: js_tag_eex(src: src)
 
   # -------------------------------------------PAGE CSS---------------------
   @spec page_css(Atom.t() | String.t(), :raw | :safe) ::
