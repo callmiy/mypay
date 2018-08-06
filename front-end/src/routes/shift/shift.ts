@@ -5,7 +5,7 @@ interface JsonResponseTag {
   attrs: { [key: string]: string };
 }
 
-interface JsonResponse {
+export interface JsonResponseNewMetaForm {
   html: string;
   css: JsonResponseTag;
   js: JsonResponseTag;
@@ -21,25 +21,33 @@ const makeTag = ({ name, attrs }: JsonResponseTag) => {
   return tagEl;
 };
 
-const getNewMetaForm = () => {
-  const newMetaFormUrl = window.appInterface.newMetaFormUrl;
+const attachNewFormToDOM = (data: JsonResponseNewMetaForm) => {
   const bodyModalInsertEl = window.appInterface.bodyModalInsertEl;
 
-  if (!newMetaFormUrl || !bodyModalInsertEl) {
+  if (!bodyModalInsertEl) {
+    return;
+  }
+
+  const css = makeTag(data.css);
+  document.head.appendChild(css);
+  bodyModalInsertEl.innerHTML = data.html;
+};
+
+const getNewMetaForm = () => {
+  const newMetaFormUrl = window.appInterface.newMetaFormUrl;
+
+  if (!newMetaFormUrl) {
     return;
   }
 
   ajax({
     url: newMetaFormUrl,
     responseType: "json"
-  })
-    // tslint:disable-next-line:no-console
-    .subscribe(json => {
-      const response = json.response as JsonResponse;
-      const css = makeTag(response.css);
-      document.head.appendChild(css);
-      bodyModalInsertEl.innerHTML = response.html;
-    });
+  }).subscribe(json => {
+    const response = json.response as JsonResponseNewMetaForm;
+    window.appInterface.newMetaFormData = response;
+    attachNewFormToDOM(response);
+  });
 };
 
 // tslint:disable-next-line:only-arrow-functions
