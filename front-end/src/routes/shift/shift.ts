@@ -1,5 +1,6 @@
 import { ajax } from "rxjs/ajax";
 import { showModal } from "../../components/modals";
+import { processNewMetaForm } from "../../components/new-meta-form/new-meta-form";
 
 interface JsonResponseTag {
   name: string;
@@ -25,6 +26,9 @@ const makeTag = ({ name, attrs }: JsonResponseTag) => {
 const attachTagsToDOM = (data: JsonResponseNewMetaForm) => {
   const css = makeTag(data.css);
   document.head.appendChild(css);
+
+  const js = makeTag(data.js);
+  document.body.appendChild(js);
 };
 
 const getNewMetaForm = async () => {
@@ -60,6 +64,8 @@ if (fetchNewMetaBtn) {
       }
 
       showModal({ content: window.appInterface.newMetaFormData.html });
+
+      setTimeout(processNewMetaForm);
     },
     false
   );
