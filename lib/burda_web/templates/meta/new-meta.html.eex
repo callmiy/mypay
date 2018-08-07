@@ -6,7 +6,7 @@
       </label>
 
       <div class="ui right labeled input new-meta-form__labeled_input">
-        <input class="new-meta-form__control" type="text" placeholder="Break time" name="break_time_secs">
+        <input class="new-meta-form__control" type="text" placeholder="Break time" name="break_time_secs" autocomplete="off">
 
         <div class="ui label ">
           <div class="text "> min </div>
@@ -25,7 +25,7 @@
           <div class="text "> &euro; </div>
         </div>
 
-        <input class="new-meta-form__control" type="text " placeholder="Pay per hour" name="pay_per_hr">
+        <input class="new-meta-form__control" type="text " placeholder="Pay per hour" name="pay_per_hr" autocomplete="off">
       </div>
 
       <div class="new-meta-form__error hidden"></div>
@@ -39,7 +39,7 @@
       </label>
 
       <div class="ui right labeled input new-meta-form__labeled_input ">
-        <input class="new-meta-form__control" type="text " placeholder="Pay per hour" name="night_suppl_pay_pct">
+        <input class="new-meta-form__control" type="text " placeholder="Night supplement pay percnt" name="night_suppl_pay_pct" autocomplete="off">
 
         <div class="ui label ">
           <div class="text "> &percnt; </div>
@@ -55,7 +55,7 @@
       </label>
 
       <div class="ui right labeled input new-meta-form__labeled_input ">
-        <input class="new-meta-form__control" type="text " placeholder="Pay per hour" name="sunday_suppl_pay_pct">
+        <input class="new-meta-form__control" type="text " placeholder="Sunday pay supplement %" name="sunday_suppl_pay_pct" autocomplete="off">
 
         <div class="ui label ">
           <div class="text "> &percnt; </div>

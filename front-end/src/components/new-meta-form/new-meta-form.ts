@@ -1,5 +1,6 @@
 import * as Yup from "yup";
 import { ValidationError } from "yup";
+import { sendMsg } from "../../utils/meta-utils";
 
 enum FormElementsName {
   BREAK_TIME_SECS = "break_time_secs",
@@ -66,7 +67,8 @@ const clearErrors = (fieldEl: HTMLElement, errorEl: HTMLElement) => {
   errorEl.classList.add("hidden");
 };
 
-export const processNewMetaForm = () => {
+// tslint:disable-next-line:no-any
+export const processNewMetaForm = (onMetaCreated: (meta: any) => void) => {
   const formSubmit = document.getElementById(
     "new-meta-form-submit"
   ) as HTMLButtonElement;
@@ -166,7 +168,16 @@ export const processNewMetaForm = () => {
 
     schema
       .validate(data, { abortEarly: false })
-      .then(() => {
+      .then(values => {
+        sendMsg({
+          topic: "create",
+          params: values,
+          ok: onMetaCreated
+        });
+
+        formSubmit.classList.add("loading");
+        formSubmit.disabled = true;
+        formReset.disabled = true;
         formThings.errors = {};
       })
       .catch(errors => {

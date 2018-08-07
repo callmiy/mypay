@@ -1,4 +1,4 @@
-defmodule BurdaWeb.Meta do
+defmodule BurdaWeb.MetaWeb do
   @moduledoc ~S"""
   Utilites used by MeteChannel and MetaController
   """

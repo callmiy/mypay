@@ -59,7 +59,14 @@ if (fetchNewMetaBtn) {
 
       showModal({
         content: window.appInterface.newMetaFormData.html,
-        onShow: processNewMetaForm
+
+        onShow: () => {
+          // tslint:disable-next-line:no-any
+          return processNewMetaForm((meta: any) => {
+            // tslint:disable-next-line:no-console
+            console.log("new meta", meta);
+          });
+        }
       });
     },
     false

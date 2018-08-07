@@ -26,21 +26,23 @@ channel
 interface Message {
   topic: string;
   // tslint:disable-next-line:no-any
+  params?: any;
+  // tslint:disable-next-line:no-any
   ok: (msg: any) => void;
   // tslint:disable-next-line:no-any
   error?: (reason: any) => void;
 }
 
-export const sendMsg = ({ ok, error }: Message) => {
+export const sendMsg = ({ topic, ok, error, params }: Message) => {
   channel
-    .push("new-form", {})
+    .push(topic, params || {})
     .receive("ok", ok)
     .receive("error", reasons => {
       if (error) {
         error(reasons);
       } else {
         // tslint:disable-next-line:no-console
-        console.log("Could not receive new form", reasons);
+        console.log(`Error on push to meta:meta:${topic}`, reasons);
       }
     })
     .receive("timeout", () => {
