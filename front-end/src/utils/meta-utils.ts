@@ -23,6 +23,28 @@ channel
     console.log("Networking issue. Still waiting...");
   });
 
-export const getChannel = () => {
-  return channel;
+interface Message {
+  topic: string;
+  // tslint:disable-next-line:no-any
+  ok: (msg: any) => void;
+  // tslint:disable-next-line:no-any
+  error?: (reason: any) => void;
+}
+
+export const sendMsg = ({ ok, error }: Message) => {
+  channel
+    .push("new-form", {})
+    .receive("ok", ok)
+    .receive("error", reasons => {
+      if (error) {
+        error(reasons);
+      } else {
+        // tslint:disable-next-line:no-console
+        console.log("Could not receive new form", reasons);
+      }
+    })
+    .receive("timeout", () => {
+      // tslint:disable-next-line:no-console
+      console.log("Networking issue...");
+    });
 };

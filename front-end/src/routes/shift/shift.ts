@@ -1,6 +1,6 @@
 import { showModal } from "../../components/modals";
 import { processNewMetaForm } from "../../components/new-meta-form/new-meta-form";
-import { getChannel } from "../../utils/meta-utils";
+import { sendMsg } from "../../utils/meta-utils";
 
 interface JsonResponseTag {
   name: string;
@@ -32,23 +32,14 @@ const attachTagsToDOM = (data: JsonResponseNewMetaForm) => {
 };
 
 const getNewMetaForm = async () => {
-  const metaChannel = getChannel();
-
-  metaChannel
-    .push("new-form", {})
-    .receive("ok", msg => {
+  sendMsg({
+    topic: "new-form",
+    ok: msg => {
       const response = msg as JsonResponseNewMetaForm;
       window.appInterface.newMetaFormData = response;
       attachTagsToDOM(response);
-    })
-    .receive("error", reasons => {
-      // tslint:disable-next-line:no-console
-      console.log("Could not receive new form", reasons);
-    })
-    .receive("timeout", () => {
-      // tslint:disable-next-line:no-console
-      console.log("Networking issue...");
-    });
+    }
+  });
 };
 getNewMetaForm();
 
