@@ -1,3 +1,5 @@
+import * as Yup from "yup";
+
 enum FormElementsName {
   BREAK_TIME_SECS = "break_time_secs",
   PAY_PER_HOUR = "pay_per_hr",
@@ -9,6 +11,31 @@ interface NewMetaFormData {
   // tslint:disable-next-line:no-any
   [key: string]: any;
 }
+
+const genericError = "Invalid Number";
+
+const schema = Yup.object().shape({
+  [FormElementsName.BREAK_TIME_SECS]: Yup.number()
+    .typeError(genericError)
+    .required()
+    .positive()
+    .integer(),
+
+  [FormElementsName.PAY_PER_HOUR]: Yup.number()
+    .typeError(genericError)
+    .required()
+    .positive(),
+
+  [FormElementsName.NIGHT_SUPPL_PAY]: Yup.number()
+    .typeError(genericError)
+    .required()
+    .positive(),
+
+  [FormElementsName.SUNDAY_SUPPL_PAY]: Yup.number()
+    .typeError(genericError)
+    .required()
+    .positive()
+});
 
 export const processNewMetaForm = () => {
   const form = document.getElementById("new-meta-form") as HTMLFormElement;
@@ -33,23 +60,25 @@ export const processNewMetaForm = () => {
           data[name] = formElements[name].value;
         });
 
-      // tslint:disable-next-line:no-console
-      console.log(
-        `
+      schema.validate(data, { abortEarly: false }).catch(errors => {
+        // tslint:disable-next-line:no-console
+        console.log(
+          `
 
 
         logging starts
 
 
-        data`,
-        data,
-        `
+        errors`,
+          errors.inner,
+          `
 
         logging ends
 
 
         `
-      );
+        );
+      });
     },
     false
   );
