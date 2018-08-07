@@ -30,6 +30,8 @@ defmodule Mix.Tasks.Deploy do
   defp deploy(["reset"]), do: reset_static_folder()
 
   defp deploy(["prod"]) do
+    System.put_env("MIX_ENV", "prod")
+
     :ok = reset_static_folder()
     :ok = process_static_files()
     :ok = run_cmd("git", ["checkout", "dev"])
@@ -52,6 +54,8 @@ defmodule Mix.Tasks.Deploy do
     :ok = reset_static_folder()
     :ok = run_cmd("git", ["add", "."])
     :ok = run_cmd("git", ["commit", "-m", "Static folder reset"])
+
+    System.delete_env("MIX_ENV")
   end
 
   defp reset_static_folder do
@@ -75,6 +79,19 @@ defmodule Mix.Tasks.Deploy do
   defp run_cmd(command, args), do: run_cmd(command, args, [])
 
   defp run_cmd(command, args, opts) do
+    {os_family, _} = :os.type()
+
+    {command, args} =
+      case Atom.to_string(os_family) =~ "win" do
+        true ->
+          args = ["/c", command | args]
+          command = "cmd.exe"
+          {command, args}
+
+        _ ->
+          {command, args}
+      end
+
     {cmd, status} = System.cmd(command, args, opts)
 
     Mix.shell().info(cmd)
