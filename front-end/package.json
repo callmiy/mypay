@@ -61,7 +61,7 @@
     "webpack-merge": "^4.1.4"
   },
   "dependencies": {
-    "phoenixjs": "^1.0.5",
+    "phoenix": "^1.3.4",
     "rxjs": "^6.2.2",
     "tslib": "^1.9.3"
   }
