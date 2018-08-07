@@ -6,6 +6,10 @@
   version "10.5.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.5.5.tgz#8e84d24e896cd77b0d4f73df274027e3149ec2ba"
 
+"@types/phoenix@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@types/phoenix/-/phoenix-0.0.4.tgz#6ada6be91dfdc1fa77ed57691f92821920f71d12"
+
 "@webassemblyjs/ast@1.5.13":
   version "1.5.13"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.5.13.tgz#81155a570bd5803a30ec31436bc2c9c0ede38f25"
@@ -4983,6 +4987,10 @@ performance-now@^0.2.0:
 performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
+
+phoenixjs@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/phoenixjs/-/phoenixjs-1.0.5.tgz#d45f4baaa3b0ea2cfbbc5af60851000a6303239f"
 
 pify@^2.0.0, pify@^2.3.0:
   version "2.3.0"

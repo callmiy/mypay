@@ -25,6 +25,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^10.5.5",
+    "@types/phoenix": "^0.0.4",
     "autoprefixer": "^9.0.2",
     "babel-loader": "^7.1.5",
     "css-loader": "^1.0.0",
@@ -60,6 +61,7 @@
     "webpack-merge": "^4.1.4"
   },
   "dependencies": {
+    "phoenixjs": "^1.0.5",
     "rxjs": "^6.2.2",
     "tslib": "^1.9.3"
   }
