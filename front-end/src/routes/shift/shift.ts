@@ -1,6 +1,6 @@
 import { showModal } from "../../components/modals";
 import { processNewMetaForm } from "../../components/new-meta-form/new-meta-form";
-import { getSocket } from "../../app";
+import { getChannel } from "../../utils/meta-utils";
 
 interface JsonResponseTag {
   name: string;
@@ -32,30 +32,9 @@ const attachTagsToDOM = (data: JsonResponseNewMetaForm) => {
 };
 
 const getNewMetaForm = async () => {
-  const socket = getSocket();
+  const metaChannel = getChannel();
 
-  const channel = socket.channel("meta:meta", {});
-  channel.on("new-form", msg => {
-    // tslint:disable-next-line:no-console
-    console.log("Got message", msg);
-  });
-
-  channel
-    .join()
-    .receive("ok", messages => {
-      // tslint:disable-next-line:no-console
-      console.log("Joining topic: meta:meta", messages);
-    })
-    .receive("error", ({ reason }) => {
-      // tslint:disable-next-line:no-console
-      console.log("failed join", reason);
-    })
-    .receive("timeout", () => {
-      // tslint:disable-next-line:no-console
-      console.log("Networking issue. Still waiting...");
-    });
-
-  channel
+  metaChannel
     .push("new-form", {})
     .receive("ok", msg => {
       const response = msg as JsonResponseNewMetaForm;
