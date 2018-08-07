@@ -12,6 +12,8 @@
           <div class="text "> min </div>
         </div>
       </div>
+
+      <div class="new-meta-form__error hidden"></div>
     </div>
     <div class="new-meta-form__field">
       <label class="new-meta-form__label" for="pay_per_hr">
@@ -25,6 +27,8 @@
 
         <input class="new-meta-form__control" type="text " placeholder="Pay per hour" name="pay_per_hr">
       </div>
+
+      <div class="new-meta-form__error hidden"></div>
     </div>
   </div>
 
@@ -41,6 +45,8 @@
           <div class="text "> &percnt; </div>
         </div>
       </div>
+
+      <div class="new-meta-form__error hidden"></div>
     </div>
 
     <div class="new-meta-form__field">
@@ -55,6 +61,8 @@
           <div class="text "> &percnt; </div>
         </div>
       </div>
+
+      <div class="new-meta-form__error hidden"></div>
     </div>
   </div>
 

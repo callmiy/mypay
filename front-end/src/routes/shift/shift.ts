@@ -66,9 +66,10 @@ if (fetchNewMetaBtn) {
         return;
       }
 
-      showModal({ content: window.appInterface.newMetaFormData.html });
-
-      setTimeout(processNewMetaForm);
+      showModal({
+        content: window.appInterface.newMetaFormData.html,
+        onShow: processNewMetaForm
+      });
     },
     false
   );

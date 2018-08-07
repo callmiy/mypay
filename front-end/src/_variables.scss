@@ -1,0 +1,9 @@
+$error-color: #9f3a38;
+$error-background-color: #fff6f6;
+$error-box-shadow: 0 0 0 1px #e0b4b4 inset, 0 0 0 0 transparent;
+
+%error-container {
+  color: $error-color;
+  background-color: $error-background-color;
+  box-shadow: $error-box-shadow;
+}

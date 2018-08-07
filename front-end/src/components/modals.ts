@@ -3,29 +3,35 @@ const dimmer = document.getElementById("body-modal-dimmer");
 const modal = document.getElementById("body-modal");
 const dismissBtn = document.getElementById("body-modal-dismiss");
 
-const dismissModalListener = (evt: MouseEvent) => {
-  if (!(modal && dimmer && dismissBtn)) {
-    return;
-  }
+const dismissModalListener = (onDismiss: void | (() => void)) =>
+  function modalDimissal(evt: MouseEvent) {
+    if (!(modal && dimmer && dismissBtn)) {
+      return;
+    }
 
-  evt.stopPropagation();
+    evt.stopPropagation();
 
-  const evtSrc = evt.srcElement;
+    const evtSrc = evt.srcElement;
 
-  if (evtSrc && !evtSrc.classList.contains("body-modal-dismisser")) {
-    return;
-  }
+    if (evtSrc && !evtSrc.classList.contains("body-modal-dismisser")) {
+      return;
+    }
 
-  modal.classList.remove("animating", "visible", "active");
-  dimmer.classList.remove("animating", "visible", "active");
-  document.body.classList.remove("dimmed", "dimmable");
+    modal.classList.remove("animating", "visible", "active");
+    dimmer.classList.remove("animating", "visible", "active");
+    document.body.classList.remove("dimmed", "dimmable");
 
-  dismissBtn.removeEventListener("click", dismissModalListener, false);
-  dimmer.removeEventListener("click", dismissModalListener, false);
-};
+    dismissBtn.removeEventListener("click", modalDimissal, false);
 
+    dimmer.removeEventListener("click", modalDimissal, false);
+
+    if (onDismiss) {
+      onDismiss();
+    }
+  };
 export interface ModalConfig {
   content: string;
+  onShow?: () => void;
 }
 
 export const showModal = (config: ModalConfig) => {
@@ -38,6 +44,12 @@ export const showModal = (config: ModalConfig) => {
   dimmer.classList.add("animating", "visible", "active");
   modal.classList.add("animating", "visible", "active");
 
-  dismissBtn.addEventListener("click", dismissModalListener, false);
-  dimmer.addEventListener("click", dismissModalListener, false);
+  let onDismiss;
+
+  if (config.onShow) {
+    onDismiss = config.onShow();
+  }
+
+  dismissBtn.addEventListener("click", dismissModalListener(onDismiss), false);
+  dimmer.addEventListener("click", dismissModalListener(onDismiss), false);
 };

@@ -24,6 +24,7 @@
   "author": "maneptha@gmail.com",
   "license": "ISC",
   "devDependencies": {
+    "@types/dom-inputevent": "^1.0.1",
     "@types/node": "^10.5.5",
     "@types/phoenix": "^0.0.4",
     "@types/yup": "^0.24.7",

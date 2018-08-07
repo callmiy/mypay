@@ -1,3 +1,5 @@
+@import "../../variables";
+
 .new-meta-form {
   padding: 2px 8px 1px 5px;
   border: 1px solid green;
@@ -12,6 +14,12 @@
   display: grid;
   grid-template-columns: 50% 50%;
   grid-column-gap: 3px;
+}
+
+.new-meta-form__field {
+  &.error {
+    color: $error-color;
+  }
 }
 
 .new-meta-form__labeled_input.ui.input {
@@ -32,4 +40,12 @@
   justify-content: center;
   align-items: center;
   margin-top: 15px;
+}
+
+.new-meta-form__error {
+  color: $error-color;
+
+  &.hidden {
+    display: none;
+  }
 }
