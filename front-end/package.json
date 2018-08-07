@@ -62,7 +62,6 @@
   },
   "dependencies": {
     "phoenix": "^1.3.4",
-    "rxjs": "^6.2.2",
     "tslib": "^1.9.3"
   }
 }

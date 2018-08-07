@@ -66,7 +66,6 @@
 
   <script>
     window.appInterface = {};
-    window.appInterface.newMetaFormUrl = "<%= meta_path(@conn, :new) %>";
   </script>
   <%= page_js(:index) %>
     <%= page_js(assigns[:page_js] ) %>

@@ -1,5 +1,4 @@
-<%= form_for @changeset, meta_path(@conn, :new), [id: "new-meta-form", class: "ui form new-meta-form"  ], fn phx_form -> %>
-
+<form id="new-meta-form" class="ui form new-meta-form">
   <div class="new-meta-form__fields two">
     <div class="new-meta-form__field">
       <label class="new-meta-form__label" for="break_time_secs">
@@ -7,14 +6,18 @@
       </label>
 
       <div class="ui right labeled input new-meta-form__labeled_input">
-        <%= text_input phx_form, :break_time_secs, class: "new-meta-form__control", placeholder: "Break time" %>
-
-          <div class="ui label ">
-            <div class="text "> min </div>
+        <input class="new-meta-form__control" type="text" placeholder="Break time" name="break_time_secs">
+        <div class="ui dropdown label">
+          <div class="text">.com</div>
+          <i class="dropdown icon"></i>
+          <div class="menu">
+            <div class="item">.com</div>
+            <div class="item">.net</div>
+            <div class="item">.org</div>
           </div>
+        </div>
       </div>
     </div>
-
     <div class="new-meta-form__field">
       <label class="new-meta-form__label" for="pay_per_hr">
         Pay per hour
@@ -25,7 +28,7 @@
           <div class="text "> &euro; </div>
         </div>
 
-        <%= text_input phx_form, :pay_per_hr, class: "new-meta-form__control", placeholder: "Pay per hour" %>
+        <input class="new-meta-form__control" type="text " placeholder="Pay per hour" name="pay_per_hr">
       </div>
     </div>
   </div>
@@ -33,29 +36,29 @@
   <div class="new-meta-form__fields">
     <div class="new-meta-form__field">
       <label class="new-meta-form__label" for="night_suppl_pay_pct">
-        Night Suppl. %
+        Night Suppl.
       </label>
 
       <div class="ui right labeled input new-meta-form__labeled_input ">
-        <%= text_input phx_form, :night_suppl_pay_pct, class: "new-meta-form__control", placeholder: "Night Supplement Pay Percent" %>
+        <input class="new-meta-form__control" type="text " placeholder="Pay per hour" name="night_suppl_pay_pct">
 
-          <div class="ui label ">
-            <div class="text "> &percnt; </div>
-          </div>
+        <div class="ui label ">
+          <div class="text "> &percnt; </div>
+        </div>
       </div>
     </div>
 
     <div class="new-meta-form__field">
       <label class="new-meta-form__label" for="sunday_suppl_pay_pct">
-        Sunday Suppl. %
+        Sunday Suppl.
       </label>
 
       <div class="ui right labeled input new-meta-form__labeled_input ">
-        <%= text_input phx_form, :sunday_suppl_pay_pct, class: "new-meta-form__control", placeholder: "Sunday Supplement Pay Percent" %>
+        <input class="new-meta-form__control" type="text " placeholder="Pay per hour" name="sunday_suppl_pay_pct">
 
-          <div class="ui label ">
-            <div class="text "> &percnt; </div>
-          </div>
+        <div class="ui label ">
+          <div class="text "> &percnt; </div>
+        </div>
       </div>
     </div>
   </div>
@@ -73,4 +76,4 @@
       </button>
     </div>
   </div>
-  <% end %>
+</form>

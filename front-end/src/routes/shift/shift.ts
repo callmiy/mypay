@@ -1,6 +1,6 @@
-import { ajax } from "rxjs/ajax";
 import { showModal } from "../../components/modals";
 import { processNewMetaForm } from "../../components/new-meta-form/new-meta-form";
+import { getSocket } from "../../app";
 
 interface JsonResponseTag {
   name: string;
@@ -32,20 +32,44 @@ const attachTagsToDOM = (data: JsonResponseNewMetaForm) => {
 };
 
 const getNewMetaForm = async () => {
-  const newMetaFormUrl = window.appInterface.newMetaFormUrl;
+  const socket = getSocket();
 
-  if (!newMetaFormUrl) {
-    return;
-  }
-
-  ajax({
-    url: newMetaFormUrl,
-    responseType: "json"
-  }).subscribe(json => {
-    const response = json.response as JsonResponseNewMetaForm;
-    window.appInterface.newMetaFormData = response;
-    attachTagsToDOM(response);
+  const channel = socket.channel("meta:meta", {});
+  channel.on("new-form", msg => {
+    // tslint:disable-next-line:no-console
+    console.log("Got message", msg);
   });
+
+  channel
+    .join()
+    .receive("ok", messages => {
+      // tslint:disable-next-line:no-console
+      console.log("Joining topic: meta:meta", messages);
+    })
+    .receive("error", ({ reason }) => {
+      // tslint:disable-next-line:no-console
+      console.log("failed join", reason);
+    })
+    .receive("timeout", () => {
+      // tslint:disable-next-line:no-console
+      console.log("Networking issue. Still waiting...");
+    });
+
+  channel
+    .push("new-form", {})
+    .receive("ok", msg => {
+      const response = msg as JsonResponseNewMetaForm;
+      window.appInterface.newMetaFormData = response;
+      attachTagsToDOM(response);
+    })
+    .receive("error", reasons => {
+      // tslint:disable-next-line:no-console
+      console.log("Could not receive new form", reasons);
+    })
+    .receive("timeout", () => {
+      // tslint:disable-next-line:no-console
+      console.log("Networking issue...");
+    });
 };
 getNewMetaForm();
 

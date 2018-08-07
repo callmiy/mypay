@@ -1,4 +1,5 @@
 import AppInterface from "./app_interface";
+import { Socket } from "phoenix";
 
 declare global {
   interface Window {
@@ -6,7 +7,13 @@ declare global {
   }
 }
 
-// tslint:disable-next-line:no-empty
+const socket = new Socket("/socket", {});
+socket.connect();
+
+export const getSocket = () => {
+  return socket;
+};
+
 // tslint:disable-next-line:only-arrow-functions
 (function() {
   const sidebarAction = (sidebar: HTMLElement) => {

@@ -2,7 +2,7 @@ defmodule BurdaWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", BurdaWeb.RoomChannel
+  channel("meta:*", BurdaWeb.MetaChannel)
 
   ## Transports
   transport(

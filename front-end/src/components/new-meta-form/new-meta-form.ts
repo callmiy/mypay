@@ -1,5 +1,3 @@
-import { CSRF_TOKEN_NAME } from "../../constants";
-
 enum FormElementsName {
   BREAK_TIME_SECS = "break_time_secs",
   PAY_PER_HOUR = "pay_per_hr",
@@ -12,10 +10,6 @@ interface NewMetaFormData {
   [key: string]: any;
 }
 
-const prefixName = (name: string) => {
-  return `meta[${name}]`;
-};
-
 export const processNewMetaForm = () => {
   const form = document.getElementById("new-meta-form") as HTMLFormElement;
   const formSubmit = document.getElementById("new-meta-form-submit");
@@ -25,21 +19,18 @@ export const processNewMetaForm = () => {
   }
 
   formSubmit.addEventListener(
-    "mousemove",
+    "click",
     async () => {
       // tslint:disable-next-line:no-any
       const formElements = form.elements as any;
 
-      const data = {
-        [CSRF_TOKEN_NAME]: formElements[CSRF_TOKEN_NAME].value,
-        meta: {}
-      } as NewMetaFormData;
+      const data = {} as NewMetaFormData;
 
       Object.keys(FormElementsName)
         // tslint:disable-next-line:no-any
         .map((key: any) => FormElementsName[key])
         .map(name => {
-          data.meta[name] = formElements[prefixName(name)].value;
+          data[name] = formElements[name].value;
         });
 
       // tslint:disable-next-line:no-console
