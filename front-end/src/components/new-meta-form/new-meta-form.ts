@@ -3,6 +3,7 @@ import { ValidationError } from "yup";
 import { sendMsg } from "../../utils/meta-utils";
 import CREATE_META from "../../graphql/create-meta.mutation";
 import { toRunableDocument } from "../../graphql/helpers";
+import { stringifyGraphQlErrors } from "../../graphql/helpers";
 
 enum FormElementsName {
   BREAK_TIME_SECS = "break_time_secs",
@@ -79,9 +80,19 @@ export const processNewMetaForm = (onMetaCreated: (meta: any) => void) => {
     "new-meta-form-reset"
   ) as HTMLButtonElement;
 
-  if (!(formSubmit && formReset)) {
+  const mainErrorContainer = document.getElementById(
+    "new-meta-form__error-main"
+  );
+
+  if (!(formSubmit && formReset && mainErrorContainer)) {
     return;
   }
+
+  const setMainErrorClass = (status: "show" | "hide") => {
+    mainErrorContainer.classList[status === "show" ? "remove" : "add"](
+      "hidden"
+    );
+  };
 
   const formThings = {
     doms: {},
@@ -110,6 +121,7 @@ export const processNewMetaForm = (onMetaCreated: (meta: any) => void) => {
 
     const focusListener = () => {
       clearErrors(fieldEl, errorEl);
+      setMainErrorClass("hide");
 
       if (!hasErrors()) {
         formSubmit.disabled = false;
@@ -118,6 +130,7 @@ export const processNewMetaForm = (onMetaCreated: (meta: any) => void) => {
 
     const inputListener = (evt: InputEvent) => {
       const target = evt.target as HTMLInputElement;
+      setMainErrorClass("hide");
 
       if (!target) {
         return;
@@ -182,8 +195,13 @@ export const processNewMetaForm = (onMetaCreated: (meta: any) => void) => {
 
           error: reason => {
             formSubmit.classList.remove("loading");
-            // tslint:disable-next-line:no-console
-            console.log("reason", reason);
+            mainErrorContainer.textContent = stringifyGraphQlErrors(
+              "meta",
+              reason
+            );
+
+            setMainErrorClass("show");
+
             formReset.disabled = false;
           }
         });
@@ -216,6 +234,7 @@ export const processNewMetaForm = (onMetaCreated: (meta: any) => void) => {
       }
 
       clearErrors(fieldEl, errorEl);
+      setMainErrorClass("hide");
     });
 
     formSubmit.classList.remove("loading");
