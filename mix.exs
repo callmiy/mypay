@@ -27,6 +27,7 @@ defmodule Burda.Mixfile do
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:dev), do: ["lib", "dev"]
   defp elixirc_paths(:test), do: elixirc_paths(:dev) ++ ["test/support"]
+  defp elixirc_paths(:prod_local), do: elixirc_paths(:dev)
   defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
