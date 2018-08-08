@@ -2,8 +2,6 @@ defmodule BurdaWeb.Resolver do
   @moduledoc """
   Helper utilities for resolvers
   """
-  alias Phoenix.View
-  alias BurdaWeb.ChangesetView
 
   @unauthorized "Unauthorized"
 
@@ -11,17 +9,20 @@ defmodule BurdaWeb.Resolver do
   Takes a changeset error and converts it to a string
   """
   @spec changeset_errors_to_string(%Ecto.Changeset{}) :: String.t()
-  def changeset_errors_to_string(%Ecto.Changeset{} = changeset) do
-    Enum.map_join(
-      View.render(ChangesetView, "error.json", changeset: changeset)[:errors],
-      " | ",
-      fn {k, v} ->
-        value = Enum.join(v, ",")
-        "[#{k}: #{value}]"
-      end
-    )
+  def changeset_errors_to_string(%Ecto.Changeset{errors: errors}) do
+    errors
+    |> Enum.map(fn
+      {k, {v, _}} ->
+        {k, v}
+
+      kv ->
+        kv
+    end)
+    |> Enum.into(%{})
+    |> Poison.encode!()
   end
 
+  @spec unauthorized() :: {:error, [{:message, <<_::96>>}, ...]}
   def unauthorized do
     {:error, message: @unauthorized}
   end
