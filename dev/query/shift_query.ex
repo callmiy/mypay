@@ -16,6 +16,9 @@ defmodule BurdaWeb.Query.Shift do
         nightSupplPay
         sundaySupplPay
         totalPay
+
+        insertedAt
+        updatedAt
       }
     """
 

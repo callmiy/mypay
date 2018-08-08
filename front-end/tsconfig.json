@@ -29,5 +29,12 @@
     "webpacks",
     "jest",
     "src/setupTests.ts"
+  ],
+  "plugins": [
+    {
+      "name": "ts-graphql-plugin",
+      "schema": "src/graphql/schema.json",
+      "tag": "gql"
+    }
   ]
 }

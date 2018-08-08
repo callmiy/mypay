@@ -1,6 +1,8 @@
 import * as Yup from "yup";
 import { ValidationError } from "yup";
 import { sendMsg } from "../../utils/meta-utils";
+import CREATE_META from "../../graphql/create-meta.mutation";
+import { toRunableDocument } from "../../graphql/helpers";
 
 enum FormElementsName {
   BREAK_TIME_SECS = "break_time_secs",
@@ -168,11 +170,22 @@ export const processNewMetaForm = (onMetaCreated: (meta: any) => void) => {
 
     schema
       .validate(data, { abortEarly: false })
-      .then(values => {
+      .then(meta => {
         sendMsg({
           topic: "create",
-          params: values,
-          ok: onMetaCreated
+
+          params: toRunableDocument(CREATE_META, {
+            meta
+          }),
+
+          ok: onMetaCreated,
+
+          error: reason => {
+            formSubmit.classList.remove("loading");
+            // tslint:disable-next-line:no-console
+            console.log("reason", reason);
+            formReset.disabled = false;
+          }
         });
 
         formSubmit.classList.add("loading");
@@ -205,8 +218,9 @@ export const processNewMetaForm = (onMetaCreated: (meta: any) => void) => {
       clearErrors(fieldEl, errorEl);
     });
 
-    formThings.errors = {};
+    formSubmit.classList.remove("loading");
     formSubmit.disabled = false;
+    formThings.errors = {};
   };
 
   formSubmit.addEventListener("click", formSubmitListener, false);

@@ -3,8 +3,8 @@ defmodule BurdaWeb.MetaChannel do
 
   alias BurdaWeb.MetaWeb
   alias BurdaWeb.Endpoint
-  alias Burda.Meta.Api
-  alias Burda.MapHelpers
+  alias Absinthe
+  alias BurdaWeb.Schema
 
   @doc false
   def join("meta:meta", _message, socket), do: {:ok, socket}
@@ -15,22 +15,20 @@ defmodule BurdaWeb.MetaChannel do
   end
 
   @doc false
-  def handle_in("create", params, socket) do
-    with {:ok, meta} <-
-           params
-           |> MapHelpers.atomize_keys()
-           |> Api.create_() do
-      meta = Map.from_struct(meta) |> Map.drop([:__meta__])
-      IO.inspect(meta, label: "
-            -----------meta------------
-            ")
-      {:reply, {:ok, meta}, socket}
-    else
-      error ->
-        IO.inspect(error, label: "
-        -----------error------------
-        ")
-        {:reply, {:error, error}, socket}
+  def handle_in("create", params, socket),
+    do: {
+      :reply,
+      run_query(params),
+      socket
+    }
+
+  defp run_query(%{"query" => query} = params) do
+    case Absinthe.run(query, Schema, variables: params["variables"] || %{}) do
+      {:ok, %{errors: errors}} ->
+        {:error, %{errors: errors}}
+
+      {:ok, %{data: data}} ->
+        {:ok, data}
     end
   end
 end

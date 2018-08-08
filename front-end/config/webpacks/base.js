@@ -91,6 +91,12 @@ module.exports = {
         test: /\.otf(\?.*)?$/,
         use:
           "file-loader?name=/fonts/[name].[ext]&mimetype=application/font-otf"
+      },
+
+      {
+        test: /graphql\/.+\.ts$/,
+        exclude: /node_modules/,
+        loader: "graphql-tag/loader"
       }
     ]
   },

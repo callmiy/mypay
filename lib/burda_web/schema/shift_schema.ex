@@ -20,6 +20,9 @@ defmodule BurdaWeb.Schema.Shift do
     field(:night_suppl_pay, non_null(:decimal))
     field(:sunday_suppl_pay, non_null(:decimal))
     field(:total_pay, non_null(:decimal))
+
+    field(:inserted_at, non_null(:iso_datetime))
+    field(:updated_at, non_null(:iso_datetime))
   end
 
   # QUERIES
