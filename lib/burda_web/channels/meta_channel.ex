@@ -1,6 +1,8 @@
 defmodule BurdaWeb.MetaChannel do
   use BurdaWeb, :channel
 
+  @dialyzer {:no_return, run_query: 1}
+
   alias BurdaWeb.MetaWeb
   alias BurdaWeb.Endpoint
   alias Absinthe
