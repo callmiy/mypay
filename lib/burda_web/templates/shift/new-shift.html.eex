@@ -1,6 +1,35 @@
 <div new-shift-main>
+
+  <div class="ui top attached segment">
+    <div class="ui top attached label">
+      Select Meta or create new.
+    </div>
+
+    <div class="ui right labeled input">
+      <select class="ui search dropdown fluid">
+        <option value="">Select Meta</option>
+
+        <%= for meta <- @metas do %>
+          <option value="<%= meta.id %>">
+            <%= Float.round(meta.break_time_secs/60, 1) %> min | &euro;
+              <%= meta.pay_per_hr %> night:
+                <%= meta.night_suppl_pay_pct %> &percnt; sunday:
+                  <%= meta.sunday_suppl_pay_pct %> &percnt;
+          </option>
+          <%end%>
+      </select>
+
+      <div id="get-new-meta-form-button" class="ui label">
+        <i class="plus icon"></i>
+      </div>
+    </div>
+
+
+  </div>
+
+
+
+
   <div class="new-shift-new-meta-container" id="new-shift-new-meta-container"></div>
-  <button id="get-new-meta-form-button" class="ui primary loadingx button">
-    New Meta
-  </button>
+
 </div>
