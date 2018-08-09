@@ -1,6 +1,9 @@
 import { showModal } from "../../components/modals";
+import { dismissModal } from "../../components/modals";
 import { processNewMetaForm } from "../../components/new-meta-form/new-meta-form";
 import { sendMsg } from "../../utils/meta-utils";
+import { CreateMeta } from "../../graphql/gen.types";
+import { CreateMeta_meta } from "../../graphql/gen.types";
 
 interface JsonResponseTag {
   name: string;
@@ -43,9 +46,22 @@ const getNewMetaForm = async () => {
 };
 getNewMetaForm();
 
-const fetchNewMetaBtn = document.getElementById("get-new-meta-form-button");
+const makeMetaSelectOption = (meta: CreateMeta_meta) => {
+  const opt = document.createElement("option") as HTMLOptionElement;
+  opt.value = meta.id;
+  opt.selected = true;
+  const breaks = (+meta.breakTimeSecs / 60).toFixed(1);
+  opt.textContent = ` ${breaks} min | € ${meta.payPerHr} night: ${
+    meta.nightSupplPayPct
+  } % sunday: ${meta.sundaySupplPayPct} % `;
 
-if (fetchNewMetaBtn) {
+  return opt;
+};
+
+const fetchNewMetaBtn = document.getElementById("get-new-meta-form-button");
+const metaSelect = document.getElementById("select-meta") as HTMLSelectElement;
+
+if (fetchNewMetaBtn && metaSelect) {
   fetchNewMetaBtn.addEventListener(
     "click",
     async () => {
@@ -61,11 +77,19 @@ if (fetchNewMetaBtn) {
         content: window.appInterface.newMetaFormData.html,
 
         onShow: () => {
-          // tslint:disable-next-line:no-any
-          return processNewMetaForm((meta: any) => {
+          const newMetaFormCleanUp = processNewMetaForm((data: CreateMeta) => {
+            const meta = data.meta as CreateMeta_meta;
             // tslint:disable-next-line:no-console
-            console.log("new meta", meta);
+            // console.log("dismissModal", dismissModal);
+
+            const opt = makeMetaSelectOption(meta);
+            metaSelect.selectedIndex = -1;
+            metaSelect.appendChild(opt);
+
+            dismissModal();
           });
+
+          return newMetaFormCleanUp;
         }
       });
     },

@@ -2,7 +2,7 @@
   <div id="new-meta-form__error-main" class="ui negative message hidden new-meta-form__error-main">
   </div>
 
-  <div class="new-meta-form__fields two">
+  <div class="new-meta-form__fields">
     <div class="new-meta-form__field">
       <label class="new-meta-form__label" for="break_time_secs">
         Break time

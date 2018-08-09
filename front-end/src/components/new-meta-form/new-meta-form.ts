@@ -4,6 +4,7 @@ import { sendMsg } from "../../utils/meta-utils";
 import CREATE_META from "../../graphql/create-meta.mutation";
 import { toRunableDocument } from "../../graphql/helpers";
 import { stringifyGraphQlErrors } from "../../graphql/helpers";
+import { CreateMeta } from "../../graphql/gen.types";
 
 enum FormElementsName {
   BREAK_TIME_SECS = "break_time_secs",
@@ -70,8 +71,9 @@ const clearErrors = (fieldEl: HTMLElement, errorEl: HTMLElement) => {
   errorEl.classList.add("hidden");
 };
 
-// tslint:disable-next-line:no-any
-export const processNewMetaForm = (onMetaCreated: (meta: any) => void) => {
+export const processNewMetaForm = (
+  onMetaCreated: (meta: CreateMeta) => void
+) => {
   const formSubmit = document.getElementById(
     "new-meta-form-submit"
   ) as HTMLButtonElement;
@@ -183,12 +185,12 @@ export const processNewMetaForm = (onMetaCreated: (meta: any) => void) => {
 
     schema
       .validate(data, { abortEarly: false })
-      .then(meta => {
+      .then((meta: { [k: string]: number }) => {
         sendMsg({
           topic: "create",
 
           params: toRunableDocument(CREATE_META, {
-            meta
+            meta: { ...meta, break_time_secs: meta.break_time_secs * 60 }
           }),
 
           ok: onMetaCreated,
