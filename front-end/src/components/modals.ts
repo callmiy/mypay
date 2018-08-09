@@ -3,7 +3,9 @@ const dimmer = document.getElementById("body-modal-dimmer");
 const modal = document.getElementById("body-modal");
 const dismissBtn = document.getElementById("body-modal-dismiss");
 
-const dismissModalListener = (onDismiss: void | (() => void)) =>
+export const dismissModal = () => dismissBtn && dismissBtn.click();
+
+export const destroyModal = (onDismiss: void | (() => void)) =>
   function modalDimissal(evt: MouseEvent) {
     if (!(modal && dimmer && dismissBtn)) {
       return;
@@ -21,9 +23,8 @@ const dismissModalListener = (onDismiss: void | (() => void)) =>
     dimmer.classList.remove("animating", "visible", "active");
     document.body.classList.remove("dimmed", "dimmable");
 
-    dismissBtn.removeEventListener("click", modalDimissal, false);
-
-    dimmer.removeEventListener("click", modalDimissal, false);
+    dismissBtn.removeEventListener("click", modalDimissal);
+    dimmer.removeEventListener("click", modalDimissal);
 
     if (onDismiss) {
       onDismiss();
@@ -50,6 +51,6 @@ export const showModal = (config: ModalConfig) => {
     onDismiss = config.onShow();
   }
 
-  dismissBtn.addEventListener("click", dismissModalListener(onDismiss), false);
-  dimmer.addEventListener("click", dismissModalListener(onDismiss), false);
+  dismissBtn.addEventListener("click", destroyModal(onDismiss), { once: true });
+  dimmer.addEventListener("click", destroyModal(onDismiss), { once: true });
 };
