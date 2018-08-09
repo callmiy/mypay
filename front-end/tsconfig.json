@@ -28,7 +28,9 @@
     "acceptance-tests",
     "webpacks",
     "jest",
-    "src/setupTests.ts"
+    "src/setupTests.ts",
+    "semantic-theme",
+    "postcss.config.js"
   ],
   "plugins": [
     {
