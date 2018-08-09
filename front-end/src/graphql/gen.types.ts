@@ -9,6 +9,10 @@
 
 export interface CreateMeta_meta {
   id: string;
+  breakTimeSecs: number;
+  nightSupplPayPct: any;
+  payPerHr: any;
+  sundaySupplPayPct: any;
 }
 
 export interface CreateMeta {

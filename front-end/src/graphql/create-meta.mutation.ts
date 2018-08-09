@@ -4,6 +4,10 @@ export const createMeta = gql`
   mutation CreateMeta($meta: CreateMetaInput!) {
     meta(meta: $meta) {
       id
+      breakTimeSecs
+      nightSupplPayPct
+      payPerHr
+      sundaySupplPayPct
     }
   }
 `;
