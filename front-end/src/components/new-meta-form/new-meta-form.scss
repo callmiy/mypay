@@ -49,3 +49,17 @@
     display: none;
   }
 }
+
+.select-date-data,
+.times {
+  display: grid;
+  grid-column-gap: 2px;
+}
+
+.select-date-data {
+  grid-template-columns: auto auto auto;
+}
+
+.times {
+  grid-template-columns: auto auto;
+}

@@ -7,8 +7,8 @@
       </div>
 
       <div class="ui right labeled input">
-        <select id="select-meta" class="ui search dropdown fluid">
-          <option value="">Select Meta</option>
+        <select name="meta_id" id="select-meta" class="ui search dropdown fluid">
+          <option value="">-----</option>
 
           <%= for meta <- @metas do %>
             <option value="<%= meta.id %>">
@@ -20,12 +20,92 @@
             <%end%>
         </select>
 
-        <div id="get-new-meta-form-button" class="ui label">
+        <div id="get-new-shift-form-button" class="ui label">
           <i class="plus icon"></i>
         </div>
       </div>
+    </div>
 
+    <!-- SHIFT DATE -->
+    <div class="ui top attached segment">
+      <div class="ui top attached label">
+        Date
+      </div>
 
+      <div class="select-date-data">
+        <select id="select-day-of-month" class="ui search dropdown">
+          <option value="">Day</option>
+
+          <%= for {day, val} <- @days_of_month do %>
+            <option value="<%= day %>" <%=val.selected%>>
+              <%= val.display %>
+            </option>
+            <%end%>
+        </select>
+
+        <select id="select-month-of-year" class="ui search dropdown">
+          <option value="">Month</option>
+
+          <%= for {month, val} <- @months_of_year do %>
+            <option value="<%= month %>" <%=val.selected%>>
+              <%= val.display %>
+            </option>
+            <%end%>
+        </select>
+
+        <select id="select-year" class="ui search dropdown">
+          <option value="">Year</option>
+
+          <%= for {year, selectionx} <- @years do %>
+            <option value="<%= year %>" <%=selectionx%>>
+              <%= year %>
+            </option>
+            <%end%>
+        </select>
+      </div>
+    </div>
+    <!-- /SHIFT DATE -->
+
+    <!-- START TIME -->
+    <div class="ui top attached segment">
+      <div class="ui top attached label">
+        Start time
+      </div>
+
+      <div class="start-time-data times">
+        <input id="start-time-hour" name="start-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off">
+
+        <input id="start-time-min" name="start-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off">
+      </div>
+    </div>
+    <!-- /START TIME -->
+
+    <!-- END TIME -->
+    <div class="ui top attached segment">
+      <div class="ui top attached label">
+        End time
+      </div>
+
+      <div class="end-time-data times">
+        <input id="end-time-hour" name="end-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off">
+
+        <input id="end-time-min" name="end-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off">
+      </div>
+    </div>
+    <!-- /END TIME -->
+
+    <div class="new-shift-form__buttons">
+      <div class="ui buttons">
+        <button id="new-shift-form-submit" type="button" class="ui positive button">
+          Save
+        </button>
+
+        <div class="or"></div>
+
+        <button id="new-shift-form-reset" type="button" class="ui button">
+          Reset
+        </button>
+      </div>
     </div>
   </form>
 
