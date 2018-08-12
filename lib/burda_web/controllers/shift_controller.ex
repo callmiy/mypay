@@ -47,7 +47,7 @@ defmodule BurdaWeb.ShiftController do
 
   @spec new(Plug.Conn.t(), any()) :: Plug.Conn.t()
   def new(conn, _params) do
-    end_time = DateTime.utc_now()
+    end_time = Timex.now(Timex.Timezone.Local.lookup())
     start_time = Timex.shift(end_time, seconds: @shift_duration_hrs_seconds)
 
     months_of_year =
