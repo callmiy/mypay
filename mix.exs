@@ -48,7 +48,8 @@ defmodule Burda.Mixfile do
       {:timex_ecto, "~> 3.3"},
       {:decimal, "~> 1.5"},
       {:phoenix_live_reload, "~> 1.0", only: [:dev]},
-      {:hound, "~> 1.0", only: [:test]}
+      {:hound, "~> 1.0", only: [:test]},
+      {:dataloader, "~> 1.0"}
     ]
   end
 
