@@ -7,7 +7,7 @@ export const dismissModal = () => dismissBtn && dismissBtn.click();
 
 export const destroyModal = (onDismiss: void | (() => void)) =>
   function modalDimissal(evt: MouseEvent) {
-    if (!(modal && dimmer && dismissBtn)) {
+    if (!(modal && dimmer && dismissBtn && modalContentContainer)) {
       return;
     }
 
@@ -22,6 +22,7 @@ export const destroyModal = (onDismiss: void | (() => void)) =>
     modal.classList.remove("animating", "visible", "active");
     dimmer.classList.remove("animating", "visible", "active");
     document.body.classList.remove("dimmed", "dimmable");
+    modalContentContainer.innerHTML = "";
 
     // remove event listeners: because we set { once: true }
     dismissBtn.click();
