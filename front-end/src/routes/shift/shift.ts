@@ -106,11 +106,11 @@ if (fetchNewMetaBtn && metaSelectEl) {
   );
 }
 
-const newShiftSubmitEl = document.getElementById(
+const submitEl = document.getElementById(
   "new-shift-form-submit"
 ) as HTMLButtonElement;
 
-const newShiftResetEl = document.getElementById(
+const resetEl = document.getElementById(
   "new-shift-form-reset"
 ) as HTMLButtonElement;
 
@@ -157,12 +157,12 @@ const validateEl = (
       };
 
       if (!formHasErrors(formThings.errors)) {
-        newShiftSubmitEl.disabled = false;
+        submitEl.disabled = false;
       }
     })
     .catch(error => {
       setFieldError({ fieldEl, errorEl }, error.message);
-      newShiftSubmitEl.disabled = true;
+      submitEl.disabled = true;
 
       formThings.errors = {
         ...formThings.errors,
@@ -176,7 +176,7 @@ const inputListener = (formThings: FormThings, schema: Schema<{}>) => (
 ) => {
   const target = evt.target as HTMLInputElement;
 
-  if (!(target && newShiftSubmitEl)) {
+  if (!(target && submitEl)) {
     return;
   }
 
@@ -205,8 +205,8 @@ const keyboardListener = (type: "hr" | "min") => (evt: KeyboardEvent) => {
 };
 
 if (
-  newShiftSubmitEl &&
-  newShiftResetEl &&
+  submitEl &&
+  resetEl &&
   metaSelectEl &&
   dayOfMonthEl &&
   monthOfYearEl &&
@@ -301,7 +301,7 @@ if (
   endTimeHrEl.addEventListener("keypress", keyboardListener("hr"));
   endTimeMinEl.addEventListener("keypress", keyboardListener("min"));
 
-  newShiftSubmitEl.addEventListener("click", () => {
+  submitEl.addEventListener("click", () => {
     const data = {} as { [k: string]: string };
 
     formElements.forEach(el => (data[el.name] = el.value));
