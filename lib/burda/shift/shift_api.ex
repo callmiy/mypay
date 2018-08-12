@@ -134,4 +134,12 @@ defmodule Burda.Shift.Api do
   def change_(%Shift{} = shift) do
     Shift.changeset(shift, %{})
   end
+
+  def data() do
+    Dataloader.Ecto.new(Repo, query: &query/2)
+  end
+
+  def query(queryable, _params) do
+    queryable
+  end
 end

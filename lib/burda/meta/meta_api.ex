@@ -126,4 +126,12 @@ defmodule Burda.Meta.Api do
 
   def default_break_time,
     do: @default_break_time_secs
+
+  def data() do
+    Dataloader.Ecto.new(Repo, query: &query/2)
+  end
+
+  def query(queryable, _params) do
+    queryable
+  end
 end

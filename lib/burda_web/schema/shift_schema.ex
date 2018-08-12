@@ -4,6 +4,8 @@ defmodule BurdaWeb.Schema.Shift do
   """
   use Absinthe.Schema.Notation
 
+  import Absinthe.Resolution.Helpers, only: [dataloader: 1]
+
   alias BurdaWeb.Resolver.Shift, as: Resolver
 
   @desc "A shift"
@@ -23,6 +25,8 @@ defmodule BurdaWeb.Schema.Shift do
 
     field(:inserted_at, non_null(:iso_datetime))
     field(:updated_at, non_null(:iso_datetime))
+
+    field(:meta, :meta, resolve: dataloader(Burda.Meta.Api))
   end
 
   # QUERIES

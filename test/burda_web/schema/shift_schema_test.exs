@@ -4,13 +4,16 @@ defmodule BurdaWeb.Schema.ShiftTest do
   alias BurdaWeb.Schema
   alias BurdaWeb.Query.Shift, as: Query
   alias Burda.Factory.Shift, as: Factory
+  alias Burda.Factory.Meta, as: MetaFactory
 
   @iso_time "{ISOtime}"
   @iso_date "{ISOdate}"
 
   describe "query" do
     test "Get all shift" do
-      shift = Factory.insert()
+      meta = MetaFactory.insert()
+      shift = Factory.insert(%{}, meta)
+
       id = Integer.to_string(shift.id)
       date = Timex.format!(shift.date, @iso_date)
       start_time = Timex.format!(shift.start_time, @iso_time)
@@ -23,6 +26,8 @@ defmodule BurdaWeb.Schema.ShiftTest do
       night_suppl_pay = Decimal.to_string(shift.night_suppl_pay)
       sunday_suppl_pay = Decimal.to_string(shift.sunday_suppl_pay)
       total_pay = Decimal.to_string(shift.total_pay)
+
+      meta_id = Integer.to_string(meta.id)
 
       assert {:ok,
               %{
@@ -40,7 +45,10 @@ defmodule BurdaWeb.Schema.ShiftTest do
                       "normalPay" => ^normal_pay,
                       "nightSupplPay" => ^night_suppl_pay,
                       "sundaySupplPay" => ^sunday_suppl_pay,
-                      "totalPay" => ^total_pay
+                      "totalPay" => ^total_pay,
+                      "meta" => %{
+                        "id" => ^meta_id
+                      }
                     }
                   ]
                 }
