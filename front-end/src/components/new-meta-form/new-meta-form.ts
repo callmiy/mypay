@@ -191,6 +191,8 @@ export const processNewMetaForm = (
           topic: "create",
 
           params: toRunableDocument(CREATE_META, {
+            // The user input is in minutes, so we convert break_time_secs to
+            // seconds by multiplying minutes by 60
             meta: { ...meta, break_time_secs: meta.break_time_secs * 60 }
           }),
 
