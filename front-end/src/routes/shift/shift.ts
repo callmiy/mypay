@@ -302,17 +302,30 @@ if (
   endTimeMinEl.addEventListener("keypress", keyboardListener("min"));
 
   submitEl.addEventListener("click", () => {
+    submitEl.classList.add("loading");
+    submitEl.disabled = true;
+    resetEl.disabled = true;
+
     const data = {} as { [k: string]: string };
 
     formElements.forEach(el => (data[el.name] = el.value));
 
-    schema.validate(data, { abortEarly: false }).then(value => {
-      value.date = `${value.dayOfMonth}-${value.monthOfYear}-${value.year}`;
-      value.startTime = `${value.startTimeHr}:${value.startTimeMin}`;
-      value.endTime = `${value.endTimeHr}:${value.endTimeMin}`;
-      // tslint:disable-next-line:no-console
-      console.log("value", value);
-    });
+    schema
+      .validate(data, { abortEarly: false })
+      .then(value => {
+        value.date = `${value.dayOfMonth}-${value.monthOfYear}-${value.year}`;
+        value.startTime = `${value.startTimeHr}:${value.startTimeMin}`;
+        value.endTime = `${value.endTimeHr}:${value.endTimeMin}`;
+
+        // tslint:disable-next-line:no-console
+        console.log("value", value);
+
+        submitEl.classList.remove("loading");
+      })
+      .catch(() => {
+        submitEl.classList.remove("loading");
+        resetEl.disabled = false;
+      });
   });
 
   resetEl.addEventListener("click", () => {
@@ -326,6 +339,9 @@ if (
       }
 
       clearFieldErrors(getFieldAndErrorEls(el));
+      submitEl.disabled = false;
+      submitEl.classList.remove("loading");
+      formThings.errors = {};
     });
   });
 }
