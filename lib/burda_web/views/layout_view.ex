@@ -158,7 +158,7 @@ defmodule BurdaWeb.LayoutView do
       :map ->
         Map.update!(@css_map, :attributes, &Map.put(&1, :href, href))
     end
-    |> link_tag(Keyword.take(opts, [:type]))
+    |> link_tag(opts)
   end
 
   def link_tag(:js, src, opts) when is_binary(src) do
@@ -169,10 +169,20 @@ defmodule BurdaWeb.LayoutView do
       :map ->
         Map.update!(@js_map, :attributes, &Map.put(&1, :src, src))
     end
-    |> link_tag(Keyword.take(opts, [:type]))
+    |> link_tag(opts)
   end
 
-  def link_tag(html, type: :raw) when is_binary(html), do: raw(html)
+  def link_tag(html, opts) when is_list(opts) do
+    type =
+      case Keyword.fetch(opts, :type) do
+        {:ok, type} -> type
+        :error -> nil
+      end
+
+    link_tag(html, type)
+  end
+
+  def link_tag(html, :raw) when is_binary(html), do: raw(html)
 
   def link_tag(html, _), do: html
 

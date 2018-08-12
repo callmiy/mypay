@@ -6,8 +6,8 @@ import { CreateMeta } from "../../graphql/gen.types";
 import { CreateMeta_meta } from "../../graphql/gen.types";
 
 interface JsonResponseTag {
-  name: string;
-  attrs: { [key: string]: string };
+  tag_name: string;
+  attributes: { [key: string]: string };
 }
 
 export interface JsonResponseNewMetaForm {
@@ -16,10 +16,10 @@ export interface JsonResponseNewMetaForm {
   js: JsonResponseTag;
 }
 
-const makeTag = ({ name, attrs }: JsonResponseTag) => {
-  const tagEl = document.createElement(name);
+const makeTag = ({ tag_name, attributes }: JsonResponseTag) => {
+  const tagEl = document.createElement(tag_name);
 
-  for (const [attr, value] of Object.entries(attrs)) {
+  for (const [attr, value] of Object.entries(attributes)) {
     tagEl.setAttribute(attr, value);
   }
 

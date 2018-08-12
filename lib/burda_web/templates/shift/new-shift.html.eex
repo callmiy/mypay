@@ -19,7 +19,7 @@
             <%end%>
         </select>
 
-        <div id="get-new-shift-form-button" class="ui label">
+        <div id="get-new-meta-form-button" class="ui label">
           <i class="plus icon"></i>
         </div>
       </div>
