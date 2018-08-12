@@ -82,6 +82,7 @@ defmodule BurdaWeb.ShiftController do
       conn,
       "new-shift.html",
       metas: all_metas,
+      meta_id_default: latest_meta.id,
       months_of_year: months_of_year,
       days_of_month: days_of_month,
       years: years,
