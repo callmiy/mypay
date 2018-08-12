@@ -5,6 +5,7 @@ defmodule BurdaWeb.ShiftController do
 
   @page_css "routes/shift.css"
   @page_js "routes/shift.js"
+  @shift_duration_hrs_seconds 8 * 60 * 60
 
   @months_of_year [
                     "Jan",
@@ -46,37 +47,53 @@ defmodule BurdaWeb.ShiftController do
 
   @spec new(Plug.Conn.t(), any()) :: Plug.Conn.t()
   def new(conn, _params) do
-    today = Date.utc_today()
+    end_time = DateTime.utc_now()
+    start_time = Timex.shift(end_time, seconds: @shift_duration_hrs_seconds)
 
     months_of_year =
       Map.update!(
         @months_of_year,
-        today.month,
+        end_time.month,
         &Map.put(&1, :selected, "selected")
       )
 
     days_of_month =
       Map.update!(
         @days_of_month,
-        today.day,
+        end_time.day,
         &Map.put(&1, :selected, "selected")
       )
 
-    year = today.year
+    year = end_time.year
 
     years =
       -4..-1
       |> Enum.map(&{&1 + year, ""})
       |> Enum.concat([{year, "selected"}])
 
+    [latest_meta | rest_metas] = MetaApi.list()
+
+    all_metas = [
+      {latest_meta, "selected"}
+      | Enum.map(rest_metas, &{&1, ""})
+    ]
+
     render(
       conn,
       "new-shift.html",
-      metas: MetaApi.list(),
+      metas: all_metas,
       months_of_year: months_of_year,
       days_of_month: days_of_month,
       years: years,
-      page_title: "New Shift"
+      page_title: "New Shift",
+      shift_start_time: %{
+        hour: start_time.hour,
+        minute: start_time.minute
+      },
+      shift_end_time: %{
+        hour: end_time.hour,
+        minute: end_time.minute
+      }
     )
   end
 
