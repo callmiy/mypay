@@ -1,3 +1,5 @@
+import * as Yup from "yup";
+
 import { showModal } from "../../components/modals";
 import { dismissModal } from "../../components/modals";
 import { processNewMetaForm } from "../../components/new-meta-form/new-meta-form";
@@ -147,6 +149,68 @@ if (
     };
   };
 
+  const schema = Yup.object().shape({
+    [metaSelectEl.name]: Yup.number()
+      .typeError("Invalid meta ID")
+      .required()
+      .positive()
+      .integer(),
+
+    [dayOfMonthEl.name]: Yup.number()
+      .typeError("Invalid day")
+      .required()
+      .positive()
+      .integer()
+      .min(1)
+      .max(31),
+    [monthOfYearEl.name]: Yup.number()
+      .typeError("Invalid month")
+      .required()
+      .positive()
+      .integer()
+      .min(1)
+      .max(12),
+    [yearEl.name]: Yup.number()
+      .typeError("Invalid year")
+      .required()
+      .positive()
+      .integer()
+      .min(2000)
+      .max(9999),
+
+    [startTimeHrEl.name]: Yup.number()
+      .typeError("Invalid hour")
+      .required()
+      .positive()
+      .integer()
+      .min(0)
+      .max(23),
+
+    [startTimeMinEl.name]: Yup.number()
+      .typeError("Invalid minute")
+      .required()
+      .positive()
+      .integer()
+      .min(0)
+      .max(59),
+
+    [endTimeHrEl.name]: Yup.number()
+      .typeError("Invalid hour")
+      .required()
+      .positive()
+      .integer()
+      .min(0)
+      .max(23),
+
+    [endTimeMinEl.name]: Yup.number()
+      .typeError("Invalid minute")
+      .required()
+      .positive()
+      .integer()
+      .min(0)
+      .max(59)
+  });
+
   newShiftSubmitEl.addEventListener("click", () => {
     // tslint:disable-next-line:no-console
     console.log(
@@ -158,6 +222,7 @@ if (
 
   getFormValues`,
       getFormValues(),
+      schema,
       `
 
   logging ends
