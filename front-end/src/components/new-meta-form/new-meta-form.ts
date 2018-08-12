@@ -172,9 +172,9 @@ export const processNewMetaForm = (
       inputListener
     };
 
-    el.addEventListener("focus", focusListener, false);
-    el.addEventListener("input", inputListener, false);
-    el.addEventListener("blur", inputListener, false);
+    el.addEventListener("focus", focusListener);
+    el.addEventListener("input", inputListener);
+    el.addEventListener("blur", inputListener);
   });
 
   const formSubmitListener = async () => {
@@ -247,19 +247,19 @@ export const processNewMetaForm = (
     formThings.errors = {};
   };
 
-  formSubmit.addEventListener("click", formSubmitListener, false);
+  formSubmit.addEventListener("click", formSubmitListener);
 
-  formReset.addEventListener("click", formResetListener, false);
+  formReset.addEventListener("click", formResetListener);
 
   return () => {
-    formSubmit.removeEventListener("click", formSubmitListener, false);
-    formReset.removeEventListener("click", formResetListener, false);
+    formSubmit.removeEventListener("click", formSubmitListener);
+    formReset.removeEventListener("click", formResetListener);
 
     Object.values(formThings.doms).forEach(v => {
       const { el, focusListener, inputListener } = v;
-      el.removeEventListener("focus", focusListener, false);
-      el.removeEventListener("input", inputListener, false);
-      el.removeEventListener("blur", inputListener, false);
+      el.removeEventListener("focus", focusListener);
+      el.removeEventListener("input", inputListener);
+      el.removeEventListener("blur", inputListener);
     });
   };
 };
