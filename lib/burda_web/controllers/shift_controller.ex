@@ -75,7 +75,8 @@ defmodule BurdaWeb.ShiftController do
       metas: MetaApi.list(),
       months_of_year: months_of_year,
       days_of_month: days_of_month,
-      years: years
+      years: years,
+      page_title: "New Shift"
     )
   end
 

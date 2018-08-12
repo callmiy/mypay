@@ -8,7 +8,10 @@
   <meta name="description" content="wages shift work clocks clock wage">
   <meta name="author" content="maneptha@gmail.com">
 
-  <title>Hello Burda!</title>
+  <title>
+    <%= assigns[:page_title] || "Shift times" %>
+  </title>
+
   <%= page_css(:index) %>
     <%= page_css(assigns[:page_css] ) %>
 
