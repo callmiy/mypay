@@ -5,29 +5,47 @@ defmodule BurdaWeb.LayoutView do
 
   alias BurdaWeb.Endpoint
 
-  @webpack_server_url "http://localhost:8080"
   @index_js_path "commons.js"
   @index_css_js_path "commons.js"
   @index_css_path "commons.css"
 
+  @css_map %{
+    tag_name: "link",
+    attributes: %{
+      text: "text/css",
+      media: "screen,projection"
+    }
+  }
+
+  @js_map %{
+    tag_name: "script",
+    attributes: %{}
+  }
+
   EEx.function_from_string(
-    :defp,
+    :def,
     :css_tag_eex,
     ~s(<link rel="stylesheet" type="text/css" href="<%= @href %>" media="screen,projection" />),
     [:assigns]
   )
 
   EEx.function_from_string(
-    :defp,
+    :def,
     :js_tag_eex,
     ~s(<script src="<%= @src %>"></script>),
     [:assigns]
   )
 
-  # EXPORTS FOR TEST
-  @spec webpack_server_url() :: <<_::168>>
-  def webpack_server_url, do: @webpack_server_url
+  EEx.function_from_string(
+    :def,
+    :webpack_server_url,
+    "http://localhost:8080/<%= @path1 %>/<%= @path2 %>",
+    [:assigns]
+  )
 
+  @default_css_js_opts [render: :string, type: :raw]
+
+  # EXPORTS FOR TEST
   @spec index_css_path() :: <<_::88>>
   def index_css_path, do: @index_css_path
 
@@ -49,104 +67,114 @@ defmodule BurdaWeb.LayoutView do
   end
 
   # -------------------------------------------PAGE JS---------------------
-  @spec page_js(Atom.t() | String.t(), :safe | :raw) ::
-          <<>>
-          | {:safe,
-             String.t()
-             | maybe_improper_list(
-                 String.t() | maybe_improper_list(any(), String.t() | []) | byte(),
-                 String.t() | []
-               )}
-  def page_js(path, type \\ :raw)
 
-  def page_js(:index, type),
+  def page_js(path, opts \\ @default_css_js_opts)
+
+  def page_js(nil, _opts), do: ""
+
+  def page_js(:index, opts),
     do:
       Mix.env()
       |> get_mix_env()
-      |> script_tag(@index_js_path, type)
+      |> script_tag(@index_js_path, opts)
 
-  def page_js(nil, _), do: ""
-
-  def page_js(path, type),
+  def page_js(path, opts),
     do:
       Mix.env()
       |> get_mix_env()
-      |> script_tag(path, type)
+      |> script_tag(path, opts)
 
-  defp script_tag(:prod, path, type),
+  def script_tag(:prod, src, opts) when is_binary(src),
     do:
-      "/js/#{path}"
+      "/js/#{src}"
       |> Endpoint.static_path()
-      |> script_tag(type)
+      |> script_tag(opts)
 
-  defp script_tag(:dev, path, type),
-    do: script_tag("#{@webpack_server_url}/js/#{path}", type)
+  def script_tag(:dev, src, opts) when is_binary(src),
+    do: script_tag(webpack_server_url(path1: "js", path2: src), opts)
 
-  defp script_tag(src, :raw), do: js_tag_eex(src: src) |> raw()
-  defp script_tag(src, :safe), do: js_tag_eex(src: src)
+  def script_tag(src, opts) when is_list(opts) do
+    html =
+      case Keyword.fetch!(opts, :render) do
+        :string ->
+          js_tag_eex(src: src)
+
+        :map ->
+          Map.update!(@js_map, :attributes, &Map.put(&1, :src, src))
+      end
+
+    case Keyword.fetch(opts, :type) do
+      {:ok, type} ->
+        script_tag(html, type)
+
+      :error ->
+        script_tag(html, nil)
+    end
+  end
+
+  def script_tag(html, :raw) when is_binary(html), do: raw(html)
+  def script_tag(html, _), do: html
 
   # -------------------------------------------PAGE CSS---------------------
-  @spec page_css(Atom.t() | String.t(), :raw | :safe) ::
-          <<>>
-          | {:safe,
-             String.t()
-             | maybe_improper_list(
-                 String.t() | maybe_improper_list(any(), String.t() | []) | byte(),
-                 String.t() | []
-               )}
-  def page_css(path, type \\ :raw)
 
-  def page_css(:index, type),
+  def page_css(path, opts \\ [render: :string, type: :raw])
+
+  def page_css(nil, _opts), do: ""
+
+  def page_css(:index, opts),
     do:
       Mix.env()
       |> get_mix_env()
-      |> link_tag(:index, type)
+      |> link_tag(:index, opts)
 
-  def page_css(nil, _), do: ""
-
-  def page_css(path, type),
+  def page_css(path, opts),
     do:
       Mix.env()
       |> get_mix_env()
-      |> link_tag(path, type)
+      |> link_tag(path, opts)
 
-  @spec link_tag(:dev | :prod, any(), Atom.t()) ::
-          <<>>
-          | {:safe,
-             binary()
-             | maybe_improper_list(
-                 binary() | maybe_improper_list(any(), binary() | []) | byte(),
-                 binary() | []
-               )}
-  def link_tag(:prod, :index, type), do: link_tag(:prod, @index_css_path, type)
+  def link_tag(:prod, :index, opts), do: link_tag(:prod, @index_css_path, opts)
 
-  def link_tag(:prod, href, type) do
+  def link_tag(:prod, href, opts) when is_binary(href) do
     href = Endpoint.static_path("/css/#{href}")
-
-    css_tag_eex(href: href)
-    |> link_tag(type)
+    link_tag(:css, href, opts)
   end
 
-  def link_tag(:dev, :index, type),
-    do: link_tag(:dev, @index_css_js_path, type)
+  def link_tag(:dev, :index, opts),
+    do: link_tag(:dev, @index_css_js_path, opts)
 
-  def link_tag(:dev, src, type) do
+  def link_tag(:dev, src, opts) when is_binary(src) do
     src = String.replace(src, ~r/\.css$/, ".js")
+    src = webpack_server_url(path1: "css", path2: src)
 
-    js_tag_eex(src: "http://localhost:8080/css/#{src}")
-    |> link_tag(type)
+    link_tag(:js, src, opts)
   end
 
-  def link_tag(href, :raw), do: raw(href)
-  def link_tag(href, :safe), do: href
+  def link_tag(:css, href, opts) when is_binary(href) do
+    case Keyword.fetch!(opts, :render) do
+      :string ->
+        css_tag_eex(href: href)
 
-  @spec encode_www_form(any()) :: binary()
-  def encode_www_form(nil), do: ""
-
-  def encode_www_form(path) do
-    {:safe, text} = page_css(path)
-    URI.encode_www_form(text)
+      :map ->
+        Map.update!(@css_map, :attributes, &Map.put(&1, :href, href))
+    end
+    |> link_tag(Keyword.take(opts, [:type]))
   end
+
+  def link_tag(:js, src, opts) when is_binary(src) do
+    case Keyword.fetch!(opts, :render) do
+      :string ->
+        js_tag_eex(src: src)
+
+      :map ->
+        Map.update!(@js_map, :attributes, &Map.put(&1, :src, src))
+    end
+    |> link_tag(Keyword.take(opts, [:type]))
+  end
+
+  def link_tag(html, type: :raw) when is_binary(html), do: raw(html)
+
+  def link_tag(html, _), do: html
 
   defp get_mix_env(:prod), do: :prod
   defp get_mix_env(:prod_local), do: :prod
