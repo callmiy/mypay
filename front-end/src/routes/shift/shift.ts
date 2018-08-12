@@ -314,4 +314,18 @@ if (
       console.log("value", value);
     });
   });
+
+  resetEl.addEventListener("click", () => {
+    formElements.forEach(el => {
+      const defaultValEl = document.getElementById(
+        `${el.name}-default`
+      ) as HTMLInputElement;
+
+      if (defaultValEl) {
+        el.value = defaultValEl.value;
+      }
+
+      clearFieldErrors(getFieldAndErrorEls(el));
+    });
+  });
 }

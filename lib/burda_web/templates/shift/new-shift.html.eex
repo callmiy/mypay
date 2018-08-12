@@ -81,6 +81,11 @@
       </div>
 
 
+      <input type="hidden" id="dayOfMonth-default" value="<%=@day_default%>">
+
+      <input type="hidden" id="monthOfYear-default" value="<%=@month_default%>">
+
+      <input type="hidden" id="year-default" value="<%=@year_default%>">
     </div>
     <!-- /SHIFT DATE -->
 
