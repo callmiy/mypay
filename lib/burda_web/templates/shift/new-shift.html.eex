@@ -1,5 +1,4 @@
 <div new-shift-main>
-
   <form id="new-shift-form" class="ui form new-shift-form">
     <div class="ui top attached segment">
       <div class="ui top attached label">
@@ -27,12 +26,12 @@
     </div>
 
     <!-- SHIFT DATE -->
-    <div class="ui top attached segment">
+    <div class="ui top attached segment date-segment">
       <div class="ui top attached label">
         Date
       </div>
 
-      <div class="select-date-data">
+      <div class="new-shift-form__fields three">
         <select id="select-day-of-month" class="ui search dropdown">
           <option value="">Day</option>
 
@@ -67,29 +66,29 @@
     <!-- /SHIFT DATE -->
 
     <!-- START TIME -->
-    <div class="ui top attached segment">
+    <div class="ui top attached segment start-time-segment">
       <div class="ui top attached label">
         Start time
       </div>
 
-      <div class="start-time-data times">
-        <input id="start-time-hour" name="start-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off">
+      <div class="new-shift-form__fields two">
+        <input id="start-time-hour" name="start-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off" maxlength="2">
 
-        <input id="start-time-min" name="start-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off">
+        <input id="start-time-min" name="start-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off" maxlength="2">
       </div>
     </div>
     <!-- /START TIME -->
 
     <!-- END TIME -->
-    <div class="ui top attached segment">
+    <div class="ui top attached segment end-time-segment">
       <div class="ui top attached label">
         End time
       </div>
 
-      <div class="end-time-data times">
-        <input id="end-time-hour" name="end-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off">
+      <div class="new-shift-form__fields two">
+        <input id="end-time-hour" name="end-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off" maxlength="2">
 
-        <input id="end-time-min" name="end-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off">
+        <input id="end-time-min" name="end-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off" maxlength="2">
       </div>
     </div>
     <!-- /END TIME -->

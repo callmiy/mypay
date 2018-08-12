@@ -1,18 +1,18 @@
-form {
-  padding: 2px 8px 1px 5px;
-  border: 1px solid green;
-  border-radius: 5px;
-  margin: 5px;
-
-  & > :nth-child(2) {
-    margin-top: 15px;
-  }
+.new-shift-form {
+  padding: 5px;
 }
 
 .new-shift-form__fields {
   display: grid;
-  grid-template-columns: 50% 50%;
   grid-column-gap: 3px;
+
+  &.three {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  &.two {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .new-shift-form__labeled_input.ui.input {
