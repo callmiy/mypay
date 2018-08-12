@@ -6,6 +6,11 @@ import CREATE_META from "../../graphql/create-meta.mutation";
 import { toRunableDocument } from "../../graphql/helpers";
 import { stringifyGraphQlErrors } from "../../graphql/helpers";
 import { CreateMeta } from "../../graphql/gen.types";
+import { makeFormThings } from "../../utils/form-things";
+import { setFieldError } from "../../utils/form-things";
+import { clearFieldErrors } from "../../utils/form-things";
+import { setMainErrorClass } from "../../utils/form-things";
+import { formHasErrors } from "../../utils/form-things";
 
 enum FormElementsName {
   BREAK_TIME_SECS = "break_time_secs",
@@ -17,14 +22,6 @@ enum FormElementsName {
 interface NewMetaFormData {
   // tslint:disable-next-line:no-any
   [key: string]: any;
-}
-
-interface FormDOM {
-  el: HTMLInputElement;
-  fieldEl: HTMLElement | null;
-  errorEl: HTMLElement | null;
-  focusListener: (evt: InputEvent) => void;
-  inputListener: (evt: InputEvent) => void;
 }
 
 const genericError = "Invalid Number";
@@ -52,26 +49,6 @@ const schema = Yup.object().shape({
     .positive()
 });
 
-const setError = (
-  { fieldEl, errorEl }: Pick<FormDOM, "fieldEl" | "errorEl">,
-  message: string
-) => {
-  if (!(fieldEl && errorEl)) {
-    return;
-  }
-
-  fieldEl.classList.add("error");
-  errorEl.classList.add("error");
-  errorEl.classList.remove("hidden");
-  errorEl.textContent = message;
-};
-
-const clearErrors = (fieldEl: HTMLElement, errorEl: HTMLElement) => {
-  fieldEl.classList.remove("error");
-  errorEl.classList.remove("error");
-  errorEl.classList.add("hidden");
-};
-
 export const processNewMetaForm = (
   onMetaCreated: (meta: CreateMeta) => void
 ) => {
@@ -91,25 +68,7 @@ export const processNewMetaForm = (
     return;
   }
 
-  const setMainErrorClass = (status: "show" | "hide") => {
-    mainErrorContainer.classList[status === "show" ? "remove" : "add"](
-      "hidden"
-    );
-  };
-
-  const formThings = {
-    doms: {},
-    errors: {}
-  } as {
-    doms: { [key: string]: FormDOM };
-    errors: {
-      [key: string]: ValidationError | undefined;
-    };
-  };
-
-  const hasErrors = () => {
-    return Object.values(formThings.errors).filter(e => e !== undefined).length;
-  };
+  const formThings = makeFormThings();
 
   const inputs: NodeListOf<HTMLInputElement> = document.querySelectorAll(
     ".new-meta-form__control"
@@ -123,17 +82,17 @@ export const processNewMetaForm = (
       : null) as HTMLElement;
 
     const focusListener = () => {
-      clearErrors(fieldEl, errorEl);
-      setMainErrorClass("hide");
+      clearFieldErrors(fieldEl, errorEl);
+      setMainErrorClass(mainErrorContainer, "hide");
 
-      if (!hasErrors()) {
+      if (!formHasErrors(formThings.errors)) {
         formSubmit.disabled = false;
       }
     };
 
     const inputListener = (evt: InputEvent) => {
       const target = evt.target as HTMLInputElement;
-      setMainErrorClass("hide");
+      setMainErrorClass(mainErrorContainer, "hide");
 
       if (!target) {
         return;
@@ -142,19 +101,19 @@ export const processNewMetaForm = (
       Yup.reach(schema, target.name)
         .validate(target.value)
         .then(() => {
-          clearErrors(fieldEl, errorEl);
+          clearFieldErrors(fieldEl, errorEl);
 
           formThings.errors = {
             ...formThings.errors,
             [name]: undefined
           };
 
-          if (!hasErrors()) {
+          if (!formHasErrors(formThings.errors)) {
             formSubmit.disabled = false;
           }
         })
         .catch(error => {
-          setError({ fieldEl, errorEl }, error.message);
+          setFieldError({ fieldEl, errorEl }, error.message);
           formSubmit.disabled = true;
 
           formThings.errors = {
@@ -205,7 +164,7 @@ export const processNewMetaForm = (
               reason
             );
 
-            setMainErrorClass("show");
+            setMainErrorClass(mainErrorContainer, "show");
 
             formReset.disabled = false;
           }
@@ -219,7 +178,7 @@ export const processNewMetaForm = (
       .catch(errors => {
         formSubmit.disabled = true;
         errors.inner.map((err: ValidationError) => {
-          setError(formThings.doms[err.path], err.message);
+          setFieldError(formThings.doms[err.path], err.message);
 
           formThings.errors = {
             ...formThings.errors,
@@ -238,8 +197,8 @@ export const processNewMetaForm = (
         return;
       }
 
-      clearErrors(fieldEl, errorEl);
-      setMainErrorClass("hide");
+      clearFieldErrors(fieldEl, errorEl);
+      setMainErrorClass(mainErrorContainer, "hide");
     });
 
     formSubmit.classList.remove("loading");
