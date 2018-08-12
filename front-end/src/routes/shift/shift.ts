@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import { Schema } from "yup";
 
 import { showModal } from "../../components/modals";
 import { dismissModal } from "../../components/modals";
@@ -6,6 +7,12 @@ import { processNewMetaForm } from "../../components/new-meta-form/new-meta-form
 import { sendMsg } from "../../utils/meta-utils";
 import { CreateMeta } from "../../graphql/gen.types";
 import { CreateMeta_meta } from "../../graphql/gen.types";
+import { makeFormThings } from "../../utils/form-things";
+import { setFieldError } from "../../utils/form-things";
+import { clearFieldErrors } from "../../utils/form-things";
+import { formHasErrors } from "../../utils/form-things";
+import { getFieldAndErrorEls } from "../../utils/form-things";
+import { FormThings } from "../../utils/form-things";
 
 interface JsonResponseTag {
   tag_name: string;
@@ -99,7 +106,14 @@ if (fetchNewMetaBtn && metaSelectEl) {
   );
 }
 
-const newShiftSubmitEl = document.getElementById("new-shift-form-submit");
+const newShiftSubmitEl = document.getElementById(
+  "new-shift-form-submit"
+) as HTMLButtonElement;
+
+const newShiftResetEl = document.getElementById(
+  "new-shift-form-reset"
+) as HTMLButtonElement;
+
 const dayOfMonthEl = document.getElementById(
   "day-of-month"
 ) as HTMLSelectElement;
@@ -125,8 +139,74 @@ const endTimeMinEl = document.getElementById(
   "end-time-min"
 ) as HTMLInputElement;
 
+const validateEl = (
+  target: HTMLInputElement,
+  formThings: FormThings,
+  schema: Schema<{}>
+) => {
+  const { fieldEl, errorEl } = getFieldAndErrorEls(target);
+
+  Yup.reach(schema, target.name)
+    .validate(target.value)
+    .then(() => {
+      clearFieldErrors({ fieldEl, errorEl });
+
+      formThings.errors = {
+        ...formThings.errors,
+        [name]: undefined
+      };
+
+      if (!formHasErrors(formThings.errors)) {
+        newShiftSubmitEl.disabled = false;
+      }
+    })
+    .catch(error => {
+      setFieldError({ fieldEl, errorEl }, error.message);
+      newShiftSubmitEl.disabled = true;
+
+      formThings.errors = {
+        ...formThings.errors,
+        [name]: error
+      };
+    });
+};
+
+const inputListener = (formThings: FormThings, schema: Schema<{}>) => (
+  evt: InputEvent
+) => {
+  const target = evt.target as HTMLInputElement;
+
+  if (!(target && newShiftSubmitEl)) {
+    return;
+  }
+
+  validateEl(target, formThings, schema);
+};
+
+const keyboardListener = (type: "hr" | "min") => (evt: KeyboardEvent) => {
+  const max = type === "hr" ? 23 : 59;
+  const key = evt.key;
+
+  if (key === ".") {
+    return evt.preventDefault();
+  }
+
+  const target = evt.target as HTMLInputElement;
+
+  if (!target) {
+    return;
+  }
+
+  const value = Number(target.value + key);
+
+  if (value > max) {
+    evt.preventDefault();
+  }
+};
+
 if (
   newShiftSubmitEl &&
+  newShiftResetEl &&
   metaSelectEl &&
   dayOfMonthEl &&
   monthOfYearEl &&
@@ -136,20 +216,10 @@ if (
   endTimeHrEl &&
   endTimeMinEl
 ) {
-  const getFormValues = () => {
-    return {
-      [metaSelectEl.name]: metaSelectEl.value,
-      [dayOfMonthEl.name]: dayOfMonthEl.value,
-      [monthOfYearEl.name]: monthOfYearEl.value,
-      [yearEl.name]: yearEl.value,
-      [startTimeHrEl.name]: startTimeHrEl.value,
-      [startTimeMinEl.name]: startTimeMinEl.value,
-      [endTimeHrEl.name]: endTimeHrEl.value,
-      [endTimeMinEl.name]: endTimeMinEl.value
-    };
-  };
+  const formThings = makeFormThings();
 
-  const schema = Yup.object().shape({
+  // tslint:disable-next-line:no-any
+  const schema = Yup.object<{ [k: string]: any }>().shape({
     [metaSelectEl.name]: Yup.number()
       .typeError("Invalid meta ID")
       .required()
@@ -211,24 +281,37 @@ if (
       .max(59)
   });
 
+  const formElements = [
+    metaSelectEl,
+    dayOfMonthEl,
+    monthOfYearEl,
+    yearEl,
+    startTimeHrEl,
+    startTimeMinEl,
+    endTimeHrEl,
+    endTimeMinEl
+  ];
+
+  formElements.forEach(element =>
+    element.addEventListener("input", inputListener(formThings, schema))
+  );
+
+  startTimeHrEl.addEventListener("keypress", keyboardListener("hr"));
+  startTimeMinEl.addEventListener("keypress", keyboardListener("min"));
+  endTimeHrEl.addEventListener("keypress", keyboardListener("hr"));
+  endTimeMinEl.addEventListener("keypress", keyboardListener("min"));
+
   newShiftSubmitEl.addEventListener("click", () => {
-    // tslint:disable-next-line:no-console
-    console.log(
-      `
+    const data = {} as { [k: string]: string };
 
+    formElements.forEach(el => (data[el.name] = el.value));
 
-  logging starts
-
-
-  getFormValues`,
-      getFormValues(),
-      schema,
-      `
-
-  logging ends
-
-
-  `
-    );
+    schema.validate(data, { abortEarly: false }).then(value => {
+      value.date = `${value.dayOfMonth}-${value.monthOfYear}-${value.year}`;
+      value.startTime = `${value.startTimeHr}:${value.startTimeMin}`;
+      value.endTime = `${value.endTimeHr}:${value.endTimeMin}`;
+      // tslint:disable-next-line:no-console
+      console.log("value", value);
+    });
   });
 }

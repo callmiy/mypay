@@ -3,7 +3,7 @@
   </div>
 
   <div class="new-meta-form__fields">
-    <div class="new-meta-form__field">
+    <div class="new-meta-form__field form__field">
       <label class="new-meta-form__label" for="break_time_secs">
         Break time
       </label>
@@ -16,9 +16,9 @@
         </div>
       </div>
 
-      <div class="new-meta-form__error hidden"></div>
+      <div class="new-meta-form__error form__error hidden"></div>
     </div>
-    <div class="new-meta-form__field">
+    <div class="new-meta-form__field form__field">
       <label class="new-meta-form__label" for="pay_per_hr">
         Pay per hour
       </label>
@@ -31,12 +31,12 @@
         <input class="new-meta-form__control" type="text " placeholder="Pay per hour" name="pay_per_hr" autocomplete="off">
       </div>
 
-      <div class="new-meta-form__error hidden"></div>
+      <div class="new-meta-form__error form__error hidden"></div>
     </div>
   </div>
 
   <div class="new-meta-form__fields">
-    <div class="new-meta-form__field">
+    <div class="new-meta-form__field form__field">
       <label class="new-meta-form__label" for="night_suppl_pay_pct">
         Night Suppl.
       </label>
@@ -49,10 +49,10 @@
         </div>
       </div>
 
-      <div class="new-meta-form__error hidden"></div>
+      <div class="new-meta-form__error form__error hidden"></div>
     </div>
 
-    <div class="new-meta-form__field">
+    <div class="new-meta-form__field form__field">
       <label class="new-meta-form__label" for="sunday_suppl_pay_pct">
         Sunday Suppl.
       </label>
@@ -65,7 +65,7 @@
         </div>
       </div>
 
-      <div class="new-meta-form__error hidden"></div>
+      <div class="new-meta-form__error form__error hidden"></div>
     </div>
   </div>
 

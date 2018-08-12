@@ -11,6 +11,7 @@ import { setFieldError } from "../../utils/form-things";
 import { clearFieldErrors } from "../../utils/form-things";
 import { setMainErrorClass } from "../../utils/form-things";
 import { formHasErrors } from "../../utils/form-things";
+import { getFieldAndErrorEls } from "../../utils/form-things";
 
 enum FormElementsName {
   BREAK_TIME_SECS = "break_time_secs",
@@ -76,13 +77,10 @@ export const processNewMetaForm = (
 
   Array.prototype.forEach.call(inputs, (el: HTMLInputElement) => {
     const name = el.name;
-    const fieldEl = el.closest(".new-meta-form__field") as HTMLElement;
-    const errorEl = (fieldEl
-      ? fieldEl.querySelector(".new-meta-form__error")
-      : null) as HTMLElement;
+    const { fieldEl, errorEl } = getFieldAndErrorEls(el);
 
     const focusListener = () => {
-      clearFieldErrors(fieldEl, errorEl);
+      clearFieldErrors({ fieldEl, errorEl });
       setMainErrorClass(mainErrorContainer, "hide");
 
       if (!formHasErrors(formThings.errors)) {
@@ -101,7 +99,7 @@ export const processNewMetaForm = (
       Yup.reach(schema, target.name)
         .validate(target.value)
         .then(() => {
-          clearFieldErrors(fieldEl, errorEl);
+          clearFieldErrors({ fieldEl, errorEl });
 
           formThings.errors = {
             ...formThings.errors,
@@ -197,7 +195,7 @@ export const processNewMetaForm = (
         return;
       }
 
-      clearFieldErrors(fieldEl, errorEl);
+      clearFieldErrors({ fieldEl, errorEl });
       setMainErrorClass(mainErrorContainer, "hide");
     });
 
@@ -207,7 +205,6 @@ export const processNewMetaForm = (
   };
 
   formSubmit.addEventListener("click", formSubmitListener);
-
   formReset.addEventListener("click", formResetListener);
 
   return () => {

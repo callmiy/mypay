@@ -1,7 +1,7 @@
 <div new-shift-main>
   <form id="new-shift-form" class="ui form new-shift-form">
     <!-- SELECT OR CREATE META -->
-    <div class="ui top attached segment">
+    <div class="ui top attached segment form__field">
       <div class="ui top attached label">
         Select Meta or create new.
       </div>
@@ -24,78 +24,120 @@
           <i class="plus icon"></i>
         </div>
       </div>
+
+      <div class="new-shift-form__error form__error hidden"></div>
+      <input type="hidden" id="metaId-default" value="<%=@meta_id_default%>">
     </div>
     <!-- /SELECT OR CREATE META -->
 
     <!-- SHIFT DATE -->
-    <div class="ui top attached segment date-segment">
+    <div class="ui top attached segment date-segment form__field">
       <div class="ui top attached label">
         Date
       </div>
 
       <div class="new-shift-form__fields three">
-        <select name="dayOfMonth" id="day-of-month" class="ui search dropdown">
-          <option value="">Day</option>
+        <div>
+          <select name="dayOfMonth" id="day-of-month" class="ui search dropdown">
+            <option value="">Day</option>
 
-          <%= for {day, val} <- @days_of_month do %>
-            <option value="<%= day %>" <%=val.selected%>>
-              <%= val.display %>
-            </option>
-            <%end%>
-        </select>
+            <%= for {day, val} <- @days_of_month do %>
+              <option value="<%= day %>" <%=val.selected%>>
+                <%= val.display %>
+              </option>
+              <%end%>
+          </select>
 
-        <select name="monthOfYear" id="month-of-year" class="ui search dropdown">
-          <option value="">Month</option>
+          <div class="new-shift-form__error form__error hidden"></div>
+        </div>
 
-          <%= for {month, val} <- @months_of_year do %>
-            <option value="<%= month %>" <%=val.selected%>>
-              <%= val.display %>
-            </option>
-            <%end%>
-        </select>
+        <div>
+          <select name="monthOfYear" id="month-of-year" class="ui search dropdown">
+            <option value="">Month</option>
 
-        <select name="year" id="year" class="ui search dropdown">
-          <option value="">Year</option>
+            <%= for {month, val} <- @months_of_year do %>
+              <option value="<%= month %>" <%=val.selected%>>
+                <%= val.display %>
+              </option>
+              <%end%>
+          </select>
 
-          <%= for {year, selectionx} <- @years do %>
-            <option value="<%= year %>" <%=selectionx%>>
-              <%= year %>
-            </option>
-            <%end%>
-        </select>
+          <div class="new-shift-form__error form__error hidden"></div>
+        </div>
+
+        <div>
+          <select name="year" id="year" class="ui search dropdown">
+            <option value="">Year</option>
+
+            <%= for {year, selectionx} <- @years do %>
+              <option value="<%= year %>" <%=selectionx%>>
+                <%= year %>
+              </option>
+              <%end%>
+          </select>
+
+          <div class="new-shift-form__error form__error hidden"></div>
+        </div>
       </div>
+
+
     </div>
     <!-- /SHIFT DATE -->
 
     <!-- START TIME -->
-    <div class="ui top attached segment start-time-segment">
+    <div class="ui top attached segment start-time-segment form__field">
       <div class="ui top attached label">
         Start time
       </div>
 
       <div class="new-shift-form__fields two">
-        <input name="startTimeHr" id="start-time-hour" name="start-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
-          maxlength="2" value="<%= @shift_start_time.hour %>">
+        <div>
+          <input name="startTimeHr" id="start-time-hour" name="start-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
+            maxlength="2" value="<%= @shift_start_time.hour %>">
 
-        <input name="startTimeMin" id="start-time-min" name="start-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
-          maxlength="2" value="<%= @shift_start_time.minute %>">
+          <div class="new-shift-form__error form__error hidden"></div>
+        </div>
+
+        <div>
+          <input name="startTimeMin" id="start-time-min" name="start-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
+            maxlength="2" value="<%= @shift_start_time.minute %>">
+
+          <div class="new-shift-form__error form__error hidden"></div>
+        </div>
       </div>
+
+      <input type="hidden" id="startTimeHr-default" value="<%=@shift_start_time.hour%>">
+
+      <input type="hidden" id="startTimeMin-default" value="<%=@shift_start_time.minute%>">
     </div>
     <!-- /START TIME -->
 
     <!-- END TIME -->
-    <div class="ui top attached segment end-time-segment">
+    <div class="ui top attached segment end-time-segment form__field">
       <div class="ui top attached label">
         End time
       </div>
 
       <div class="new-shift-form__fields two">
-        <input name="endTimeHr" id="end-time-hour" name="end-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
-          maxlength="2" value="<%= @shift_end_time.hour %>">
+        <div>
+          <input name="endTimeHr" id="end-time-hour" name="end-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
+            maxlength="2" value="<%= @shift_end_time.hour %>">
 
-        <input name="endTimeMin" id="end-time-min" name="end-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
-          maxlength="2" value="<%= @shift_end_time.minute %>">
+          <div class="new-shift-form__error form__error hidden"></div>
+        </div>
+
+        <div>
+          <input name="endTimeMin" id="end-time-min" name="end-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
+            maxlength="2" value="<%= @shift_end_time.minute %>">
+
+          <div class="new-shift-form__error form__error hidden"></div>
+        </div>
       </div>
+
+
+      <input type="hidden" id="endTimeHr-default" value="<%=@shift_end_time.hour%>">
+
+      <input type="hidden" id="endTimeMin-default" value="<%=@shift_end_time.minute%>">
     </div>
     <!-- /END TIME -->
 

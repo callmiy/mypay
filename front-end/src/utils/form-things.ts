@@ -22,10 +22,14 @@ export const setFieldError = (
   errorEl.textContent = message;
 };
 
-export const clearFieldErrors = (
-  fieldEl: HTMLElement,
-  errorEl: HTMLElement
-) => {
+export const clearFieldErrors = ({
+  fieldEl,
+  errorEl
+}: Pick<FormDOM, "fieldEl" | "errorEl">) => {
+  if (!(fieldEl && errorEl)) {
+    return;
+  }
+
   fieldEl.classList.remove("error");
   errorEl.classList.remove("error");
   errorEl.classList.add("hidden");
@@ -42,7 +46,7 @@ interface FormThingsError {
   [key: string]: ValidationError | undefined;
 }
 
-interface FormThings {
+export interface FormThings {
   doms: { [key: string]: FormDOM };
   errors: FormThingsError;
 }
@@ -55,4 +59,20 @@ export const makeFormThings = () =>
 
 export const formHasErrors = (errors: FormThingsError) => {
   return Object.values(errors).filter(e => e !== undefined).length;
+};
+
+export const getFieldAndErrorEls = (el: HTMLElement) => {
+  const fieldEl = el.closest(".form__field") as HTMLElement;
+
+  const elParent = el.parentElement as HTMLElement;
+
+  let errorEl = elParent.querySelector(".form__error") as HTMLElement;
+
+  if (!errorEl) {
+    errorEl = (fieldEl
+      ? fieldEl.querySelector(".form__error")
+      : null) as HTMLElement;
+  }
+
+  return { fieldEl, errorEl };
 };
