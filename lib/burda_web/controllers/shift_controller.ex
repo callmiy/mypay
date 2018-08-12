@@ -83,8 +83,11 @@ defmodule BurdaWeb.ShiftController do
       "new-shift.html",
       metas: all_metas,
       meta_id_default: latest_meta.id,
+      year_default: year,
       months_of_year: months_of_year,
+      month_default: end_time.month,
       days_of_month: days_of_month,
+      day_default: end_time.day,
       years: years,
       page_title: "New Shift",
       shift_start_time: %{
