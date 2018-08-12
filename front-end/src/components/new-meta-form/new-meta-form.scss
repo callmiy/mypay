@@ -16,12 +16,6 @@
   grid-column-gap: 3px;
 }
 
-.new-meta-form__field {
-  &.error {
-    color: $error-color;
-  }
-}
-
 .new-meta-form__labeled_input.ui.input {
   display: grid;
   grid-template-columns: auto auto;
@@ -40,14 +34,6 @@
   justify-content: center;
   align-items: center;
   margin-top: 15px;
-}
-
-.new-meta-form__error {
-  color: $error-color;
-
-  &.hidden {
-    display: none;
-  }
 }
 
 .select-date-data,
