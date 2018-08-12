@@ -23,8 +23,9 @@ export const destroyModal = (onDismiss: void | (() => void)) =>
     dimmer.classList.remove("animating", "visible", "active");
     document.body.classList.remove("dimmed", "dimmable");
 
-    dismissBtn.removeEventListener("click", modalDimissal);
-    dimmer.removeEventListener("click", modalDimissal);
+    // remove event listeners: because we set { once: true }
+    dismissBtn.click();
+    dimmer.click();
 
     if (onDismiss) {
       onDismiss();
