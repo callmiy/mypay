@@ -20,7 +20,9 @@ defmodule Burda.Meta.Api do
 
   """
   def list do
-    Repo.all(Meta)
+    Meta
+    |> order_by([m], desc: m.id)
+    |> Repo.all()
   end
 
   @doc """
