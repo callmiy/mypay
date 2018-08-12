@@ -1,16 +1,17 @@
 <div new-shift-main>
   <form id="new-shift-form" class="ui form new-shift-form">
+    <!-- SELECT OR CREATE META -->
     <div class="ui top attached segment">
       <div class="ui top attached label">
         Select Meta or create new.
       </div>
 
       <div class="ui right labeled input">
-        <select name="meta_id" id="select-meta" class="ui search dropdown fluid">
+        <select name="metaId" id="select-meta" class="ui search dropdown fluid">
           <option value="">-----</option>
 
-          <%= for meta <- @metas do %>
-            <option value="<%= meta.id %>">
+          <%= for {meta, selected} <- @metas do %>
+            <option value="<%= meta.id %>" <%=selected%> >
               <%= Float.round(meta.break_time_secs/60, 1) %> min | &euro;
                 <%= meta.pay_per_hr %> night:
                   <%= meta.night_suppl_pay_pct %> &percnt; sunday:
@@ -24,6 +25,7 @@
         </div>
       </div>
     </div>
+    <!-- /SELECT OR CREATE META -->
 
     <!-- SHIFT DATE -->
     <div class="ui top attached segment date-segment">
@@ -32,7 +34,7 @@
       </div>
 
       <div class="new-shift-form__fields three">
-        <select id="select-day-of-month" class="ui search dropdown">
+        <select name="dayOfMonth" id="day-of-month" class="ui search dropdown">
           <option value="">Day</option>
 
           <%= for {day, val} <- @days_of_month do %>
@@ -42,7 +44,7 @@
             <%end%>
         </select>
 
-        <select id="select-month-of-year" class="ui search dropdown">
+        <select name="monthOfYear" id="month-of-year" class="ui search dropdown">
           <option value="">Month</option>
 
           <%= for {month, val} <- @months_of_year do %>
@@ -52,7 +54,7 @@
             <%end%>
         </select>
 
-        <select id="select-year" class="ui search dropdown">
+        <select name="year" id="year" class="ui search dropdown">
           <option value="">Year</option>
 
           <%= for {year, selectionx} <- @years do %>
@@ -72,9 +74,11 @@
       </div>
 
       <div class="new-shift-form__fields two">
-        <input id="start-time-hour" name="start-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off" maxlength="2">
+        <input name="startTimeHr" id="start-time-hour" name="start-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
+          maxlength="2" value="<%= @shift_start_time.hour %>">
 
-        <input id="start-time-min" name="start-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off" maxlength="2">
+        <input name="startTimeMin" id="start-time-min" name="start-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
+          maxlength="2" value="<%= @shift_start_time.minute %>">
       </div>
     </div>
     <!-- /START TIME -->
@@ -86,9 +90,11 @@
       </div>
 
       <div class="new-shift-form__fields two">
-        <input id="end-time-hour" name="end-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off" maxlength="2">
+        <input name="endTimeHr" id="end-time-hour" name="end-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
+          maxlength="2" value="<%= @shift_end_time.hour %>">
 
-        <input id="end-time-min" name="end-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off" maxlength="2">
+        <input name="endTimeMin" id="end-time-min" name="end-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
+          maxlength="2" value="<%= @shift_end_time.minute %>">
       </div>
     </div>
     <!-- /END TIME -->

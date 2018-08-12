@@ -59,9 +59,11 @@ const makeMetaSelectOption = (meta: CreateMeta_meta) => {
 };
 
 const fetchNewMetaBtn = document.getElementById("get-new-meta-form-button");
-const metaSelect = document.getElementById("select-meta") as HTMLSelectElement;
+const metaSelectEl = document.getElementById(
+  "select-meta"
+) as HTMLSelectElement;
 
-if (fetchNewMetaBtn && metaSelect) {
+if (fetchNewMetaBtn && metaSelectEl) {
   fetchNewMetaBtn.addEventListener(
     "click",
     async () => {
@@ -79,12 +81,10 @@ if (fetchNewMetaBtn && metaSelect) {
         onShow: () => {
           const newMetaFormCleanUp = processNewMetaForm((data: CreateMeta) => {
             const meta = data.meta as CreateMeta_meta;
-            // tslint:disable-next-line:no-console
-            // console.log("dismissModal", dismissModal);
 
             const opt = makeMetaSelectOption(meta);
-            metaSelect.selectedIndex = -1;
-            metaSelect.appendChild(opt);
+            metaSelectEl.selectedIndex = -1;
+            metaSelectEl.appendChild(opt);
 
             dismissModal();
           });
@@ -95,4 +95,75 @@ if (fetchNewMetaBtn && metaSelect) {
     },
     false
   );
+}
+
+const newShiftSubmitEl = document.getElementById("new-shift-form-submit");
+const dayOfMonthEl = document.getElementById(
+  "day-of-month"
+) as HTMLSelectElement;
+const monthOfYearEl = document.getElementById(
+  "month-of-year"
+) as HTMLSelectElement;
+
+const yearEl = document.getElementById("year") as HTMLSelectElement;
+
+const startTimeHrEl = document.getElementById(
+  "start-time-hour"
+) as HTMLInputElement;
+
+const startTimeMinEl = document.getElementById(
+  "start-time-min"
+) as HTMLInputElement;
+
+const endTimeHrEl = document.getElementById(
+  "end-time-hour"
+) as HTMLInputElement;
+
+const endTimeMinEl = document.getElementById(
+  "end-time-min"
+) as HTMLInputElement;
+
+if (
+  newShiftSubmitEl &&
+  metaSelectEl &&
+  dayOfMonthEl &&
+  monthOfYearEl &&
+  yearEl &&
+  startTimeHrEl &&
+  startTimeMinEl &&
+  endTimeHrEl &&
+  endTimeMinEl
+) {
+  const getFormValues = () => {
+    return {
+      [metaSelectEl.name]: metaSelectEl.value,
+      [dayOfMonthEl.name]: dayOfMonthEl.value,
+      [monthOfYearEl.name]: monthOfYearEl.value,
+      [yearEl.name]: yearEl.value,
+      [startTimeHrEl.name]: startTimeHrEl.value,
+      [startTimeMinEl.name]: startTimeMinEl.value,
+      [endTimeHrEl.name]: endTimeHrEl.value,
+      [endTimeMinEl.name]: endTimeMinEl.value
+    };
+  };
+
+  newShiftSubmitEl.addEventListener("click", () => {
+    // tslint:disable-next-line:no-console
+    console.log(
+      `
+
+
+  logging starts
+
+
+  getFormValues`,
+      getFormValues(),
+      `
+
+  logging ends
+
+
+  `
+    );
+  });
 }
