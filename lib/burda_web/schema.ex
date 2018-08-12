@@ -15,6 +15,7 @@ defmodule BurdaWeb.Schema do
 
   mutation do
     import_fields(:meta_mutation)
+    import_fields(:shift_mutation)
   end
 
   def context(ctx) do

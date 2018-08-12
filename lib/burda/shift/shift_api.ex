@@ -10,6 +10,7 @@ defmodule Burda.Shift.Api do
   alias Burda.Shift.Wages
   alias Burda.Shift.Times
   alias Burda.Meta
+  alias Burda.Meta.Api, as: MetaApi
 
   @doc """
   Returns the list of ShiftApi.
@@ -67,8 +68,11 @@ defmodule Burda.Shift.Api do
             start_time: Time.t(),
             meta_id: Integer.t() | String.t()
           },
-          Burda.Meta.t()
+          Burda.Meta.t() | nil
         ) :: {:ok, %Shift{}} | {:error, %Ecto.Changeset{}}
+
+  def create_(%{meta_id: id} = attrs), do: create_(attrs, MetaApi.get(id))
+
   def create_(%{} = attrs, %Meta{} = meta) do
     times =
       Times.times(

@@ -15,9 +15,9 @@ defmodule BurdaWeb.Schema.ShiftTest do
       shift = Factory.insert(%{}, meta)
 
       id = Integer.to_string(shift.id)
-      date = Timex.format!(shift.date, @iso_date)
-      start_time = Timex.format!(shift.start_time, @iso_time)
-      end_time = Timex.format!(shift.end_time, @iso_time)
+      date = format_date(shift.date)
+      start_time = format_time(shift.start_time)
+      end_time = format_time(shift.end_time)
       hours_gross = shift.hours_gross
       normal_hours = shift.normal_hours
       night_hours = shift.night_hours
@@ -55,4 +55,41 @@ defmodule BurdaWeb.Schema.ShiftTest do
               }} = Absinthe.run(Query.query_all(), Schema)
     end
   end
+
+  describe "mutation" do
+    test "create shift succeeds" do
+      meta = MetaFactory.insert()
+
+      params =
+        Factory.params()
+        |> Map.put("metaId", Integer.to_string(meta.id))
+        |> Enum.map(fn
+          {:date, d} -> {"date", format_date(d)}
+          {:end_time, t} -> {"endTime", format_time(t)}
+          {:start_time, t} -> {"startTime", format_time(t)}
+          x -> x
+        end)
+        |> Enum.into(%{})
+
+      assert {:ok,
+              %{
+                data: %{
+                  "shift" => %{
+                    "id" => _,
+                    "startTime" => _
+                  }
+                }
+              }} =
+               Absinthe.run(
+                 Query.create_shift(),
+                 Schema,
+                 variables: %{
+                   "shift" => params
+                 }
+               )
+    end
+  end
+
+  defp format_time(%Time{} = time), do: Timex.format!(time, @iso_time)
+  defp format_date(%Date{} = date), do: Timex.format!(date, @iso_date)
 end

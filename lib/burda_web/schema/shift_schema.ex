@@ -29,12 +29,31 @@ defmodule BurdaWeb.Schema.Shift do
     field(:meta, :meta, resolve: dataloader(Burda.Meta.Api))
   end
 
+  @desc "Inputs for creating shift"
+  input_object :create_shift_input do
+    field(:meta_id, non_null(:id))
+    field(:date, non_null(:date))
+    field(:start_time, non_null(:time))
+    field(:end_time, non_null(:time))
+  end
+
   # QUERIES
   @desc "Queries allowed on Shift object"
   object :shift_query do
     @desc "Get all shifts"
     field :shifts, type: list_of(:shift) do
       resolve(&Resolver.shifts/3)
+    end
+  end
+
+  # MUTATIONS
+  @desc "Mutations allowed on Shift object"
+  object :shift_mutation do
+    @desc "Create a shift"
+    field :shift, type: :shift do
+      arg(:shift, non_null(:create_shift_input))
+
+      resolve(&Resolver.create/3)
     end
   end
 end

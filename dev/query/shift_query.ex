@@ -46,4 +46,18 @@ defmodule BurdaWeb.Query.Shift do
     #{meta_frag}
     """
   end
+
+  def create_shift do
+    {frag_name, frag} = all_fields_fragment()
+
+    """
+    mutation CreateShift($shift: CreateShiftInput!) {
+      shift(shift: $shift) {
+        ...#{frag_name}
+      }
+    }
+
+    #{frag}
+    """
+  end
 end
