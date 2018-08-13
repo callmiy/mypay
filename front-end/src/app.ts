@@ -64,8 +64,10 @@ export const sendChannelMsg = (
     });
 };
 
-// tslint:disable-next-line:only-arrow-functions
-(function() {
+export const docReady = (fn: () => void) =>
+  document.addEventListener("DOMContentLoaded", fn);
+
+const processSidebar = () => {
   const sidebarAction = (sidebar: HTMLElement) => {
     const containerEl = document.getElementById("app-container");
     const sidebarTriggerEl = document.getElementById("sidebar-trigger");
@@ -108,4 +110,6 @@ export const sendChannelMsg = (
   if (sidebarEl) {
     sidebarAction(sidebarEl);
   }
-})();
+};
+
+docReady(processSidebar);
