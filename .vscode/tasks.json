@@ -94,6 +94,13 @@
       "options": {
         "cwd": "./front-end"
       }
+    },
+
+    {
+      "label": "deploy to heroku",
+      "type": "shell",
+      "command": "mix deploy prod",
+      "problemMatcher": []
     }
   ]
 }
