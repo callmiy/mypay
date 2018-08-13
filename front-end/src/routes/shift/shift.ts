@@ -14,6 +14,10 @@ import { clearFieldErrors } from "../../utils/form-things";
 import { formHasErrors } from "../../utils/form-things";
 import { getFieldAndErrorEls } from "../../utils/form-things";
 import { FormThings } from "../../utils/form-things";
+import { sendChannelMsg as sendShiftChannelMsg } from "../../utils/shift-utils";
+import { Topic as ShiftTopic } from "../../utils/shift-utils";
+import { toRunableDocument } from "../../graphql/helpers";
+import CREATE_SHIFT_GQL from "../../graphql/create-shift.mutation";
 
 interface JsonResponseTag {
   tag_name: string;
@@ -311,15 +315,45 @@ if (
 
     formElements.forEach(el => (data[el.name] = el.value));
 
+    const pad = (val: number) => {
+      return (val + "").padStart(2, "0");
+    };
+
     schema
       .validate(data, { abortEarly: false })
-      .then(value => {
-        value.date = `${value.dayOfMonth}-${value.monthOfYear}-${value.year}`;
-        value.startTime = `${value.startTimeHr}:${value.startTimeMin}`;
-        value.endTime = `${value.endTimeHr}:${value.endTimeMin}`;
+      .then(shift => {
+        shift.date = `${pad(shift.year)}-${pad(shift.monthOfYear)}-${pad(
+          shift.dayOfMonth
+        )}`;
+
+        shift.startTime = `${pad(shift.startTimeHr)}:${pad(
+          shift.startTimeMin
+        )}:00`;
+
+        shift.endTime = `${pad(shift.endTimeHr)}:${pad(shift.endTimeMin)}:00`;
+
+        delete shift.dayOfMonth;
+        delete shift.monthOfYear;
+        delete shift.year;
+        delete shift.startTimeHr;
+        delete shift.startTimeMin;
+        delete shift.endTimeHr;
+        delete shift.endTimeMin;
 
         // tslint:disable-next-line:no-console
-        console.log("value", value);
+        console.log("value", shift);
+
+        sendShiftChannelMsg({
+          topic: ShiftTopic.CREATE,
+
+          params: toRunableDocument(CREATE_SHIFT_GQL, { shift }),
+
+          ok: msg => {
+            // tslint:disable-next-line:no-console
+            console.log("shift created", msg);
+            window.location.href = "/";
+          }
+        });
 
         submitEl.classList.remove("loading");
       })

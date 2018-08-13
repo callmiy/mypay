@@ -77,6 +77,73 @@
         },
         {
           "possibleTypes": null,
+          "name": "CreateShiftInput",
+          "kind": "INPUT_OBJECT",
+          "interfaces": null,
+          "inputFields": [
+            {
+              "type": {
+                "ofType": {
+                  "ofType": null,
+                  "name": "Date",
+                  "kind": "SCALAR"
+                },
+                "name": null,
+                "kind": "NON_NULL"
+              },
+              "name": "date",
+              "description": null,
+              "defaultValue": null
+            },
+            {
+              "type": {
+                "ofType": {
+                  "ofType": null,
+                  "name": "Time",
+                  "kind": "SCALAR"
+                },
+                "name": null,
+                "kind": "NON_NULL"
+              },
+              "name": "endTime",
+              "description": null,
+              "defaultValue": null
+            },
+            {
+              "type": {
+                "ofType": {
+                  "ofType": null,
+                  "name": "ID",
+                  "kind": "SCALAR"
+                },
+                "name": null,
+                "kind": "NON_NULL"
+              },
+              "name": "metaId",
+              "description": null,
+              "defaultValue": null
+            },
+            {
+              "type": {
+                "ofType": {
+                  "ofType": null,
+                  "name": "Time",
+                  "kind": "SCALAR"
+                },
+                "name": null,
+                "kind": "NON_NULL"
+              },
+              "name": "startTime",
+              "description": null,
+              "defaultValue": null
+            }
+          ],
+          "fields": null,
+          "enumValues": null,
+          "description": "Inputs for creating shift"
+        },
+        {
+          "possibleTypes": null,
           "name": "Date",
           "kind": "SCALAR",
           "interfaces": null,
@@ -291,6 +358,33 @@
                   "defaultValue": null
                 }
               ]
+            },
+            {
+              "type": {
+                "ofType": null,
+                "name": "Shift",
+                "kind": "OBJECT"
+              },
+              "name": "shift",
+              "isDeprecated": false,
+              "description": "Create a shift",
+              "deprecationReason": null,
+              "args": [
+                {
+                  "type": {
+                    "ofType": {
+                      "ofType": null,
+                      "name": "CreateShiftInput",
+                      "kind": "INPUT_OBJECT"
+                    },
+                    "name": null,
+                    "kind": "NON_NULL"
+                  },
+                  "name": "shift",
+                  "description": null,
+                  "defaultValue": null
+                }
+              ]
             }
           ],
           "enumValues": null,
@@ -405,6 +499,18 @@
                 "kind": "NON_NULL"
               },
               "name": "insertedAt",
+              "isDeprecated": false,
+              "description": null,
+              "deprecationReason": null,
+              "args": []
+            },
+            {
+              "type": {
+                "ofType": null,
+                "name": "Meta",
+                "kind": "OBJECT"
+              },
+              "name": "meta",
               "isDeprecated": false,
               "description": null,
               "deprecationReason": null,
