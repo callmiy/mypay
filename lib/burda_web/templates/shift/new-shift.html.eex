@@ -1,4 +1,4 @@
-<div new-shift-main>
+<div class="new-shift-main">
   <form id="new-shift-form" class="ui form new-shift-form">
     <div id="new-shift-form__error-main" class="ui negative message hidden new-shift-form__error-main">
     </div>

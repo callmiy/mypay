@@ -1,8 +1,13 @@
 @import "./variables";
 
 html,
-body {
+body,
+.app-container {
   height: 100%;
+  width: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 [role="button"],
@@ -22,11 +27,9 @@ form {
 }
 
 .app-container {
-  height: 100%;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
-  overflow-y: hidden;
+  overflow: hidden;
 }
 
 .app-main-menu {
@@ -49,6 +52,8 @@ form {
 main {
   flex: 1;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .ui.dimmer {
