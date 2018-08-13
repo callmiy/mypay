@@ -1,6 +1,8 @@
 import { DocumentNode } from "graphql";
 import { GraphQLError } from "graphql";
 
+import { capitalize } from "../utils/utils";
+
 export const toRunableDocument = <TGraphQLVariables = {}>(
   document: DocumentNode,
   variables?: TGraphQLVariables
@@ -10,10 +12,6 @@ export const toRunableDocument = <TGraphQLVariables = {}>(
     variables
   };
 };
-
-// {errors: Array<{
-//   path: string[], message: string
-// }> }
 
 export const stringifyGraphQlErrors = (
   path: string,
@@ -30,4 +28,33 @@ export const stringifyGraphQlErrors = (
       return prev;
     }, prevVal)
     .join(" | ");
+};
+
+export const htmlfyGraphQlErrors = (
+  path: string,
+  { errors }: { errors: GraphQLError[] }
+) => {
+  const prevVal = [] as string[];
+
+  return errors
+    .reduce((prev, e) => {
+      if (e.path && e.path[0] === path) {
+        const msg = JSON.parse(e.message);
+        const html = Object.keys(msg)
+          .map(
+            (m: string) => `
+          <div>
+            <span class="error-key" >${capitalize(m)}</span>
+            <span class="error-value" >${msg[m]}</span>
+          </div>
+        `
+          )
+          .join("\n");
+
+        return [...prev, html];
+      }
+
+      return prev;
+    }, prevVal)
+    .join("\n");
 };

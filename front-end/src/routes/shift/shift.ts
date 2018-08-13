@@ -19,6 +19,8 @@ import { sendChannelMsg as sendShiftChannelMsg } from "../../utils/shift-utils";
 import { Topic as ShiftTopic } from "../../utils/shift-utils";
 import { toRunableDocument } from "../../graphql/helpers";
 import CREATE_SHIFT_GQL from "../../graphql/create-shift.mutation";
+import { htmlfyGraphQlErrors } from "../../graphql/helpers";
+import { setMainErrorClass } from "../../utils/form-things";
 
 interface JsonResponseTag {
   tag_name: string;
@@ -136,6 +138,10 @@ const endTimeMinEl = document.getElementById(
   "end-time-min"
 ) as HTMLInputElement;
 
+const mainErrorContainer = document.getElementById(
+  "new-shift-form__error-main"
+);
+
 const validateEl = (
   target: HTMLInputElement,
   formThings: FormThings,
@@ -203,6 +209,7 @@ const keyboardListener = (type: "hr" | "min") => (evt: KeyboardEvent) => {
 };
 
 if (
+  mainErrorContainer &&
   submitEl &&
   resetEl &&
   metaSelectEl &&
@@ -334,18 +341,23 @@ if (
         delete shift.endTimeHr;
         delete shift.endTimeMin;
 
-        // tslint:disable-next-line:no-console
-        console.log("value", shift);
-
         sendShiftChannelMsg({
           topic: ShiftTopic.CREATE,
 
           params: toRunableDocument(CREATE_SHIFT_GQL, { shift }),
 
-          ok: msg => {
-            // tslint:disable-next-line:no-console
-            console.log("shift created", msg);
+          ok: () => {
             window.location.href = "/";
+          },
+
+          error: reason => {
+            submitEl.classList.remove("loading");
+
+            mainErrorContainer.innerHTML = htmlfyGraphQlErrors("shift", reason);
+
+            setMainErrorClass(mainErrorContainer, "show");
+
+            resetEl.disabled = false;
           }
         });
 
@@ -379,6 +391,7 @@ if (
         el.value = defaultValEl.value;
       }
 
+      setMainErrorClass(mainErrorContainer, "hide");
       clearFieldErrors(getFieldAndErrorEls(el));
       submitEl.disabled = false;
       submitEl.classList.remove("loading");
