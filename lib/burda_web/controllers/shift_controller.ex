@@ -2,6 +2,7 @@ defmodule BurdaWeb.ShiftController do
   use Phoenix.Controller
 
   alias Burda.Meta.Api, as: MetaApi
+  alias BurdaWeb.MetaWeb
 
   @page_css "routes/shift.css"
   @page_js "routes/shift.js"
@@ -114,6 +115,7 @@ defmodule BurdaWeb.ShiftController do
       merge_assigns(
         conn,
         page_css: @page_css,
-        page_js: @page_js
+        page_js: @page_js,
+        preload_resources: MetaWeb.preload_resources()
       )
 end

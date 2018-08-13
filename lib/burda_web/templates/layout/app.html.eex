@@ -15,6 +15,18 @@
   <%= page_css(:index) %>
     <%= page_css(assigns[:page_css] ) %>
 
+      <%= for {:css, href} <- (assigns[:preload_resources] || []) do %>
+        <link rel="preload" href="<%=href%>" as="style" onload="this.rel='stylesheet'">
+        <%end%>
+
+          <%= for {:css_js, href} <- (assigns[:preload_resources] || []) do %>
+            <link rel="preload" href="<%=href%>" as="script" onload="const script = document.createElement('script'); script.src = this.href; document.head.appendChild(script);">
+            <%end%>
+
+              <%= for {:js, href} <- (assigns[:preload_resources] || []) do %>
+                <link rel="preload" href="<%=href%>" as="script" onload="const script = document.createElement('script'); script.src = this.href; document.body.appendChild(script);">
+                <%end%>
+
 </head>
 
 <body>

@@ -2,7 +2,6 @@ defmodule BurdaWeb.MetaWeb do
   @moduledoc ~S"""
   Utilites used by MeteChannel and MetaController
   """
-  require Logger
 
   alias Burda.Meta.Api
   alias BurdaWeb.MetaView
@@ -20,26 +19,14 @@ defmodule BurdaWeb.MetaWeb do
         conn: conn_end_point
       )
 
-    css = LayoutView.page_css(@new_form_css_path, render: :map)
-    js = LayoutView.page_js(@new_form_js_path, render: :map)
-
-    form = %{
-      html: html,
-      css: css,
-      js: js
+    %{
+      html: html
     }
-
-    Logger.info(fn ->
-      [
-        "\n\n\n\nnew meta form object css: ",
-        inspect(css),
-        "\n\n\n\n",
-        "\n\n\n\nnew meta form object js: ",
-        inspect(js),
-        "\n\n\n\n"
-      ]
-    end)
-
-    form
   end
+
+  def preload_resources,
+    do: [
+      LayoutView.js_css_src(:css, @new_form_css_path),
+      LayoutView.js_css_src(:js, @new_form_js_path)
+    ]
 end

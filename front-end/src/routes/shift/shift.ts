@@ -31,31 +31,12 @@ export interface JsonResponseNewMetaForm {
   js: JsonResponseTag;
 }
 
-const makeTag = ({ tag_name, attributes }: JsonResponseTag) => {
-  const tagEl = document.createElement(tag_name);
-
-  for (const [attr, value] of Object.entries(attributes)) {
-    tagEl.setAttribute(attr, value);
-  }
-
-  return tagEl;
-};
-
-const attachTagsToDOM = (data: JsonResponseNewMetaForm) => {
-  const css = makeTag(data.css);
-  document.head.appendChild(css);
-
-  const js = makeTag(data.js);
-  document.body.appendChild(js);
-};
-
 const getNewMetaForm = async () => {
   sendMetaChannelMsg({
     topic: MetaTopic.NEW_FORM,
     ok: msg => {
       const response = msg as JsonResponseNewMetaForm;
       window.appInterface.newMetaFormData = response;
-      attachTagsToDOM(response);
     }
   });
 };
