@@ -151,7 +151,7 @@
 
     <div class="new-shift-form__buttons">
       <div class="ui buttons">
-        <button id="new-shift-form-submit" type="button" class="ui positive button">
+        <button id="new-shift-form-submit" type="submit" class="ui positive button">
           Save
         </button>
 
