@@ -9,6 +9,7 @@ $border-color: unquote("#034c035c");
   overflow: hidden;
   display: grid;
   grid-template-rows: auto 1fr auto;
+  padding: 0 8px;
 }
 
 .shift-summaries {
