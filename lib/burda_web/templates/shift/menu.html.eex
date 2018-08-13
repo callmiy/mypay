@@ -1,0 +1,21 @@
+<div class="ui inverted menu shift-route-menu ">
+  <div class="ui container">
+    <a id="go-back-from-shift-route" class="item" href="<%=@go_back_url%>">
+      <i class="arrow left icon"></i>
+    </a>
+
+    <div class="item shift-route-menu__title">
+      Create New Shift
+    </div>
+
+    <div class="right menu">
+      <div class="ui right aligned category search item">
+        <div class="ui transparent icon input ">
+          <input class="prompt" type="text" placeholder="Search dates...">
+          <i class="search link icon inverted"></i>
+        </div>
+        <div class="results"></div>
+      </div>
+    </div>
+  </div>
+</div>

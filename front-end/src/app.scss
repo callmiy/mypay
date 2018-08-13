@@ -31,6 +31,10 @@ form {
 
 .app-main-menu {
   flex-shrink: 0;
+
+  .ui.menu {
+    border-radius: 0;
+  }
 }
 
 .ui.menu {

@@ -86,6 +86,18 @@ defmodule BurdaWeb.ShiftController do
           {latest_meta, all_metas}
       end
 
+    index_path = BurdaWeb.Router.Helpers.index_path(conn, :index)
+    this_path = BurdaWeb.Router.Helpers.shift_path(conn, :new)
+
+    go_back_url =
+      case get_req_header(conn, "referer") do
+        [url | _] ->
+          if(url == this_path, do: index_path, else: url)
+
+        _ ->
+          index_path
+      end
+
     render(
       conn,
       "new-shift.html",
@@ -105,7 +117,8 @@ defmodule BurdaWeb.ShiftController do
       shift_end_time: %{
         hour: end_time.hour,
         minute: end_time.minute
-      }
+      },
+      go_back_url: go_back_url
     )
   end
 
