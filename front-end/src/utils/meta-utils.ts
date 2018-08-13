@@ -18,4 +18,5 @@ channel.on(Topic.NEW_FORM, msg => {
   console.log("Got message", msg);
 });
 
-export const sendChannelMsg = (msg: ChannelMessage) => sendMsg(channel, msg);
+export const sendChannelMsg = (msg: ChannelMessage) =>
+  sendMsg(channelName, channel, msg);

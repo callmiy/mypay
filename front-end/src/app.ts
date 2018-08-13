@@ -43,6 +43,7 @@ export interface ChannelMessage {
 }
 
 export const sendChannelMsg = (
+  channelName: string,
   channel: Channel,
   { topic, ok, error, params }: ChannelMessage
 ) => {
@@ -54,7 +55,7 @@ export const sendChannelMsg = (
         error(reasons);
       } else {
         // tslint:disable-next-line:no-console
-        console.log(`Error on push to ${topic}`, reasons);
+        console.log(`Error on push to ${channelName}:${topic}`, reasons);
       }
     })
     .receive("timeout", () => {
