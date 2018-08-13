@@ -1,5 +1,6 @@
 import * as Yup from "yup";
 import { Schema } from "yup";
+import { ValidationError } from "yup";
 
 import { showModal } from "../../components/modals";
 import { dismissModal } from "../../components/modals";
@@ -73,11 +74,16 @@ const makeMetaSelectOption = (meta: CreateMeta_meta) => {
 };
 
 const fetchNewMetaBtn = document.getElementById("get-new-meta-form-button");
+
 const metaSelectEl = document.getElementById(
   "select-meta"
 ) as HTMLSelectElement;
 
 if (fetchNewMetaBtn && metaSelectEl) {
+  const metaSelectDefaultEl = document.getElementById(
+    `${metaSelectEl.name}-default`
+  ) as HTMLInputElement;
+
   fetchNewMetaBtn.addEventListener(
     "click",
     async () => {
@@ -99,8 +105,13 @@ if (fetchNewMetaBtn && metaSelectEl) {
             const opt = makeMetaSelectOption(meta);
             metaSelectEl.selectedIndex = -1;
             metaSelectEl.appendChild(opt);
+            metaSelectEl.dispatchEvent(new Event("input"));
 
             dismissModal();
+
+            if (metaSelectDefaultEl) {
+              metaSelectDefaultEl.value = meta.id;
+            }
           });
 
           return newMetaFormCleanUp;
@@ -150,8 +161,9 @@ const validateEl = (
   schema: Schema<{}>
 ) => {
   const { fieldEl, errorEl } = getFieldAndErrorEls(target);
+  const name = target.name;
 
-  Yup.reach(schema, target.name)
+  Yup.reach(schema, name)
     .validate(target.value)
     .then(() => {
       clearFieldErrors({ fieldEl, errorEl });
@@ -229,7 +241,8 @@ if (
       .typeError("Invalid meta ID")
       .required()
       .positive()
-      .integer(),
+      .integer()
+      .min(1),
 
     [dayOfMonthEl.name]: Yup.number()
       .typeError("Invalid day")
@@ -286,18 +299,18 @@ if (
       .max(59)
   });
 
-  const formElements = [
-    metaSelectEl,
-    dayOfMonthEl,
-    monthOfYearEl,
-    yearEl,
-    startTimeHrEl,
-    startTimeMinEl,
-    endTimeHrEl,
-    endTimeMinEl
-  ];
+  const formElements = {
+    [metaSelectEl.name]: metaSelectEl,
+    [dayOfMonthEl.name]: dayOfMonthEl,
+    [monthOfYearEl.name]: monthOfYearEl,
+    [yearEl.name]: yearEl,
+    [startTimeHrEl.name]: startTimeHrEl,
+    [startTimeMinEl.name]: startTimeMinEl,
+    [endTimeHrEl.name]: endTimeHrEl,
+    [endTimeMinEl.name]: endTimeMinEl
+  };
 
-  formElements.forEach(element =>
+  Object.values(formElements).forEach(element =>
     element.addEventListener("input", inputListener(formThings, schema))
   );
 
@@ -313,7 +326,7 @@ if (
 
     const data = {} as { [k: string]: string };
 
-    formElements.forEach(el => (data[el.name] = el.value));
+    Object.values(formElements).forEach(el => (data[el.name] = el.value));
 
     const pad = (val: number) => {
       return (val + "").padStart(2, "0");
@@ -357,14 +370,26 @@ if (
 
         submitEl.classList.remove("loading");
       })
-      .catch(() => {
+      .catch(errors => {
         submitEl.classList.remove("loading");
         resetEl.disabled = false;
+
+        errors.inner.map((err: ValidationError) => {
+          setFieldError(
+            getFieldAndErrorEls(formElements[err.path]),
+            err.message
+          );
+
+          formThings.errors = {
+            ...formThings.errors,
+            [err.path]: err
+          };
+        });
       });
   });
 
   resetEl.addEventListener("click", () => {
-    formElements.forEach(el => {
+    Object.values(formElements).forEach(el => {
       const defaultValEl = document.getElementById(
         `${el.name}-default`
       ) as HTMLInputElement;

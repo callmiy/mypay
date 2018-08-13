@@ -15,9 +15,9 @@
   }
 }
 
-.new-shift-form__labeled_input.ui.input {
+.meta-id.ui.input {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: 1fr auto;
 }
 
 .new-shift-form__label {

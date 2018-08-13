@@ -6,7 +6,7 @@
         Select Meta or create new.
       </div>
 
-      <div class="ui right labeled input">
+      <div class="meta-id ui right labeled input">
         <select name="metaId" id="select-meta" class="ui search dropdown fluid">
           <option value="">-----</option>
 

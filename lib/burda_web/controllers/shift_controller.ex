@@ -71,12 +71,19 @@ defmodule BurdaWeb.ShiftController do
       |> Enum.map(&{&1 + year, ""})
       |> Enum.concat([{year, "selected"}])
 
-    [latest_meta | rest_metas] = MetaApi.list()
+    {latest_meta, all_metas} =
+      case MetaApi.list() do
+        [] ->
+          {%{id: 0}, []}
 
-    all_metas = [
-      {latest_meta, "selected"}
-      | Enum.map(rest_metas, &{&1, ""})
-    ]
+        [latest_meta | rest_metas] ->
+          all_metas = [
+            {latest_meta, "selected"}
+            | Enum.map(rest_metas, &{&1, ""})
+          ]
+
+          {latest_meta, all_metas}
+      end
 
     render(
       conn,
