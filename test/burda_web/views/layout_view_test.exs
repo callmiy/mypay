@@ -125,4 +125,36 @@ defmodule BurdaWeb.LayoutViewTest do
              }
            } = View.script_tag(:prod, @index_css_js_path, render: :map)
   end
+
+  test "page_js/2, env: dev, render: string, type: raw" do
+    src =
+      View.webpack_server_url(
+        path1: "js",
+        path2: @index_css_js_path
+      )
+
+    assert View.script_tag(
+             :dev,
+             @index_css_js_path,
+             render: :string,
+             type: :raw
+           ) ==
+             View.js_tag_eex(src: src)
+             |> raw()
+  end
+
+  test "page_js/2, env: dev, render: map" do
+    src =
+      View.webpack_server_url(
+        path1: "js",
+        path2: @index_css_js_path
+      )
+
+    assert %{
+             tag_name: "script",
+             attributes: %{
+               src: ^src
+             }
+           } = View.script_tag(:dev, @index_css_js_path, render: :map)
+  end
 end

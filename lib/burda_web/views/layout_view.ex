@@ -86,14 +86,17 @@ defmodule BurdaWeb.LayoutView do
 
   def script_tag(:prod, src, opts) when is_binary(src),
     do:
-      "/js/#{src}"
-      |> Endpoint.static_path()
+      :prod
+      |> js_css_src(:js, src)
       |> script_tag(opts)
 
   def script_tag(:dev, src, opts) when is_binary(src),
-    do: script_tag(webpack_server_url(path1: "js", path2: src), opts)
+    do:
+      :dev
+      |> js_css_src(:js, src)
+      |> script_tag(opts)
 
-  def script_tag(src, opts) when is_list(opts) do
+  def script_tag({:js, src}, opts) when is_list(opts) do
     html =
       case Keyword.fetch!(opts, :render) do
         :string ->
@@ -117,6 +120,7 @@ defmodule BurdaWeb.LayoutView do
 
   # -------------------------------------------PAGE CSS---------------------
 
+  @spec page_css(:index | nil | binary(), any()) :: any()
   def page_css(path, opts \\ [render: :string, type: :raw])
 
   def page_css(nil, _opts), do: ""
@@ -135,22 +139,23 @@ defmodule BurdaWeb.LayoutView do
 
   def link_tag(:prod, :index, opts), do: link_tag(:prod, @index_css_path, opts)
 
-  def link_tag(:prod, href, opts) when is_binary(href) do
-    href = Endpoint.static_path("/css/#{href}")
-    link_tag(:css, href, opts)
-  end
+  def link_tag(:prod, href, opts) when is_binary(href),
+    do:
+      :prod
+      |> js_css_src(:css, href)
+      |> link_tag(opts)
 
   def link_tag(:dev, :index, opts),
     do: link_tag(:dev, @index_css_js_path, opts)
 
-  def link_tag(:dev, src, opts) when is_binary(src) do
-    src = String.replace(src, ~r/\.css$/, ".js")
-    src = webpack_server_url(path1: "css", path2: src)
+  def link_tag(:dev, src, opts) when is_binary(src),
+    do:
+      :dev
+      |> js_css_src(:css, src)
+      |> link_tag(opts)
 
-    link_tag(:js, src, opts)
-  end
-
-  def link_tag(:css, href, opts) when is_binary(href) do
+  @spec link_tag(any(), any()) :: any()
+  def link_tag({:css, href}, opts) when is_binary(href) do
     case Keyword.fetch!(opts, :render) do
       :string ->
         css_tag_eex(href: href)
@@ -161,7 +166,10 @@ defmodule BurdaWeb.LayoutView do
     |> link_tag(opts)
   end
 
-  def link_tag(:js, src, opts) when is_binary(src) do
+  def link_tag({:css_js, src}, opts) when is_binary(src),
+    do: link_tag({:js, src}, opts)
+
+  def link_tag({:js, src}, opts) when is_binary(src) do
     case Keyword.fetch!(opts, :render) do
       :string ->
         js_tag_eex(src: src)
@@ -183,8 +191,43 @@ defmodule BurdaWeb.LayoutView do
   end
 
   def link_tag(html, :raw) when is_binary(html), do: raw(html)
-
   def link_tag(html, _), do: html
+
+  # ------------------------------UTILITIES--------------------------------
+
+  @spec js_css_src(
+          resource_type :: :css | :js,
+          path :: nil | String.t()
+        ) :: nil | {:css, String.t()} | {:js, String.t()}
+  def js_css_src(_, nil), do: nil
+
+  def js_css_src(type, href) when is_binary(href),
+    do:
+      Mix.env()
+      |> get_mix_env()
+      |> js_css_src(type, href)
+
+  @spec js_css_src(
+          mix_env :: :dev | :prod,
+          resource_type :: :css | :js,
+          path :: String.t()
+        ) :: {:css, String.t()} | {:js, String.t()}
+
+  def js_css_src(:dev, :css, src) when is_binary(src) do
+    src = String.replace(src, ~r/\.css$/, ".js")
+    src = webpack_server_url(path1: "css", path2: src)
+
+    {:css_js, src}
+  end
+
+  def js_css_src(:dev, :js, src) when is_binary(src),
+    do: {:js, webpack_server_url(path1: "js", path2: src)}
+
+  def js_css_src(:prod, :css, href) when is_binary(href),
+    do: {:css, Endpoint.static_path("/css/#{href}")}
+
+  def js_css_src(:prod, :js, href) when is_binary(href),
+    do: {:js, Endpoint.static_path("/js/#{href}")}
 
   defp get_mix_env(:prod), do: :prod
   defp get_mix_env(:prod_local), do: :prod
