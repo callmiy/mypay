@@ -9,9 +9,9 @@ export enum Topic {
 }
 
 const socket = getSocket();
-const channelTopic = "meta:meta";
-const channel = socket.channel(channelTopic, {});
-channelJoin(channelTopic, channel);
+const channelName = "meta:meta";
+const channel = socket.channel(channelName, {});
+channelJoin(channelName, channel);
 
 channel.on(Topic.NEW_FORM, msg => {
   // tslint:disable-next-line:no-console
