@@ -1,7 +1,8 @@
 import * as Yup from "yup";
 import { ValidationError } from "yup";
 
-import { sendMsg } from "../../utils/meta-utils";
+import { sendChannelMsg } from "../../utils/meta-utils";
+import { Topic } from "../../utils/meta-utils";
 import CREATE_META from "../../graphql/create-meta.mutation";
 import { toRunableDocument } from "../../graphql/helpers";
 import { stringifyGraphQlErrors } from "../../graphql/helpers";
@@ -144,8 +145,8 @@ export const processNewMetaForm = (
     schema
       .validate(data, { abortEarly: false })
       .then((meta: { [k: string]: number }) => {
-        sendMsg({
-          topic: "create",
+        sendChannelMsg({
+          topic: Topic.CREATE,
 
           params: toRunableDocument(CREATE_META, {
             // The user input is in minutes, so we convert break_time_secs to

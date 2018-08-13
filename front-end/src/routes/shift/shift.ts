@@ -4,7 +4,8 @@ import { Schema } from "yup";
 import { showModal } from "../../components/modals";
 import { dismissModal } from "../../components/modals";
 import { processNewMetaForm } from "../../components/new-meta-form/new-meta-form";
-import { sendMsg } from "../../utils/meta-utils";
+import { sendChannelMsg as sendMetaChannelMsg } from "../../utils/meta-utils";
+import { Topic as MetaTopic } from "../../utils/meta-utils";
 import { CreateMeta } from "../../graphql/gen.types";
 import { CreateMeta_meta } from "../../graphql/gen.types";
 import { makeFormThings } from "../../utils/form-things";
@@ -44,8 +45,8 @@ const attachTagsToDOM = (data: JsonResponseNewMetaForm) => {
 };
 
 const getNewMetaForm = async () => {
-  sendMsg({
-    topic: "new-form",
+  sendMetaChannelMsg({
+    topic: MetaTopic.NEW_FORM,
     ok: msg => {
       const response = msg as JsonResponseNewMetaForm;
       window.appInterface.newMetaFormData = response;
