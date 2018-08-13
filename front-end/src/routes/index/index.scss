@@ -1,3 +1,5 @@
+@import "../../variables";
+
 $border-color: unquote("#034c035c");
 
 .index-route-menu__title {
@@ -21,7 +23,7 @@ $border-color: unquote("#034c035c");
 }
 
 .earnings-summary {
-  border: 1px solid #034803;
+  border: 1px solid #038203;
   color: white;
   display: grid;
   grid-template-columns: 1fr minmax(auto, 25%);
@@ -32,14 +34,14 @@ $border-color: unquote("#034c035c");
   }
 
   & > :first-child {
-    background: #039e03;
+    background: #15b43a;
   }
 
   & > :last-child {
-    background: #029602;
+    background: #05a32a;
     text-align: right;
     font-weight: 900;
-    border-left: 3px solid green;
+    border-left: 3px solid #fff;
   }
 }
 
@@ -76,7 +78,7 @@ $border-color: unquote("#034c035c");
     margin-right: 5px;
     text-decoration-line: underline;
     text-decoration-style: initial;
-    text-decoration-color: green;
+    text-decoration-color: $app-color;
   }
 
   & > :last-child {
@@ -96,7 +98,7 @@ $border-color: unquote("#034c035c");
   border-bottom: 1px solid $border-color;
 
   &.header {
-    background: green;
+    background: $app-color;
     color: white;
     font-weight: 900;
     font-size: 1.03em;
@@ -151,7 +153,7 @@ $border-color: unquote("#034c035c");
     display: flex;
     justify-content: center;
     align-items: center;
-    background: green;
+    background: $app-color;
     color: white;
     cursor: pointer;
     z-index: 101;
