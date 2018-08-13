@@ -396,6 +396,7 @@ if (
       submitEl.disabled = false;
       submitEl.classList.remove("loading");
       formThings.errors = {};
+      mainErrorContainer.innerHTML = "";
     });
   });
 }
