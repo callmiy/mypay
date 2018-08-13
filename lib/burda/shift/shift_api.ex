@@ -71,7 +71,28 @@ defmodule Burda.Shift.Api do
           Burda.Meta.t() | nil
         ) :: {:ok, %Shift{}} | {:error, %Ecto.Changeset{}}
 
-  def create_(%{meta_id: id} = attrs), do: create_(attrs, MetaApi.get(id))
+  def create_(%{meta_id: id} = attrs) do
+    case MetaApi.get(id) do
+      nil ->
+        changes =
+          %Shift{}
+          |> change_(attrs)
+          |> Map.put(:errors, meta_id: meta_id_not_found_error(id))
+
+        {:error, changes}
+
+      meta ->
+        create_(attrs, meta)
+    end
+  end
+
+  def create_(attrs),
+    do: {
+      :error,
+      %Shift{}
+      |> change_(attrs)
+      |> Map.put(:errors, meta_id: meta_id_blank_error())
+    }
 
   def create_(%{} = attrs, %Meta{} = meta) do
     times =
@@ -135,8 +156,8 @@ defmodule Burda.Shift.Api do
       %Ecto.Changeset{source: %Shift{}}
 
   """
-  def change_(%Shift{} = shift) do
-    Shift.changeset(shift, %{})
+  def change_(%Shift{} = shift, attrs \\ %{}) do
+    Shift.changeset(shift, attrs)
   end
 
   def data() do
@@ -146,4 +167,8 @@ defmodule Burda.Shift.Api do
   def query(queryable, _params) do
     queryable
   end
+
+  def meta_id_not_found_error(id), do: ~s(meta with ID "#{id}" not found)
+
+  def meta_id_blank_error, do: ~s(meta ID can not be blank)
 end

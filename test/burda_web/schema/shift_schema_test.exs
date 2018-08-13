@@ -5,6 +5,7 @@ defmodule BurdaWeb.Schema.ShiftTest do
   alias BurdaWeb.Query.Shift, as: Query
   alias Burda.Factory.Shift, as: Factory
   alias Burda.Factory.Meta, as: MetaFactory
+  alias Burda.Shift.Api
 
   @iso_time "{ISOtime}"
   @iso_date "{ISOdate}"
@@ -75,10 +76,54 @@ defmodule BurdaWeb.Schema.ShiftTest do
               %{
                 data: %{
                   "shift" => %{
-                    "id" => _,
-                    "startTime" => _
+                    "id" => _id,
+                    "date" => _,
+                    "startTime" => _,
+                    "endTime" => _,
+                    "hoursGross" => _,
+                    "normalHours" => _,
+                    "nightHours" => _,
+                    "sundayHours" => _,
+                    "normalPay" => _,
+                    "nightSupplPay" => _,
+                    "sundaySupplPay" => _,
+                    "totalPay" => _
                   }
                 }
+              }} =
+               Absinthe.run(
+                 Query.create_shift(),
+                 Schema,
+                 variables: %{
+                   "shift" => params
+                 }
+               )
+    end
+
+    test "create shift fails when wrong meta supplied" do
+      params =
+        Factory.params()
+        |> Map.put("metaId", "0")
+        |> Enum.map(fn
+          {:date, d} -> {"date", format_date(d)}
+          {:end_time, t} -> {"endTime", format_time(t)}
+          {:start_time, t} -> {"startTime", format_time(t)}
+          x -> x
+        end)
+        |> Enum.into(%{})
+
+      msg =
+        Poison.encode!(%{
+          meta_id: Api.meta_id_not_found_error("0")
+        })
+
+      assert {:ok,
+              %{
+                errors: [
+                  %{
+                    message: ^msg
+                  }
+                ]
               }} =
                Absinthe.run(
                  Query.create_shift(),
