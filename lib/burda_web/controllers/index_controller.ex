@@ -1,12 +1,7 @@
 defmodule BurdaWeb.IndexController do
   use Phoenix.Controller
 
-  # alias BurdaWeb.Schema
-  # alias BurdaWeb.Query.Shift, as: Query
   alias Burda.Shift.Api
-
-  @page_js "routes/index.js"
-  @page_css "routes/index.css"
 
   plug(:assign_defaults)
 
@@ -26,8 +21,6 @@ defmodule BurdaWeb.IndexController do
 
     merge_assigns(
       conn,
-      page_js: @page_js,
-      page_css: @page_css,
       current_month: Timex.format!(today, "{Mshort}/{YYYY}"),
       today: today
     )

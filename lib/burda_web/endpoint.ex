@@ -52,6 +52,7 @@ defmodule BurdaWeb.Endpoint do
     signing_salt: "AL7ymQAm"
   )
 
+  plug(:assign_all_resources)
   plug(BurdaWeb.Router)
 
   @doc """
@@ -68,4 +69,15 @@ defmodule BurdaWeb.Endpoint do
       {:ok, config}
     end
   end
+
+  @doc ~S"""
+    Load all all CSS and JS files for all routes so we can do offline first.
+  """
+  def assign_all_resources(conn, _),
+    do:
+      assign(
+        conn,
+        :resources,
+        BurdaWeb.LayoutView.resources(conn.request_path)
+      )
 end
