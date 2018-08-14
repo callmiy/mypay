@@ -4,6 +4,7 @@ const path = require("path");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+
 const PurifyCSSPlugin = require("purifycss-webpack");
 const glob = require("glob-all");
 const baseConfig = require("./base");
@@ -37,6 +38,24 @@ module.exports = merge(baseConfig, {
 
   module: {
     rules: [
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+
+          {
+            loader: "css-loader",
+            options: {
+              importLoaders: 1,
+              minimize: true,
+              sourceMap: true
+            }
+          },
+
+          "postcss-loader"
+        ]
+      },
+
       {
         test: /\.less$/,
         use: [
@@ -82,7 +101,10 @@ module.exports = merge(baseConfig, {
         parallel: true,
         sourceMap: true // set to true if you want JS source maps
       }),
-      new OptimizeCSSAssetsPlugin({})
+
+      new OptimizeCSSAssetsPlugin({
+        cssProcessorOptions: { discardComments: { removeAll: true } }
+      })
     ]
   }
 });

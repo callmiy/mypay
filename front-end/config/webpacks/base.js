@@ -1,6 +1,7 @@
 const webpack = require("webpack");
 const path = require("path");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+
 const paths = require("./../paths");
 
 module.exports = {
@@ -9,16 +10,35 @@ module.exports = {
 
     rules: [
       {
-        test: /\.less$/,
+        test: /\.css$/,
         use: [
           "style-loader",
+
           {
             loader: "css-loader",
             options: {
               importLoaders: 1
             }
           },
+
+          "postcss-loader"
+        ]
+      },
+
+      {
+        test: /\.less$/,
+        use: [
+          "style-loader",
+
+          {
+            loader: "css-loader",
+            options: {
+              importLoaders: 1
+            }
+          },
+
           "postcss-loader",
+
           "less-loader"
         ]
       },
@@ -27,13 +47,16 @@ module.exports = {
         test: /\.s(css|ass)$/,
         loaders: [
           "style-loader",
+
           {
             loader: "css-loader",
             options: {
               importLoaders: 1
             }
           },
+
           "postcss-loader",
+
           "sass-loader"
         ]
       },
@@ -102,6 +125,13 @@ module.exports = {
   },
 
   plugins: [
+    // Moment.js is an extremely popular library that bundles large locale files
+    // by default due to how Webpack interprets its code. This is a practical
+    // solution that requires the user to opt into importing specific locales.
+    // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
+    // You can remove this if you don't use Moment.js:
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+
     // Perform type checking and linting in a separate process to speed up compilation
     new ForkTsCheckerWebpackPlugin({
       async: false,
@@ -110,6 +140,16 @@ module.exports = {
       tslint: paths.appTsLint
     })
   ],
+
+  // Some libraries import Node modules but don't use them in the browser.
+  // Tell Webpack to provide empty mocks for them so importing them works.
+  node: {
+    dgram: "empty",
+    fs: "empty",
+    net: "empty",
+    tls: "empty",
+    child_process: "empty"
+  },
 
   resolve: {
     modules: ["node_modules", paths.appSrc],

@@ -1,6 +1,9 @@
 const path = require("path");
 const merge = require("webpack-merge");
 const webpack = require("webpack");
+const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
+const WatchMissingNodeModulesPlugin = require("react-dev-utils/WatchMissingNodeModulesPlugin");
+
 const baseConfig = require("./base");
 const paths = require("./../paths");
 
@@ -47,8 +50,22 @@ module.exports = merge(baseConfig, {
   devtool: "cheap-module-eval-source-map",
 
   plugins: [
-    new webpack.HotModuleReplacementPlugin(), // enable HMR globally
-    new webpack.NamedModulesPlugin() // prints more readable module names in the browser console on HMR updates
+    // Add module names to factory functions so they appear in browser profiler.
+    new webpack.NamedModulesPlugin(),
+
+    // This is necessary to emit hot updates (currently CSS only):
+    new webpack.HotModuleReplacementPlugin(),
+
+    // Watcher doesn't work well if you mistype casing in a path so we use
+    // a plugin that prints an error when you attempt to do this.
+    // See https://github.com/facebookincubator/create-react-app/issues/240
+    new CaseSensitivePathsPlugin(),
+
+    // If you require a missing module and then `npm install` it, you still have
+    // to restart the development server for Webpack to discover it. This plugin
+    // makes the discovery automatic so you don't have to restart.
+    // See https://github.com/facebookincubator/create-react-app/issues/186
+    new WatchMissingNodeModulesPlugin(paths.appNodeModules)
   ],
 
   performance: {
