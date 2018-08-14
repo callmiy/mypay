@@ -71,7 +71,10 @@ module.exports = merge(baseConfig, {
     }),
 
     new PurifyCSSPlugin({
-      paths: glob.sync([`${paths.phoenixTemplatePath}/**/*.html.eex`])
+      paths: glob.sync([
+        `${paths.phoenixTemplatePath}/**/*.html.eex`,
+        `${paths.appSrc}/**/*.ts`
+      ])
     })
   ],
 
