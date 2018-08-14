@@ -2,7 +2,7 @@ import { Socket } from "phoenix";
 import { Channel } from "phoenix";
 
 import AppInterface from "./app_interface";
-import "./register-service-worker";
+import registerServiceWorker from "./register-service-worker";
 
 declare global {
   interface Window {
@@ -115,3 +115,5 @@ const processSidebar = () => {
 };
 
 docReady(processSidebar);
+
+registerServiceWorker();
