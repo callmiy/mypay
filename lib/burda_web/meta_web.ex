@@ -8,7 +8,6 @@ defmodule BurdaWeb.MetaWeb do
   alias BurdaWeb.LayoutView
 
   @new_form_css_path "components/new-meta-form.css"
-  @new_form_js_path "components/new-meta-form.js"
 
   def new_form(conn_end_point) do
     html =
@@ -26,7 +25,6 @@ defmodule BurdaWeb.MetaWeb do
 
   def preload_resources,
     do: [
-      LayoutView.js_css_src(:css, @new_form_css_path),
-      LayoutView.js_css_src(:js, @new_form_js_path)
+      LayoutView.js_css_src(:css, @new_form_css_path)
     ]
 end
