@@ -13,7 +13,7 @@ defmodule BurdaWeb.Endpoint do
     at: "/",
     from: :burda,
     gzip: true,
-    only: ~w(css fonts img images js favicon.ico robots.txt)
+    only: ~w(css fonts img images js favicon.ico robots.txt service-worker.js)
   )
 
   # Code reloading can be explicitly enabled under the

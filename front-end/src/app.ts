@@ -1,6 +1,8 @@
-import AppInterface from "./app_interface";
 import { Socket } from "phoenix";
 import { Channel } from "phoenix";
+
+import AppInterface from "./app_interface";
+import "./register-service-worker";
 
 declare global {
   interface Window {
