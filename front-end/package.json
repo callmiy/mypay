@@ -9,8 +9,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "webpack --config=config/webpacks/prod.js",
-    "start": "yarn run watch",
+    "deploy": "cross-env NODE_ENV=production webpack --config=config/webpacks/prod.js",
+    "start": "cross-env NODE_ENV=development yarn run watch",
     "watch": "webpack-dev-server --config=config/webpacks/dev.js --colors --watch-stdin"
   },
   "keywords": [
@@ -34,6 +34,7 @@
     "babel-loader": "^7.1.5",
     "babel-plugin-graphql-tag": "^1.6.0",
     "case-sensitive-paths-webpack-plugin": "^2.1.2",
+    "cross-env": "^5.2.0",
     "css-loader": "^1.0.0",
     "cssnano": "^4.0.5",
     "file-loader": "^1.1.11",

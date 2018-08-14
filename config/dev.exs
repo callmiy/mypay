@@ -12,12 +12,10 @@ config :burda, BurdaWeb.Endpoint,
   code_reloader: true,
   check_origin: false,
   watchers: [
-    node: [
-      "node_modules/webpack-dev-server/bin/webpack-dev-server.js",
-      "--config",
-      "config/webpacks/dev.js",
-      "--colors",
-      "--watch-stdin",
+    "cmd.exe": [
+      "/c",
+      "yarn",
+      "start",
       cd: Path.expand("../front-end", __DIR__)
     ]
   ]

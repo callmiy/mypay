@@ -12,12 +12,8 @@ defmodule Mix.Tasks.Deploy do
   @static_folder Path.expand("priv/static")
   @static_folder_permanent Path.expand("priv/static.permanent")
   @front_end_folder Path.expand("front-end")
-  @node "node"
-  @webpack_cmd_args [
-    "node_modules/webpack/bin/webpack.js",
-    "--config",
-    "config/webpacks/prod.js"
-  ]
+  @win_cmd "cmd.exe"
+  @yarn "yarn"
 
   @spec run([<<_::32>>, ...]) :: :ok
   def run(args), do: deploy(args)
@@ -70,7 +66,7 @@ defmodule Mix.Tasks.Deploy do
   end
 
   defp process_static_files do
-    :ok = run_cmd(@node, @webpack_cmd_args, cd: @front_end_folder)
+    :ok = run_cmd(@yarn, ["deploy"], cd: @front_end_folder)
     Mix.Task.run("phx.digest")
     :ok
   end
@@ -84,7 +80,7 @@ defmodule Mix.Tasks.Deploy do
       case Atom.to_string(os_family) =~ "win" do
         true ->
           args = ["/c", command | args]
-          command = "cmd.exe"
+          command = @win_cmd
           {command, args}
 
         _ ->
