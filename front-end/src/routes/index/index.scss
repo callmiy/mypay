@@ -21,6 +21,7 @@ $border-color: unquote("#034c035c");
 .shift-details {
   overflow-x: hidden;
   overflow-y: auto;
+  margin-bottom: 50px;
 }
 
 .earnings-summary {
@@ -141,27 +142,23 @@ $border-color: unquote("#034c035c");
   padding: 8px 5px 0;
 }
 
-.new-container {
+.new-shift-trigger {
+  position: absolute;
+  bottom: 25px;
+  right: 25px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
   display: flex;
-  flex-direction: row-reverse;
-  padding: 0 20px 15px;
+  justify-content: center;
+  align-items: center;
+  background: $app-color;
+  color: white;
+  cursor: pointer;
+  z-index: 101;
 
-  & > a {
-    display: block;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: $app-color;
-    color: white;
-    cursor: pointer;
-    z-index: 101;
-
-    & > span {
-      font-weight: 900;
-      font-size: 1.5em;
-    }
+  & > span {
+    font-weight: 900;
+    font-size: 1.5em;
   }
 }

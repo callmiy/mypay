@@ -86,11 +86,11 @@
     </div>
 
     <!-- NEW -->
-    <div class="new-container">
-      <a href="<%= shift_path(@conn, :new) %>">
-        <span class="">&plus;</span>
-      </a>
-    </div>
+
+    <a id="new-shift-trigger" class="new-shift-trigger" data-off-line-link="true" href="<%= shift_path(@conn, :new) %>">
+      <span class="">&plus;</span>
+    </a>
+
     <!-- /NEW -->
 
   </div>
