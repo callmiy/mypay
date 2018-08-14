@@ -12,6 +12,8 @@ declare global {
 
 const socket = new Socket("/socket", {});
 socket.connect();
+socket.onOpen(() => (window.appInterface.serverOnlineStatus = true));
+socket.onError(() => (window.appInterface.serverOnlineStatus = false));
 
 export const getSocket = () => {
   return socket;
@@ -29,8 +31,7 @@ export const channelJoin = (topic: string, channel: Channel) => {
       console.log("failed join", reason);
     })
     .receive("timeout", () => {
-      // tslint:disable-next-line:no-console
-      console.log("Networking issue. Still waiting...");
+      window.appInterface.serverOnlineStatus = false;
     });
 };
 
