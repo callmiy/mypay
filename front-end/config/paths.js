@@ -48,11 +48,6 @@ module.exports = {
       "new-meta-form.scss"
     ),
 
-    newMetaFormComponentJs: entryJs(
-      "components/new-meta-form",
-      "new-meta-form.ts"
-    ),
-
     commonsStyles: entryCss("commons", [
       resolveApp("semantic-theme/semantic.less"),
       resolveApp("src/app.scss")
