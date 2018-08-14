@@ -10,19 +10,6 @@ defmodule BurdaWeb.LayoutView do
   @index_css_js_path "commons.js"
   @index_css_path "commons.css"
 
-  @css_map %{
-    tag_name: "link",
-    attributes: %{
-      text: "text/css",
-      media: "screen,projection"
-    }
-  }
-
-  @js_map %{
-    tag_name: "script",
-    attributes: %{}
-  }
-
   EEx.function_from_string(
     :def,
     :css_tag_eex,
@@ -58,15 +45,6 @@ defmodule BurdaWeb.LayoutView do
     [:assigns]
   )
 
-  EEx.function_from_string(
-    :def,
-    :preloaded_js,
-    ~s/<link rel="preload" href="<%=@href%>" as="script" onload="const script = document.createElement('script'); script.src = this.href; document.body.appendChild(script);">/,
-    [:assigns]
-  )
-
-  @default_css_js_opts [render: :string, type: :raw]
-
   # EXPORTS FOR TEST
   @spec index_css_path() :: <<_::88>>
   def index_css_path, do: @index_css_path
@@ -87,135 +65,6 @@ defmodule BurdaWeb.LayoutView do
         ""
     end
   end
-
-  # -------------------------------------------PAGE JS---------------------
-
-  def page_js(path, opts \\ @default_css_js_opts)
-
-  def page_js(nil, _opts), do: ""
-
-  def page_js(:index, opts),
-    do:
-      Mix.env()
-      |> get_mix_env()
-      |> script_tag(@index_js_path, opts)
-
-  def page_js(path, opts),
-    do:
-      Mix.env()
-      |> get_mix_env()
-      |> script_tag(path, opts)
-
-  def script_tag(:prod, src, opts) when is_binary(src),
-    do:
-      :prod
-      |> js_css_src(:js, src)
-      |> script_tag(opts)
-
-  def script_tag(:dev, src, opts) when is_binary(src),
-    do:
-      :dev
-      |> js_css_src(:js, src)
-      |> script_tag(opts)
-
-  def script_tag({:js, src}, opts) when is_list(opts) do
-    html =
-      case Keyword.fetch!(opts, :render) do
-        :string ->
-          js_tag_eex(src: src)
-
-        :map ->
-          Map.update!(@js_map, :attributes, &Map.put(&1, :src, src))
-      end
-
-    case Keyword.fetch(opts, :type) do
-      {:ok, type} ->
-        script_tag(html, type)
-
-      :error ->
-        script_tag(html, nil)
-    end
-  end
-
-  def script_tag(html, :raw) when is_binary(html), do: raw(html)
-  def script_tag(html, _), do: html
-
-  # -------------------------------------------PAGE CSS---------------------
-
-  @spec page_css(:index | nil | binary(), any()) :: any()
-  def page_css(path, opts \\ [render: :string, type: :raw])
-
-  def page_css(nil, _opts), do: ""
-
-  def page_css(:index, opts),
-    do:
-      Mix.env()
-      |> get_mix_env()
-      |> link_tag(:index, opts)
-
-  def page_css(path, opts),
-    do:
-      Mix.env()
-      |> get_mix_env()
-      |> link_tag(path, opts)
-
-  def link_tag(:prod, :index, opts), do: link_tag(:prod, @index_css_path, opts)
-
-  def link_tag(:prod, href, opts) when is_binary(href),
-    do:
-      :prod
-      |> js_css_src(:css, href)
-      |> link_tag(opts)
-
-  def link_tag(:dev, :index, opts),
-    do: link_tag(:dev, @index_css_js_path, opts)
-
-  def link_tag(:dev, src, opts) when is_binary(src),
-    do:
-      :dev
-      |> js_css_src(:css, src)
-      |> link_tag(opts)
-
-  @spec link_tag(any(), any()) :: any()
-  def link_tag({:css, href}, opts) when is_binary(href) do
-    case Keyword.fetch!(opts, :render) do
-      :string ->
-        css_tag_eex(href: href)
-
-      :map ->
-        Map.update!(@css_map, :attributes, &Map.put(&1, :href, href))
-    end
-    |> link_tag(opts)
-  end
-
-  def link_tag({:css_js, src}, opts) when is_binary(src),
-    do: link_tag({:js, src}, opts)
-
-  def link_tag({:js, src}, opts) when is_binary(src) do
-    case Keyword.fetch!(opts, :render) do
-      :string ->
-        js_tag_eex(src: src)
-
-      :map ->
-        Map.update!(@js_map, :attributes, &Map.put(&1, :src, src))
-    end
-    |> link_tag(opts)
-  end
-
-  def link_tag(html, opts) when is_list(opts) do
-    type =
-      case Keyword.fetch(opts, :type) do
-        {:ok, type} -> type
-        :error -> nil
-      end
-
-    link_tag(html, type)
-  end
-
-  def link_tag(html, :raw) when is_binary(html), do: raw(html)
-  def link_tag(html, _), do: html
-
-  # ------------------------------UTILITIES--------------------------------
 
   @spec js_css_src(
           resource_type :: :css | :js,
