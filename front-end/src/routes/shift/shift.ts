@@ -9,18 +9,17 @@ import { sendChannelMsg as sendMetaChannelMsg } from "../../utils/meta-utils";
 import { Topic as MetaTopic } from "../../utils/meta-utils";
 import { CreateMeta } from "../../graphql/gen.types";
 import { CreateMeta_meta } from "../../graphql/gen.types";
-import { makeFormThings } from "../../utils/form-things";
 import { setFieldError } from "../../utils/form-things";
 import { clearFieldErrors } from "../../utils/form-things";
 import { formHasErrors } from "../../utils/form-things";
 import { getFieldAndErrorEls } from "../../utils/form-things";
-import { FormThings } from "../../utils/form-things";
 import { sendChannelMsg as sendShiftChannelMsg } from "../../utils/shift-utils";
 import { Topic as ShiftTopic } from "../../utils/shift-utils";
 import { toRunableDocument } from "../../graphql/helpers";
 import CREATE_SHIFT_GQL from "../../graphql/create-shift.mutation";
 import { htmlfyGraphQlErrors } from "../../graphql/helpers";
 import { setMainErrorClass } from "../../utils/form-things";
+import { FormThingsError } from "../../utils/form-things";
 
 export interface JsonResponseNewMetaForm {
   html: string;
@@ -155,15 +154,15 @@ const mainErrorContainer = document.getElementById(
   "new-shift-form__error-main"
 );
 
+// we store key of form control name and value of Yup validation errors
+let formErrors = {} as FormThingsError;
+
 /**
  *
  * We validate each form control when user inputs data
+ * Note that errors is some sort of global and we are mutating it.
  */
-const validateEl = (
-  target: HTMLInputElement,
-  formThings: FormThings,
-  schema: Schema<{}>
-) => {
+const validateEl = (target: HTMLInputElement, schema: Schema<{}>) => {
   const { fieldEl, errorEl } = getFieldAndErrorEls(target);
   const name = target.name;
 
@@ -171,37 +170,27 @@ const validateEl = (
     .validate(target.value)
     .then(() => {
       clearFieldErrors({ fieldEl, errorEl });
+      delete formErrors[name];
 
-      formThings.errors = {
-        ...formThings.errors,
-        [name]: undefined
-      };
-
-      if (!formHasErrors(formThings.errors)) {
+      if (!formHasErrors(formErrors)) {
         submitEl.disabled = false;
       }
     })
     .catch(error => {
       setFieldError({ fieldEl, errorEl }, error.message);
       submitEl.disabled = true;
-
-      formThings.errors = {
-        ...formThings.errors,
-        [name]: error
-      };
+      formErrors[name] = error;
     });
 };
 
-const inputListener = (formThings: FormThings, schema: Schema<{}>) => (
-  evt: InputEvent
-) => {
+const inputListener = (schema: Schema<{}>) => (evt: InputEvent) => {
   const target = evt.target as HTMLInputElement;
 
   if (!(target && submitEl)) {
     return;
   }
 
-  validateEl(target, formThings, schema);
+  validateEl(target, schema);
 };
 
 /**
@@ -250,8 +239,6 @@ if (
   endTimeHrEl &&
   endTimeMinEl
 ) {
-  const formThings = makeFormThings();
-
   // tslint:disable-next-line:no-any
   const schema = Yup.object<{ [k: string]: any }>().shape({
     [metaSelectEl.name]: Yup.number()
@@ -328,7 +315,7 @@ if (
   };
 
   Object.values(formElements).forEach(element =>
-    element.addEventListener("input", inputListener(formThings, schema))
+    element.addEventListener("input", inputListener(schema))
   );
 
   startTimeHrEl.addEventListener("keypress", keyboardListener("hr"));
@@ -399,10 +386,7 @@ if (
             err.message
           );
 
-          formThings.errors = {
-            ...formThings.errors,
-            [err.path]: err
-          };
+          formErrors[err.path] = err;
         });
       });
   });
@@ -419,12 +403,14 @@ if (
         el.value = defaultValEl.value;
       }
 
-      setMainErrorClass(mainErrorContainer, "hide");
       clearFieldErrors(getFieldAndErrorEls(el));
-      submitEl.disabled = false;
-      submitEl.classList.remove("loading");
-      formThings.errors = {};
-      mainErrorContainer.innerHTML = "";
     });
+
+    setMainErrorClass(mainErrorContainer, "hide");
+
+    submitEl.disabled = false;
+    submitEl.classList.remove("loading");
+    formErrors = {};
+    mainErrorContainer.innerHTML = "";
   });
 }

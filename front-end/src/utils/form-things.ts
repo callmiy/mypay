@@ -42,7 +42,7 @@ export const setMainErrorClass = (
   mainErrorContainer.classList[status === "show" ? "remove" : "add"]("hidden");
 };
 
-interface FormThingsError {
+export interface FormThingsError {
   [key: string]: ValidationError | undefined;
 }
 
