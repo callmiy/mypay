@@ -22,15 +22,8 @@ import CREATE_SHIFT_GQL from "../../graphql/create-shift.mutation";
 import { htmlfyGraphQlErrors } from "../../graphql/helpers";
 import { setMainErrorClass } from "../../utils/form-things";
 
-interface JsonResponseTag {
-  tag_name: string;
-  attributes: { [key: string]: string };
-}
-
 export interface JsonResponseNewMetaForm {
   html: string;
-  css: JsonResponseTag;
-  js: JsonResponseTag;
 }
 
 const getNewMetaForm = async () => {
