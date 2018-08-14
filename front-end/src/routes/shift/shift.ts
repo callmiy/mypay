@@ -25,7 +25,9 @@ import { setMainErrorClass } from "../../utils/form-things";
 export interface JsonResponseNewMetaForm {
   html: string;
 }
-
+/**
+ * Get the HTML string that will be used to create new meta and store.
+ */
 const getNewMetaForm = async () => {
   sendMetaChannelMsg({
     topic: MetaTopic.NEW_FORM,
@@ -37,6 +39,11 @@ const getNewMetaForm = async () => {
 };
 getNewMetaForm();
 
+/**
+ *
+ * When a new meta is created on the server and returned to us, we turn the
+ * meta into a select option and immediately select it.
+ */
 const makeMetaSelectOption = (meta: CreateMeta_meta) => {
   const opt = document.createElement("option") as HTMLOptionElement;
   opt.value = meta.id;
@@ -49,18 +56,18 @@ const makeMetaSelectOption = (meta: CreateMeta_meta) => {
   return opt;
 };
 
-const fetchNewMetaBtn = document.getElementById("get-new-meta-form-button");
+const fetchNewMetaEl = document.getElementById("get-new-meta-form-button");
 
 const metaSelectEl = document.getElementById(
   "select-meta"
 ) as HTMLSelectElement;
 
-if (fetchNewMetaBtn && metaSelectEl) {
+if (fetchNewMetaEl && metaSelectEl) {
   const metaSelectDefaultEl = document.getElementById(
     `${metaSelectEl.name}-default`
   ) as HTMLInputElement;
 
-  fetchNewMetaBtn.addEventListener(
+  fetchNewMetaEl.addEventListener(
     "click",
     async () => {
       if (!window.appInterface.newMetaFormData) {
@@ -75,21 +82,33 @@ if (fetchNewMetaBtn && metaSelectEl) {
         content: window.appInterface.newMetaFormData.html,
 
         onShow: () => {
+          // processNewMetaForm takes a function that will be invoked with the
+          // new meta after it has been created on the server and returned
           const newMetaFormCleanUp = processNewMetaForm((data: CreateMeta) => {
             const meta = data.meta as CreateMeta_meta;
 
             const opt = makeMetaSelectOption(meta);
             metaSelectEl.selectedIndex = -1;
             metaSelectEl.appendChild(opt);
+
+            // triggering input event let's us clear errors from the
+            //  metaSelectEl UI and run validation on user form inputs. See
+            // below where we added the input event listener to metaSelectEl
+
             metaSelectEl.dispatchEvent(new Event("input"));
 
             dismissModal();
 
+            // We keep the newly created meta as the default so that if user
+            // wishes to reset the form, she always gets the latest meta as the
+            // default
             if (metaSelectDefaultEl) {
               metaSelectDefaultEl.value = meta.id;
             }
           });
 
+          // the modal module will execute this to clean up the new meta form
+          // e.g. remove event listeners
           return newMetaFormCleanUp;
         }
       });
@@ -109,6 +128,7 @@ const resetEl = document.getElementById(
 const dayOfMonthEl = document.getElementById(
   "day-of-month"
 ) as HTMLSelectElement;
+
 const monthOfYearEl = document.getElementById(
   "month-of-year"
 ) as HTMLSelectElement;
@@ -135,6 +155,10 @@ const mainErrorContainer = document.getElementById(
   "new-shift-form__error-main"
 );
 
+/**
+ *
+ * We validate each form control when user inputs data
+ */
 const validateEl = (
   target: HTMLInputElement,
   formThings: FormThings,
@@ -180,6 +204,18 @@ const inputListener = (formThings: FormThings, schema: Schema<{}>) => (
   validateEl(target, formThings, schema);
 };
 
+/**
+ *
+ * ISO dates and times require padding to length 2 e.g. 09:50:00, 2014-03-09
+ */
+const pad = (val: number) => {
+  return (val + "").padStart(2, "0");
+};
+
+/**
+ *
+ * "hr" or "min" means the form control will take an hour or minute time.
+ */
 const keyboardListener = (type: "hr" | "min") => (evt: KeyboardEvent) => {
   const max = type === "hr" ? 23 : 59;
   const key = evt.key;
@@ -309,10 +345,6 @@ if (
 
     Object.values(formElements).forEach(el => (data[el.name] = el.value));
 
-    const pad = (val: number) => {
-      return (val + "").padStart(2, "0");
-    };
-
     schema
       .validate(data, { abortEarly: false })
       .then(shift => {
@@ -326,13 +358,15 @@ if (
 
         shift.endTime = `${pad(shift.endTimeHr)}:${pad(shift.endTimeMin)}:00`;
 
-        delete shift.dayOfMonth;
-        delete shift.monthOfYear;
-        delete shift.year;
-        delete shift.startTimeHr;
-        delete shift.startTimeMin;
-        delete shift.endTimeHr;
-        delete shift.endTimeMin;
+        [
+          "dayOfMonth",
+          "monthOfYear",
+          "year",
+          "startTimeHr",
+          "startTimeMin",
+          "endTimeHr",
+          "endTimeMin"
+        ].forEach(k => delete shift[k]);
 
         sendShiftChannelMsg({
           topic: ShiftTopic.CREATE,
@@ -349,12 +383,11 @@ if (
             mainErrorContainer.innerHTML = htmlfyGraphQlErrors("shift", reason);
 
             setMainErrorClass(mainErrorContainer, "show");
-
-            resetEl.disabled = false;
           }
         });
 
         submitEl.classList.remove("loading");
+        resetEl.disabled = false;
       })
       .catch(errors => {
         submitEl.classList.remove("loading");
@@ -375,6 +408,8 @@ if (
   });
 
   resetEl.addEventListener("click", () => {
+    // Get the hidden elements which represent the default values and reset
+    // form elements that user will interact with to those hidden default values
     Object.values(formElements).forEach(el => {
       const defaultValEl = document.getElementById(
         `${el.name}-default`
