@@ -21,6 +21,19 @@ defmodule BurdaWeb.IndexController do
     )
   end
 
+  def index_skeleton(conn, _params) do
+    html =
+      Phoenix.View.render_to_string(
+        BurdaWeb.IndexView,
+        "index.html",
+        []
+      )
+
+    conn
+    |> put_resp_header("content-type", "text/html")
+    |> resp(200, html)
+  end
+
   def assign_defaults(conn, _) do
     today = Date.utc_today()
 
