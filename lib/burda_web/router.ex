@@ -18,7 +18,7 @@ defmodule BurdaWeb.Router do
 
     get("/", IndexController, :index)
 
-    resources("/shifts", ShiftController)
+    get("/shifts/new", ShiftController, :new)
   end
 
   if Mix.env() == :dev do
