@@ -3,6 +3,7 @@ import { Channel } from "phoenix";
 
 import AppInterface from "./app_interface";
 import registerServiceWorker from "./register-service-worker";
+import registerServiceWorker1 from "./register-service-worker1";
 
 declare global {
   interface Window {
@@ -101,3 +102,4 @@ const processSidebar = () => {
 docReady(processSidebar);
 
 registerServiceWorker();
+registerServiceWorker1();

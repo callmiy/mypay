@@ -27,7 +27,7 @@ defmodule BurdaWeb.LayoutView do
   EEx.function_from_string(
     :def,
     :webpack_server_url,
-    "http://localhost:8080/<%= @path1 %>/<%= @path2 %>",
+    "http://localhost:4019/<%= @path1 %>/<%= @path2 %>",
     [:assigns]
   )
 

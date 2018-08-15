@@ -6,8 +6,8 @@ const fs = require("fs");
 const appDirectory = fs.realpathSync(process.cwd());
 const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
 const entryJs = (name, entry) => ({
-  name: "js/" + name,
-  path: resolveApp(entry ? "src/" + name + "/" + entry : "src/app.ts")
+  name: `js/${name}`,
+  path: resolveApp(entry ? `src/${name}/${entry}` : "src/app.ts")
 });
 const entryCss = (name, path) => {
   if (path.map === undefined) {
@@ -52,6 +52,11 @@ module.exports = {
       resolveApp("semantic-theme/semantic.less"),
       resolveApp("src/app.scss")
     ])
+
+    // serviceWorkerJs: {
+    //   name: "service-worker1",
+    //   path: resolveApp("src/service-worker.ts")
+    // }
   },
 
   appPackageJson: resolveApp("package.json"),

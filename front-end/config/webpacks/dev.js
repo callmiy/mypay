@@ -7,12 +7,14 @@ const WatchMissingNodeModulesPlugin = require("react-dev-utils/WatchMissingNodeM
 const baseConfig = require("./base");
 const paths = require("./../paths");
 
+const WEBPACK_DEV_SERVER_URL = process.env.WEBPACK_DEV_SERVER_URL;
+
 module.exports = merge(baseConfig, {
   mode: "development",
 
   entry: {
     [paths.appEntries.commons.name]: [
-      "webpack-dev-server/client?http://localhost:8080", // bundle the client for webpack-dev-server and connect to the provided endpoint
+      `webpack-dev-server/client?${WEBPACK_DEV_SERVER_URL}`, // bundle the client for webpack-dev-server and connect to the provided endpoint
       "webpack/hot/only-dev-server", // bundle the client for hot reloading, only- means to only hot reload for successful updates
       paths.appEntries.commons.path // the entry point of our app
     ],
@@ -34,7 +36,7 @@ module.exports = merge(baseConfig, {
   output: {
     path: paths.appPublic,
     filename: "[name].js",
-    publicPath: "http://localhost:8080/",
+    publicPath: `${WEBPACK_DEV_SERVER_URL}/`,
     // Point sourcemap entries to original disk location (format as URL on Windows)
     devtoolModuleFilenameTemplate: info =>
       path.resolve(info.absoluteResourcePath).replace(/\\/g, "/")

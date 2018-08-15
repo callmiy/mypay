@@ -9,9 +9,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "cross-env NODE_ENV=production webpack --config=config/webpacks/prod.js",
-    "start": "cross-env NODE_ENV=development yarn run watch",
-    "watch": "webpack-dev-server --config=config/webpacks/dev.js --colors --watch-stdin"
+    "deploy": "cross-env NODE_ENV=production webpack --port=4019 --config=config/webpacks/prod.js",
+    "start": "cross-env NODE_ENV=development WEBPACK_DEV_SERVER_URL=http://localhost:4019 yarn run watch",
+    "watch": "webpack-dev-server --port=4019 --config=config/webpacks/dev.js --colors --watch-stdin"
   },
   "keywords": [
     "shift",
