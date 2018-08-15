@@ -122,6 +122,19 @@ defmodule BurdaWeb.ShiftController do
     )
   end
 
+  def new_skeleton(conn, _params) do
+    html =
+      Phoenix.View.render_to_string(
+        BurdaWeb.ShiftView,
+        "new-shift.html",
+        []
+      )
+
+    conn
+    |> put_resp_header("content-type", "text/html")
+    |> resp(200, html)
+  end
+
   @spec assign_defaults(Plug.Conn.t(), any()) :: Plug.Conn.t()
   def assign_defaults(conn, _),
     do:

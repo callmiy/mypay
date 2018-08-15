@@ -17,7 +17,7 @@ defmodule BurdaWeb.Router do
     pipe_through(:browser)
 
     get("/", IndexController, :index)
-
+    get("/shifts/new/skeleton", ShiftController, :new_skeleton)
     get("/shifts/new", ShiftController, :new)
   end
 

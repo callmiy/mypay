@@ -5,6 +5,6 @@ defmodule BurdaWeb.ShiftView do
     Send the top menu to be rendered by the layout view
   """
 
-  def top_menu(%{go_back_url: url}),
-    do: render("menu.html", go_back_url: url)
+  def top_menu(assigns),
+    do: render("menu.html", go_back_url: assigns[:go_back_url] || "")
 end

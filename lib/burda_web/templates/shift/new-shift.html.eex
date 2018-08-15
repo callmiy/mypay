@@ -13,14 +13,15 @@
         <select name="metaId" id="select-meta" class="ui search dropdown fluid">
           <option value="">-----</option>
 
-          <%= for {meta, selected} <- @metas do %>
-            <option value="<%= meta.id %>" <%=selected%> >
-              <%= Float.round(meta.break_time_secs/60, 1) %> min | &euro;
-                <%= meta.pay_per_hr %> night:
-                  <%= meta.night_suppl_pay_pct %> &percnt; sunday:
-                    <%= meta.sunday_suppl_pay_pct %> &percnt;
-            </option>
-            <%end%>
+          <%= for meta_ <- (assigns[:metas] || []) do %>
+            <%{meta, selected} = meta_%>
+              <option value="<%= meta.id %>" <%=selected%> >
+                <%= Float.round(meta.break_time_secs/60, 1) %> min | &euro;
+                  <%= meta.pay_per_hr %> night:
+                    <%= meta.night_suppl_pay_pct %> &percnt; sunday:
+                      <%= meta.sunday_suppl_pay_pct %> &percnt;
+              </option>
+              <%end%>
         </select>
 
         <div id="get-new-meta-form-button" class="ui label">
@@ -29,7 +30,7 @@
       </div>
 
       <div class="new-shift-form__error form__error hidden"></div>
-      <input type="hidden" id="metaId-default" value="<%=@meta_id_default%>">
+      <input type="hidden" id="metaId-default" value="<%= assigns[:meta_id_default] || ~s() %>">
     </div>
     <!-- /SELECT OR CREATE META -->
 
@@ -44,11 +45,12 @@
           <select name="dayOfMonth" id="day-of-month" class="ui search dropdown">
             <option value="">Day</option>
 
-            <%= for {day, val} <- @days_of_month do %>
-              <option value="<%= day %>" <%=val.selected%>>
-                <%= val.display %>
-              </option>
-              <%end%>
+            <%= for days_of_month <- (assigns[:days_of_month] || []) do %>
+              <%{day, val} = days_of_month%>
+                <option value="<%= day %>" <%=val.selected%>>
+                  <%= val.display %>
+                </option>
+                <%end%>
           </select>
 
           <div class="new-shift-form__error form__error hidden"></div>
@@ -58,11 +60,12 @@
           <select name="monthOfYear" id="month-of-year" class="ui search dropdown">
             <option value="">Month</option>
 
-            <%= for {month, val} <- @months_of_year do %>
-              <option value="<%= month %>" <%=val.selected%>>
-                <%= val.display %>
-              </option>
-              <%end%>
+            <%= for month_of_year <- assigns[:months_of_year] || [] do %>
+              <%{month, val} = month_of_year%>
+                <option value="<%= month %>" <%=val.selected%>>
+                  <%= val.display %>
+                </option>
+                <%end%>
           </select>
 
           <div class="new-shift-form__error form__error hidden"></div>
@@ -72,11 +75,12 @@
           <select name="year" id="year" class="ui search dropdown">
             <option value="">Year</option>
 
-            <%= for {year, selectionx} <- @years do %>
-              <option value="<%= year %>" <%=selectionx%>>
-                <%= year %>
-              </option>
-              <%end%>
+            <%= for year_ <- (assigns[:years] || []) do %>
+              <%{year, selection} = year_%>
+                <option value="<%= year %>" <%=selection%>>
+                  <%= year %>
+                </option>
+                <%end%>
           </select>
 
           <div class="new-shift-form__error form__error hidden"></div>
@@ -84,11 +88,11 @@
       </div>
 
 
-      <input type="hidden" id="dayOfMonth-default" value="<%=@day_default%>">
+      <input type="hidden" id="dayOfMonth-default" value="<%= assigns[:day_default] || ~s() %>">
 
-      <input type="hidden" id="monthOfYear-default" value="<%=@month_default%>">
+      <input type="hidden" id="monthOfYear-default" value="<%= assigns[:month_default] || ~s() %>">
 
-      <input type="hidden" id="year-default" value="<%=@year_default%>">
+      <input type="hidden" id="year-default" value="<%= assigns[:year_default] || ~s() %>">
     </div>
     <!-- /SHIFT DATE -->
 
@@ -100,23 +104,24 @@
 
       <div class="new-shift-form__fields two">
         <div>
-          <input name="startTimeHr" id="start-time-hour" name="start-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
-            maxlength="2" value="<%= @shift_start_time.hour %>">
+          <%shift_start_time = assigns[:shift_start_time] || %{} %>
+            <input name="startTimeHr" id="start-time-hour" name="start-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
+              maxlength="2" value="<%= shift_start_time[:hour] || ~s() %>">
 
-          <div class="new-shift-form__error form__error hidden"></div>
+            <div class="new-shift-form__error form__error hidden"></div>
         </div>
 
         <div>
           <input name="startTimeMin" id="start-time-min" name="start-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
-            maxlength="2" value="<%= @shift_start_time.minute %>">
+            maxlength="2" value="<%= shift_start_time[:minute] || ~s() %>">
 
           <div class="new-shift-form__error form__error hidden"></div>
         </div>
       </div>
 
-      <input type="hidden" id="startTimeHr-default" value="<%=@shift_start_time.hour%>">
+      <input type="hidden" id="startTimeHr-default" value="<%=shift_start_time[:hour] || ~s() %>">
 
-      <input type="hidden" id="startTimeMin-default" value="<%=@shift_start_time.minute%>">
+      <input type="hidden" id="startTimeMin-default" value="<%=shift_start_time[:minute] || ~s()%>">
     </div>
     <!-- /START TIME -->
 
@@ -128,24 +133,25 @@
 
       <div class="new-shift-form__fields two">
         <div>
-          <input name="endTimeHr" id="end-time-hour" name="end-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
-            maxlength="2" value="<%= @shift_end_time.hour %>">
+          <%shift_end_time = assigns[:shift_end_time] || %{} %>
+            <input name="endTimeHr" id="end-time-hour" name="end-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
+              maxlength="2" value="<%= shift_end_time[:hour] || ~s()  %>">
 
-          <div class="new-shift-form__error form__error hidden"></div>
+            <div class="new-shift-form__error form__error hidden"></div>
         </div>
 
         <div>
           <input name="endTimeMin" id="end-time-min" name="end-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
-            maxlength="2" value="<%= @shift_end_time.minute %>">
+            maxlength="2" value="<%= shift_end_time[:minute] || ~s()  %>">
 
           <div class="new-shift-form__error form__error hidden"></div>
         </div>
       </div>
 
 
-      <input type="hidden" id="endTimeHr-default" value="<%=@shift_end_time.hour%>">
+      <input type="hidden" id="endTimeHr-default" value="<%=shift_end_time[:hour] || ~s() %>">
 
-      <input type="hidden" id="endTimeMin-default" value="<%=@shift_end_time.minute%>">
+      <input type="hidden" id="endTimeMin-default" value="<%=shift_end_time[:minute] || ~s() %>">
     </div>
     <!-- /END TIME -->
 
