@@ -26,11 +26,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="wages shift work clocks clock wage">
 
+
   <title>
     <%= assigns[:page_title] || "Shift times" %>
   </title>
 
-  <%= @resources[:css] || "" %>
+  <%= page_css(:index) %>
+    <%= page_css(assigns[:page_css] ) %>
+
+      <%= for {:css, href} <- (assigns[:preload_resources] || []) do %>
+        <link rel="preload" href="<%=href%>" as="style" onload="this.rel='stylesheet'">
+        <%end%>
+
+          <%= for {:css_js, href} <- (assigns[:preload_resources] || []) do %>
+            <link rel="preload" href="<%=href%>" as="script" onload="const script = document.createElement('script'); script.src = this.href; document.head.appendChild(script);">
+            <%end%>
+
+              <%= for {:js, href} <- (assigns[:preload_resources] || []) do %>
+                <link rel="preload" href="<%=href%>" as="script" onload="const script = document.createElement('script'); script.src = this.href; document.body.appendChild(script);">
+                <%end%>
 
 </head>
 
@@ -88,7 +102,8 @@
   <script>
     window.appInterface = {};
   </script>
-  <%= @resources[:js] || "" %>
+  <%= page_js(:index) %>
+    <%= page_js(assigns[:page_js] ) %>
 </body>
 
 </html>

@@ -2,7 +2,10 @@ defmodule BurdaWeb.ShiftController do
   use Phoenix.Controller
 
   alias Burda.Meta.Api, as: MetaApi
+  alias BurdaWeb.MetaWeb
 
+  @page_css "routes/shift.css"
+  @page_js "routes/shift.js"
   @shift_duration_hrs_seconds 8 * 60 * 60
 
   @months_of_year [
@@ -40,6 +43,8 @@ defmodule BurdaWeb.ShiftController do
                     }}
                  )
                  |> Enum.into(%{})
+
+  plug(:assign_defaults)
 
   @spec new(Plug.Conn.t(), any()) :: Plug.Conn.t()
   def new(conn, _params) do
@@ -116,4 +121,14 @@ defmodule BurdaWeb.ShiftController do
       go_back_url: go_back_url
     )
   end
+
+  @spec assign_defaults(Plug.Conn.t(), any()) :: Plug.Conn.t()
+  def assign_defaults(conn, _),
+    do:
+      merge_assigns(
+        conn,
+        page_css: @page_css,
+        page_js: @page_js,
+        preload_resources: MetaWeb.preload_resources()
+      )
 end
