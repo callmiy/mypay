@@ -18,6 +18,7 @@
       "_build": true,
       "build": true,
       ".elixir_ls": true
-    }
+    },
+    "tslint.jsEnable": true
   }
 }

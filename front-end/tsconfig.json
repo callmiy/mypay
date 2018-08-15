@@ -8,7 +8,7 @@
     "sourceMap": true,
     "allowJs": true,
     "moduleResolution": "node",
-    "rootDir": "src",
+    // "rootDir": "src",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
@@ -21,12 +21,16 @@
     "importHelpers": true,
     "noUnusedParameters": true
   },
+  "include": [
+    "src/**/*",
+    "./../priv/static/service-worker1.js",
+    "webpacks/**/*"
+  ],
   "exclude": [
     "node_modules",
     "config",
     "scripts",
     "acceptance-tests",
-    "webpacks",
     "jest",
     "src/setupTests.ts",
     "semantic-theme",

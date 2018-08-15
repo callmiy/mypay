@@ -1,3 +1,4 @@
+// tslint:disable:object-literal-sort-keys
 const webpack = require("webpack");
 const path = require("path");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
