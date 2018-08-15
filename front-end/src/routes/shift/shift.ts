@@ -20,6 +20,7 @@ import CREATE_SHIFT_GQL from "../../graphql/create-shift.mutation";
 import { htmlfyGraphQlErrors } from "../../graphql/helpers";
 import { setMainErrorClass } from "../../utils/form-things";
 import { FormThingsError } from "../../utils/form-things";
+import { docReady } from "../../app";
 
 export interface JsonResponseNewMetaForm {
   html: string;
@@ -38,312 +39,307 @@ const getNewMetaForm = async () => {
 };
 getNewMetaForm();
 
-/**
- *
- * When a new meta is created on the server and returned to us, we turn the
- * meta into a select option and immediately select it.
- */
-const makeMetaSelectOption = (meta: CreateMeta_meta) => {
-  const opt = document.createElement("option") as HTMLOptionElement;
-  opt.value = meta.id;
-  opt.selected = true;
-  const breaks = (+meta.breakTimeSecs / 60).toFixed(1);
-  opt.textContent = ` ${breaks} min | € ${meta.payPerHr} night: ${
-    meta.nightSupplPayPct
-  } % sunday: ${meta.sundaySupplPayPct} % `;
+class Shift {
+  submitEl = document.getElementById(
+    "new-shift-form-submit"
+  ) as HTMLButtonElement;
 
-  return opt;
-};
+  resetEl = document.getElementById(
+    "new-shift-form-reset"
+  ) as HTMLButtonElement;
 
-const fetchNewMetaEl = document.getElementById("get-new-meta-form-button");
-
-const metaSelectEl = document.getElementById(
-  "select-meta"
-) as HTMLSelectElement;
-
-if (fetchNewMetaEl && metaSelectEl) {
-  const metaSelectDefaultEl = document.getElementById(
-    `${metaSelectEl.name}-default`
+  startTimeHrEl = document.getElementById(
+    "start-time-hour"
   ) as HTMLInputElement;
 
-  fetchNewMetaEl.addEventListener(
-    "click",
-    async () => {
-      if (!window.appInterface.newMetaFormData) {
-        await getNewMetaForm();
-      }
+  startTimeMinEl = document.getElementById(
+    "start-time-min"
+  ) as HTMLInputElement;
 
-      if (!window.appInterface.newMetaFormData) {
-        return;
-      }
+  metaSelectDefaultEl: HTMLInputElement;
 
-      showModal({
-        content: window.appInterface.newMetaFormData.html,
+  mainErrorContainer = document.getElementById(
+    "new-shift-form__error-main"
+  ) as HTMLDivElement;
 
-        onShow: () => {
-          // processNewMetaForm takes a function that will be invoked with the
-          // new meta after it has been created on the server and returned
-          const newMetaFormCleanUp = processNewMetaForm((data: CreateMeta) => {
-            const meta = data.meta as CreateMeta_meta;
+  dayOfMonthEl = document.getElementById("day-of-month") as HTMLSelectElement;
+  monthOfYearEl = document.getElementById("month-of-year") as HTMLSelectElement;
+  yearEl = document.getElementById("year") as HTMLSelectElement;
+  endTimeHrEl = document.getElementById("end-time-hour") as HTMLInputElement;
+  endTimeMinEl = document.getElementById("end-time-min") as HTMLInputElement;
+  fetchNewMetaEl = document.getElementById("get-new-meta-form-button");
+  metaSelectEl = document.getElementById("select-meta") as HTMLSelectElement;
 
-            const opt = makeMetaSelectOption(meta);
-            metaSelectEl.selectedIndex = -1;
-            metaSelectEl.appendChild(opt);
-
-            // triggering input event let's us clear errors from the
-            //  metaSelectEl UI and run validation on user form inputs. See
-            // below where we added the input event listener to metaSelectEl
-
-            metaSelectEl.dispatchEvent(new Event("input"));
-
-            dismissModal();
-
-            // We keep the newly created meta as the default so that if user
-            // wishes to reset the form, she always gets the latest meta as the
-            // default
-            if (metaSelectDefaultEl) {
-              metaSelectDefaultEl.value = meta.id;
-            }
-          });
-
-          // the modal module will execute this to clean up the new meta form
-          // e.g. remove event listeners
-          return newMetaFormCleanUp;
-        }
-      });
-    },
-    false
-  );
-}
-
-const submitEl = document.getElementById(
-  "new-shift-form-submit"
-) as HTMLButtonElement;
-
-const resetEl = document.getElementById(
-  "new-shift-form-reset"
-) as HTMLButtonElement;
-
-const dayOfMonthEl = document.getElementById(
-  "day-of-month"
-) as HTMLSelectElement;
-
-const monthOfYearEl = document.getElementById(
-  "month-of-year"
-) as HTMLSelectElement;
-
-const yearEl = document.getElementById("year") as HTMLSelectElement;
-
-const startTimeHrEl = document.getElementById(
-  "start-time-hour"
-) as HTMLInputElement;
-
-const startTimeMinEl = document.getElementById(
-  "start-time-min"
-) as HTMLInputElement;
-
-const endTimeHrEl = document.getElementById(
-  "end-time-hour"
-) as HTMLInputElement;
-
-const endTimeMinEl = document.getElementById(
-  "end-time-min"
-) as HTMLInputElement;
-
-const mainErrorContainer = document.getElementById(
-  "new-shift-form__error-main"
-);
-
-// we store key of form control name and value of Yup validation errors
-let formErrors = {} as FormThingsError;
-
-/**
- *
- * We validate each form control when user inputs data
- * Note that errors is some sort of global and we are mutating it.
- */
-const validateEl = (target: HTMLInputElement, schema: Schema<{}>) => {
-  const { fieldEl, errorEl } = getFieldAndErrorEls(target);
-  const name = target.name;
-
-  Yup.reach(schema, name)
-    .validate(target.value)
-    .then(() => {
-      clearFieldErrors({ fieldEl, errorEl });
-      delete formErrors[name];
-
-      if (!formHasErrors(formErrors)) {
-        submitEl.disabled = false;
-      }
-    })
-    .catch(error => {
-      setFieldError({ fieldEl, errorEl }, error.message);
-      submitEl.disabled = true;
-      formErrors[name] = error;
-    });
-};
-
-const inputListener = (schema: Schema<{}>) => (evt: InputEvent) => {
-  const target = evt.target as HTMLInputElement;
-
-  if (!(target && submitEl)) {
-    return;
-  }
-
-  validateEl(target, schema);
-};
-
-/**
- *
- * ISO dates and times require padding to length 2 e.g. 09:50:00, 2014-03-09
- */
-const pad = (val: number) => {
-  return (val + "").padStart(2, "0");
-};
-
-/**
- *
- * "hr" or "min" means the form control will take an hour or minute time.
- */
-const keyboardListener = (type: "hr" | "min") => (evt: KeyboardEvent) => {
-  const max = type === "hr" ? 23 : 59;
-  const key = evt.key;
-
-  if (key === ".") {
-    return evt.preventDefault();
-  }
-
-  const target = evt.target as HTMLInputElement;
-
-  if (!target) {
-    return;
-  }
-
-  const value = Number(target.value + key);
-
-  if (value > max) {
-    evt.preventDefault();
-  }
-};
-
-if (
-  mainErrorContainer &&
-  submitEl &&
-  resetEl &&
-  metaSelectEl &&
-  dayOfMonthEl &&
-  monthOfYearEl &&
-  yearEl &&
-  startTimeHrEl &&
-  startTimeMinEl &&
-  endTimeHrEl &&
-  endTimeMinEl
-) {
+  formElements: { [k: string]: HTMLSelectElement | HTMLInputElement };
+  formErrors = {} as FormThingsError;
   // tslint:disable-next-line:no-any
-  const schema = Yup.object<{ [k: string]: any }>().shape({
-    [metaSelectEl.name]: Yup.number()
-      .typeError("Invalid meta ID")
-      .required()
-      .positive()
-      .integer()
-      .min(1),
+  schema: Schema<any>;
 
-    [dayOfMonthEl.name]: Yup.number()
-      .typeError("Invalid day")
-      .required()
-      .positive()
-      .integer()
-      .min(1)
-      .max(31),
-    [monthOfYearEl.name]: Yup.number()
-      .typeError("Invalid month")
-      .required()
-      .positive()
-      .integer()
-      .min(1)
-      .max(12),
-    [yearEl.name]: Yup.number()
-      .typeError("Invalid year")
-      .required()
-      .positive()
-      .integer()
-      .min(2000)
-      .max(9999),
+  constructor() {
+    if (
+      this.fetchNewMetaEl &&
+      this.mainErrorContainer &&
+      this.submitEl &&
+      this.resetEl &&
+      this.metaSelectEl &&
+      this.dayOfMonthEl &&
+      this.monthOfYearEl &&
+      this.yearEl &&
+      this.startTimeHrEl &&
+      this.startTimeMinEl &&
+      this.endTimeHrEl &&
+      this.endTimeMinEl
+    ) {
+      this.metaSelectDefaultEl = document.getElementById(
+        `${this.metaSelectEl.name}-default`
+      ) as HTMLInputElement;
 
-    [startTimeHrEl.name]: Yup.number()
-      .typeError("Invalid hour")
-      .required()
-      .positive()
-      .integer()
-      .min(0)
-      .max(23),
+      this.fetchNewMetaEl.addEventListener(
+        "click",
+        this.fetchNewMetaElClickHandler
+      );
 
-    [startTimeMinEl.name]: Yup.number()
-      .typeError("Invalid minute")
-      .required()
-      .positive()
-      .integer()
-      .min(0)
-      .max(59),
+      this.submitEl.addEventListener("click", this.submitElHandler);
+      this.resetEl.addEventListener("click", this.resetElHandler);
 
-    [endTimeHrEl.name]: Yup.number()
-      .typeError("Invalid hour")
-      .required()
-      .positive()
-      .integer()
-      .min(0)
-      .max(23),
+      this.schema = Yup.object().shape({
+        [this.metaSelectEl.name]: Yup.number()
+          .typeError("Invalid meta ID")
+          .required()
+          .positive()
+          .integer()
+          .min(1),
 
-    [endTimeMinEl.name]: Yup.number()
-      .typeError("Invalid minute")
-      .required()
-      .positive()
-      .integer()
-      .min(0)
-      .max(59)
-  });
+        [this.dayOfMonthEl.name]: Yup.number()
+          .typeError("Invalid day")
+          .required()
+          .positive()
+          .integer()
+          .min(1)
+          .max(31),
+        [this.monthOfYearEl.name]: Yup.number()
+          .typeError("Invalid month")
+          .required()
+          .positive()
+          .integer()
+          .min(1)
+          .max(12),
+        [this.yearEl.name]: Yup.number()
+          .typeError("Invalid year")
+          .required()
+          .positive()
+          .integer()
+          .min(2000)
+          .max(9999),
 
-  const formElements = {
-    [metaSelectEl.name]: metaSelectEl,
-    [dayOfMonthEl.name]: dayOfMonthEl,
-    [monthOfYearEl.name]: monthOfYearEl,
-    [yearEl.name]: yearEl,
-    [startTimeHrEl.name]: startTimeHrEl,
-    [startTimeMinEl.name]: startTimeMinEl,
-    [endTimeHrEl.name]: endTimeHrEl,
-    [endTimeMinEl.name]: endTimeMinEl
+        [this.startTimeHrEl.name]: Yup.number()
+          .typeError("Invalid hour")
+          .required()
+          .positive()
+          .integer()
+          .min(0)
+          .max(23),
+
+        [this.startTimeMinEl.name]: Yup.number()
+          .typeError("Invalid minute")
+          .required()
+          .positive()
+          .integer()
+          .min(0)
+          .max(59),
+
+        [this.endTimeHrEl.name]: Yup.number()
+          .typeError("Invalid hour")
+          .required()
+          .positive()
+          .integer()
+          .min(0)
+          .max(23),
+
+        [this.endTimeMinEl.name]: Yup.number()
+          .typeError("Invalid minute")
+          .required()
+          .positive()
+          .integer()
+          .min(0)
+          .max(59)
+      });
+
+      this.formElements = {
+        [this.metaSelectEl.name]: this.metaSelectEl,
+        [this.dayOfMonthEl.name]: this.dayOfMonthEl,
+        [this.monthOfYearEl.name]: this.monthOfYearEl,
+        [this.yearEl.name]: this.yearEl,
+        [this.startTimeHrEl.name]: this.startTimeHrEl,
+        [this.startTimeMinEl.name]: this.startTimeMinEl,
+        [this.endTimeHrEl.name]: this.endTimeHrEl,
+        [this.endTimeMinEl.name]: this.endTimeMinEl
+      };
+
+      Object.values(this.formElements).forEach(element =>
+        element.addEventListener("input", this.validateEl)
+      );
+
+      this.startTimeHrEl.addEventListener(
+        "keypress",
+        this.keyboardListener("hr")
+      );
+      this.startTimeMinEl.addEventListener(
+        "keypress",
+        this.keyboardListener("min")
+      );
+      this.endTimeHrEl.addEventListener(
+        "keypress",
+        this.keyboardListener("hr")
+      );
+      this.endTimeMinEl.addEventListener(
+        "keypress",
+        this.keyboardListener("min")
+      );
+    }
+  }
+
+  /**
+   *
+   * When a new meta is created on the server and returned to us, we turn the
+   * meta into a select option and immediately select it.
+   */
+  makeMetaSelectOption = (meta: CreateMeta_meta) => {
+    const opt = document.createElement("option") as HTMLOptionElement;
+    opt.value = meta.id;
+    opt.selected = true;
+    const breaks = (+meta.breakTimeSecs / 60).toFixed(1);
+    opt.textContent = ` ${breaks} min | € ${meta.payPerHr} night: ${
+      meta.nightSupplPayPct
+    } % sunday: ${meta.sundaySupplPayPct} % `;
+
+    return opt;
   };
 
-  Object.values(formElements).forEach(element =>
-    element.addEventListener("input", inputListener(schema))
-  );
+  fetchNewMetaElClickHandler = async () => {
+    if (!window.appInterface.newMetaFormData) {
+      await getNewMetaForm();
+    }
 
-  startTimeHrEl.addEventListener("keypress", keyboardListener("hr"));
-  startTimeMinEl.addEventListener("keypress", keyboardListener("min"));
-  endTimeHrEl.addEventListener("keypress", keyboardListener("hr"));
-  endTimeMinEl.addEventListener("keypress", keyboardListener("min"));
+    if (!window.appInterface.newMetaFormData) {
+      return;
+    }
 
-  submitEl.addEventListener("click", () => {
-    submitEl.classList.add("loading");
-    submitEl.disabled = true;
-    resetEl.disabled = true;
+    showModal({
+      content: window.appInterface.newMetaFormData.html,
+
+      onShow: () => {
+        // processNewMetaForm takes a function that will be invoked with the
+        // new meta after it has been created on the server and returned
+        const newMetaFormCleanUp = processNewMetaForm((data: CreateMeta) => {
+          const meta = data.meta as CreateMeta_meta;
+
+          const opt = this.makeMetaSelectOption(meta);
+          this.metaSelectEl.selectedIndex = -1;
+          this.metaSelectEl.appendChild(opt);
+
+          // triggering input event let's us clear errors from the
+          //  metaSelectEl UI and run validation on user form inputs. See
+          // below where we added the input event listener to metaSelectEl
+
+          this.metaSelectEl.dispatchEvent(new Event("input"));
+
+          dismissModal();
+
+          // We keep the newly created meta as the default so that if user
+          // wishes to reset the form, she always gets the latest meta as the
+          // default
+          if (this.metaSelectDefaultEl) {
+            this.metaSelectDefaultEl.value = meta.id;
+          }
+        });
+
+        // the modal module will execute this to clean up the new meta form
+        // e.g. remove event listeners
+        return newMetaFormCleanUp;
+      }
+    });
+  };
+
+  /**
+   *
+   * We validate each form control when user inputs data
+   */
+  validateEl = (evt: InputEvent) => {
+    const target = evt.target as HTMLInputElement;
+
+    if (!target) {
+      return;
+    }
+
+    const { fieldEl, errorEl } = getFieldAndErrorEls(target);
+    const name = target.name;
+
+    Yup.reach(this.schema, name)
+      .validate(target.value)
+      .then(() => {
+        clearFieldErrors({ fieldEl, errorEl });
+        delete this.formErrors[name];
+
+        if (!formHasErrors(this.formErrors)) {
+          this.submitEl.disabled = false;
+        }
+      })
+      .catch((error: ValidationError) => {
+        setFieldError({ fieldEl, errorEl }, error.message);
+        this.submitEl.disabled = true;
+        this.formErrors[name] = error;
+      });
+  };
+
+  /**
+   *
+   * "hr" or "min" means the form control will take an hour or minute time.
+   */
+  keyboardListener = (type: "hr" | "min") => (evt: KeyboardEvent) => {
+    const max = type === "hr" ? 23 : 59;
+    const key = evt.key;
+
+    if (key === ".") {
+      return evt.preventDefault();
+    }
+
+    const target = evt.target as HTMLInputElement;
+
+    if (!target) {
+      return;
+    }
+
+    const value = Number(target.value + key);
+
+    if (value > max) {
+      evt.preventDefault();
+    }
+  };
+
+  submitElHandler = () => {
+    this.submitEl.classList.add("loading");
+    this.submitEl.disabled = true;
+    this.resetEl.disabled = true;
 
     const data = {} as { [k: string]: string };
 
-    Object.values(formElements).forEach(el => (data[el.name] = el.value));
+    Object.values(this.formElements).forEach(el => (data[el.name] = el.value));
 
-    schema
+    this.schema
       .validate(data, { abortEarly: false })
       .then(shift => {
-        shift.date = `${pad(shift.year)}-${pad(shift.monthOfYear)}-${pad(
-          shift.dayOfMonth
-        )}`;
+        shift.date = `${this.pad(shift.year)}-${this.pad(
+          shift.monthOfYear
+        )}-${this.pad(shift.dayOfMonth)}`;
 
-        shift.startTime = `${pad(shift.startTimeHr)}:${pad(
+        shift.startTime = `${this.pad(shift.startTimeHr)}:${this.pad(
           shift.startTimeMin
         )}:00`;
 
-        shift.endTime = `${pad(shift.endTimeHr)}:${pad(shift.endTimeMin)}:00`;
+        shift.endTime = `${this.pad(shift.endTimeHr)}:${this.pad(
+          shift.endTimeMin
+        )}:00`;
 
         [
           "dayOfMonth",
@@ -365,36 +361,39 @@ if (
           },
 
           error: reason => {
-            submitEl.classList.remove("loading");
+            this.submitEl.classList.remove("loading");
 
-            mainErrorContainer.innerHTML = htmlfyGraphQlErrors("shift", reason);
+            this.mainErrorContainer.innerHTML = htmlfyGraphQlErrors(
+              "shift",
+              reason
+            );
 
-            setMainErrorClass(mainErrorContainer, "show");
+            setMainErrorClass(this.mainErrorContainer, "show");
           }
         });
 
-        submitEl.classList.remove("loading");
-        resetEl.disabled = false;
+        this.submitEl.classList.remove("loading");
+        this.resetEl.disabled = false;
       })
       .catch(errors => {
-        submitEl.classList.remove("loading");
-        resetEl.disabled = false;
+        this.submitEl.classList.remove("loading");
+        this.resetEl.disabled = false;
 
         errors.inner.map((err: ValidationError) => {
           setFieldError(
-            getFieldAndErrorEls(formElements[err.path]),
+            getFieldAndErrorEls(this.formElements[err.path]),
             err.message
           );
 
-          formErrors[err.path] = err;
+          this.formErrors[err.path] = err;
         });
       });
-  });
+  };
 
-  resetEl.addEventListener("click", () => {
+  resetElHandler = () => {
     // Get the hidden elements which represent the default values and reset
     // form elements that user will interact with to those hidden default values
-    Object.values(formElements).forEach(el => {
+    Object.values(this.formElements).forEach(el => {
       const defaultValEl = document.getElementById(
         `${el.name}-default`
       ) as HTMLInputElement;
@@ -406,11 +405,19 @@ if (
       clearFieldErrors(getFieldAndErrorEls(el));
     });
 
-    setMainErrorClass(mainErrorContainer, "hide");
+    setMainErrorClass(this.mainErrorContainer, "hide");
 
-    submitEl.disabled = false;
-    submitEl.classList.remove("loading");
-    formErrors = {};
-    mainErrorContainer.innerHTML = "";
-  });
+    this.submitEl.disabled = false;
+    this.submitEl.classList.remove("loading");
+    this.formErrors = {};
+    this.mainErrorContainer.innerHTML = "";
+  };
+
+  /**
+   *
+   * ISO dates and times require padding to length 2 e.g. 09:50:00, 2014-03-09
+   */
+  pad = (val: number) => (val + "").padStart(2, "0");
 }
+
+docReady(() => new Shift());
