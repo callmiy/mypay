@@ -4,7 +4,7 @@
     <div class="shift-summaries">
       <div class="earnings-summary">
         <span class="label">
-          Total Eranings &nbsp; &nbsp;
+          Total Earnings &nbsp; &nbsp;
           <%= assigns[:current_month] || "" %>
         </span>
 
