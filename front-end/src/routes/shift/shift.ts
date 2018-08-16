@@ -4,7 +4,7 @@ import { ValidationError } from "yup";
 
 import { showModal } from "../../components/modals";
 import { dismissModal } from "../../components/modals";
-import { processNewMetaForm } from "../../components/new-meta-form/new-meta-form";
+import { NewMeta } from "../../components/new-meta-form/new-meta-form";
 import { sendChannelMsg as sendMetaChannelMsg } from "../../utils/meta-utils";
 import { Topic as MetaTopic } from "../../utils/meta-utils";
 import { CreateMeta } from "../../graphql/gen.types";
@@ -229,36 +229,33 @@ class Shift {
       content: window.appInterface.newMetaFormData.html,
 
       onShow: () => {
-        // processNewMetaForm takes a function that will be invoked with the
-        // new meta after it has been created on the server and returned
-        const newMetaFormCleanUp = processNewMetaForm((data: CreateMeta) => {
-          const meta = data.meta as CreateMeta_meta;
-
-          const opt = this.makeMetaSelectOption(meta);
-          this.metaSelectEl.selectedIndex = -1;
-          this.metaSelectEl.appendChild(opt);
-
-          // triggering input event let's us clear errors from the
-          //  metaSelectEl UI and run validation on user form inputs. See
-          // below where we added the input event listener to metaSelectEl
-
-          this.metaSelectEl.dispatchEvent(new Event("input"));
-
-          dismissModal();
-
-          // We keep the newly created meta as the default so that if user
-          // wishes to reset the form, she always gets the latest meta as the
-          // default
-          if (this.metaSelectDefaultEl) {
-            this.metaSelectDefaultEl.value = meta.id;
-          }
-        });
-
-        // the modal module will execute this to clean up the new meta form
-        // e.g. remove event listeners
-        return newMetaFormCleanUp;
+        const newMeta = new NewMeta(this.onMetaCreated);
+        return newMeta.cleanUp;
       }
     });
+  };
+
+  onMetaCreated = (data: CreateMeta) => {
+    const meta = data.meta as CreateMeta_meta;
+
+    const opt = this.makeMetaSelectOption(meta);
+    this.metaSelectEl.selectedIndex = -1;
+    this.metaSelectEl.appendChild(opt);
+
+    // triggering input event let's us clear errors from the
+    //  metaSelectEl UI and run validation on user form inputs. See
+    // below where we added the input event listener to metaSelectEl
+
+    this.metaSelectEl.dispatchEvent(new Event("input"));
+
+    dismissModal();
+
+    // We keep the newly created meta as the default so that if user
+    // wishes to reset the form, she always gets the latest meta as the
+    // default
+    if (this.metaSelectDefaultEl) {
+      this.metaSelectDefaultEl.value = meta.id;
+    }
   };
 
   /**

@@ -28,101 +28,107 @@ interface NewMetaFormData {
 
 const genericError = "Invalid Number";
 
-const schema = Yup.object().shape({
-  [FormElementsName.BREAK_TIME_SECS]: Yup.number()
-    .typeError(genericError)
-    .required()
-    .positive()
-    .integer(),
+export class NewMeta {
+  onMetaCreated: (meta: CreateMeta) => void;
 
-  [FormElementsName.PAY_PER_HOUR]: Yup.number()
-    .typeError(genericError)
-    .required()
-    .positive(),
+  schema = Yup.object().shape({
+    [FormElementsName.BREAK_TIME_SECS]: Yup.number()
+      .typeError(genericError)
+      .required()
+      .positive()
+      .integer(),
 
-  [FormElementsName.NIGHT_SUPPL_PAY]: Yup.number()
-    .typeError(genericError)
-    .required()
-    .positive(),
+    [FormElementsName.PAY_PER_HOUR]: Yup.number()
+      .typeError(genericError)
+      .required()
+      .positive(),
 
-  [FormElementsName.SUNDAY_SUPPL_PAY]: Yup.number()
-    .typeError(genericError)
-    .required()
-    .positive()
-});
+    [FormElementsName.NIGHT_SUPPL_PAY]: Yup.number()
+      .typeError(genericError)
+      .required()
+      .positive(),
 
-export const processNewMetaForm = (
-  onMetaCreated: (meta: CreateMeta) => void
-) => {
-  const formSubmit = document.getElementById(
+    [FormElementsName.SUNDAY_SUPPL_PAY]: Yup.number()
+      .typeError(genericError)
+      .required()
+      .positive()
+  });
+
+  formSubmit = document.getElementById(
     "new-meta-form-submit"
   ) as HTMLButtonElement;
 
-  const formReset = document.getElementById(
+  formReset = document.getElementById(
     "new-meta-form-reset"
   ) as HTMLButtonElement;
 
-  const mainErrorContainer = document.getElementById(
+  mainErrorContainer = document.getElementById(
     "new-meta-form__error-main"
-  );
+  ) as HTMLDivElement;
 
-  if (!(formSubmit && formReset && mainErrorContainer)) {
-    return;
-  }
+  formThings = makeFormThings();
 
-  const formThings = makeFormThings();
-
-  const inputs: NodeListOf<HTMLInputElement> = document.querySelectorAll(
+  inputs: NodeListOf<HTMLInputElement> = document.querySelectorAll(
     ".new-meta-form__control"
   );
 
-  Array.prototype.forEach.call(inputs, (el: HTMLInputElement) => {
+  constructor(onMetaCreated: (meta: CreateMeta) => void) {
+    this.onMetaCreated = onMetaCreated;
+    Array.prototype.forEach.call(this.inputs, this.setUpInput);
+
+    if (this.formSubmit && this.formReset && this.mainErrorContainer) {
+      this.formSubmit.addEventListener("click", this.formSubmitElHandler);
+      this.formReset.addEventListener("click", this.formResetElHandler);
+    }
+  }
+
+  setUpInput = (el: HTMLInputElement) => {
     const name = el.name;
     const { fieldEl, errorEl } = getFieldAndErrorEls(el);
 
     const focusListener = () => {
       clearFieldErrors({ fieldEl, errorEl });
-      setMainErrorClass(mainErrorContainer, "hide");
+      setMainErrorClass(this.mainErrorContainer, "hide");
 
-      if (!formHasErrors(formThings.errors)) {
-        formSubmit.disabled = false;
+      if (!formHasErrors(this.formThings.errors)) {
+        this.formSubmit.disabled = false;
       }
     };
 
     const inputListener = (evt: InputEvent) => {
       const target = evt.target as HTMLInputElement;
-      setMainErrorClass(mainErrorContainer, "hide");
+      setMainErrorClass(this.mainErrorContainer, "hide");
 
       if (!target) {
         return;
       }
 
-      Yup.reach(schema, target.name)
+      Yup.reach(this.schema, target.name)
         .validate(target.value)
         .then(() => {
           clearFieldErrors({ fieldEl, errorEl });
 
-          formThings.errors = {
-            ...formThings.errors,
+          this.formThings.errors = {
+            ...this.formThings.errors,
             [name]: undefined
           };
 
-          if (!formHasErrors(formThings.errors)) {
-            formSubmit.disabled = false;
+          if (!formHasErrors(this.formThings.errors)) {
+            this.formSubmit.disabled = false;
           }
         })
         .catch(error => {
           setFieldError({ fieldEl, errorEl }, error.message);
-          formSubmit.disabled = true;
+          this.formSubmit.disabled = true;
 
-          formThings.errors = {
-            ...formThings.errors,
+          this.formThings.errors = {
+            ...this.formThings.errors,
             [name]: error
           };
         });
     };
 
-    formThings.doms[name] = {
+    this.formThings.doms[name] = {
       el,
       fieldEl,
       errorEl,
@@ -133,16 +139,16 @@ export const processNewMetaForm = (
     el.addEventListener("focus", focusListener);
     el.addEventListener("input", inputListener);
     el.addEventListener("blur", inputListener);
-  });
+  };
 
-  const formSubmitListener = async () => {
+  formSubmitElHandler = () => {
     const data = {} as NewMetaFormData;
 
-    Object.keys(formThings.doms).forEach(
-      k => (data[k] = formThings.doms[k].el.value)
+    Object.keys(this.formThings.doms).forEach(
+      k => (data[k] = this.formThings.doms[k].el.value)
     );
 
-    schema
+    this.schema
       .validate(data, { abortEarly: false })
       .then((meta: { [k: string]: number }) => {
         sendChannelMsg({
@@ -154,42 +160,42 @@ export const processNewMetaForm = (
             meta: { ...meta, break_time_secs: meta.break_time_secs * 60 }
           }),
 
-          ok: onMetaCreated,
+          ok: this.onMetaCreated,
 
           error: reason => {
-            formSubmit.classList.remove("loading");
-            mainErrorContainer.textContent = stringifyGraphQlErrors(
+            this.formSubmit.classList.remove("loading");
+            this.mainErrorContainer.textContent = stringifyGraphQlErrors(
               "meta",
               reason
             );
 
-            setMainErrorClass(mainErrorContainer, "show");
+            setMainErrorClass(this.mainErrorContainer, "show");
 
-            formReset.disabled = false;
+            this.formReset.disabled = false;
           }
         });
 
-        formSubmit.classList.add("loading");
-        formSubmit.disabled = true;
-        formReset.disabled = true;
-        formThings.errors = {};
+        this.formSubmit.classList.add("loading");
+        this.formSubmit.disabled = true;
+        this.formReset.disabled = true;
+        this.formThings.errors = {};
       })
       .catch(errors => {
-        formSubmit.disabled = true;
+        this.formSubmit.disabled = true;
         errors.inner.map((err: ValidationError) => {
-          setFieldError(formThings.doms[err.path], err.message);
+          setFieldError(this.formThings.doms[err.path], err.message);
 
-          formThings.errors = {
-            ...formThings.errors,
+          this.formThings.errors = {
+            ...this.formThings.errors,
             [err.path]: err
           };
         });
       });
   };
 
-  const formResetListener = async () => {
-    Object.keys(formThings.doms).forEach(k => {
-      const { el, fieldEl, errorEl } = formThings.doms[k];
+  formResetElHandler = () => {
+    Object.keys(this.formThings.doms).forEach(k => {
+      const { el, fieldEl, errorEl } = this.formThings.doms[k];
       el.value = "";
 
       if (!(fieldEl && errorEl)) {
@@ -197,26 +203,25 @@ export const processNewMetaForm = (
       }
 
       clearFieldErrors({ fieldEl, errorEl });
-      setMainErrorClass(mainErrorContainer, "hide");
+      setMainErrorClass(this.mainErrorContainer, "hide");
     });
 
-    formSubmit.classList.remove("loading");
-    formSubmit.disabled = false;
-    formThings.errors = {};
+    this.formSubmit.classList.remove("loading");
+    this.formSubmit.disabled = false;
+    this.formThings.errors = {};
   };
 
-  formSubmit.addEventListener("click", formSubmitListener);
-  formReset.addEventListener("click", formResetListener);
+  cleanUp = () => {
+    this.formSubmit.removeEventListener("click", this.formSubmitElHandler);
+    this.formReset.removeEventListener("click", this.formResetElHandler);
 
-  return () => {
-    formSubmit.removeEventListener("click", formSubmitListener);
-    formReset.removeEventListener("click", formResetListener);
-
-    Object.values(formThings.doms).forEach(v => {
+    Object.values(this.formThings.doms).forEach(v => {
       const { el, focusListener, inputListener } = v;
       el.removeEventListener("focus", focusListener);
       el.removeEventListener("input", inputListener);
       el.removeEventListener("blur", inputListener);
     });
   };
-};
+}
+
+export default NewMeta;
