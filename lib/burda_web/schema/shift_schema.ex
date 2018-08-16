@@ -37,11 +37,36 @@ defmodule BurdaWeb.Schema.Shift do
     field(:end_time, non_null(:time))
   end
 
+  @desc "Sorting directive"
+  enum :sorting_directive do
+    value(:asc, description: "Sort from smallest to largest")
+    value(:desc, description: "Sort from largest to smallest")
+  end
+
+  @desc "input for sorting"
+  input_object :sorting do
+    field(:id, :sorting_directive)
+    field(:date, :sorting_directive)
+  end
+
+  @desc "Where condition for retrieving a shift"
+  input_object :where_condition do
+    field(:year, :integer)
+    field(:month, :integer)
+  end
+
+  @desc "Inputs for getting shift"
+  input_object :get_shift_input do
+    field(:where, :where_condition)
+    field(:order_by, :sorting)
+  end
+
   # QUERIES
   @desc "Queries allowed on Shift object"
   object :shift_query do
     @desc "Get all shifts"
     field :shifts, type: list_of(:shift) do
+      arg(:shift, :get_shift_input)
       resolve(&Resolver.shifts/3)
     end
   end

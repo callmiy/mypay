@@ -11,7 +11,7 @@ defmodule BurdaWeb.Schema.ShiftTest do
   @iso_date "{ISOdate}"
 
   describe "query" do
-    test "Get all shift" do
+    test "Get all shifts no filter" do
       meta = MetaFactory.insert()
       shift = Factory.insert(%{}, meta)
 
@@ -54,6 +54,49 @@ defmodule BurdaWeb.Schema.ShiftTest do
                   ]
                 }
               }} = Absinthe.run(Query.query_all(), Schema)
+    end
+
+    test "Get all shifts filtered by year and month ordered by date desc" do
+      shift1 = Factory.insert(date: ~D[2014-05-15])
+      shift2 = Factory.insert(date: ~D[2014-05-05])
+      shift3 = Factory.insert(date: ~D[2014-05-25])
+      _shift = Factory.insert(date: ~D[2013-05-15])
+
+      shift1_id = Integer.to_string(shift1.id)
+      shift2_id = Integer.to_string(shift2.id)
+      shift3_id = Integer.to_string(shift3.id)
+
+      assert {:ok,
+              %{
+                data: %{
+                  "shifts" => [
+                    %{
+                      "id" => ^shift3_id
+                    },
+                    %{
+                      "id" => ^shift1_id
+                    },
+                    %{
+                      "id" => ^shift2_id
+                    }
+                  ]
+                }
+              }} =
+               Absinthe.run(
+                 Query.query_all(),
+                 Schema,
+                 variables: %{
+                   "shift" => %{
+                     "where" => %{
+                       "month" => 5,
+                       "year" => 2014
+                     },
+                     "orderBy" => %{
+                       "date" => "DESC"
+                     }
+                   }
+                 }
+               )
     end
   end
 

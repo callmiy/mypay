@@ -4,7 +4,11 @@ defmodule BurdaWeb.Resolver.Shift do
   alias Burda.Shift
 
   @spec shifts(any(), any(), any()) :: {:ok, [Shift.t()]}
-  def shifts(_root, _args, _info), do: {:ok, Api.list()}
+  def shifts(_root, %{shift: filter} = _args, _info),
+    do: {:ok, Api.list(filter)}
+
+  def shifts(_root, _args, _info),
+    do: {:ok, Api.list()}
 
   @spec create(
           any(),

@@ -12,6 +12,9 @@ defmodule Burda.Shift.Api do
   alias Burda.Meta
   alias Burda.Meta.Api, as: MetaApi
 
+  @extract_month_from_date "extract(month from date) = ?"
+  @extract_year_from_date "extract(year from date) = ?"
+
   @doc """
   Returns the list of ShiftApi.
 
@@ -21,15 +24,40 @@ defmodule Burda.Shift.Api do
       [%Shift{}, ...]
 
   """
-  def list do
-    Repo.all(Shift)
+  def list(filter \\ nil) do
+    Shift
+    |> filter(filter)
+    |> Repo.all()
   end
+
+  defp filter(query, %{} = filter),
+    do: Enum.reduce(filter, query, &filter(&2, &1))
+
+  defp filter(query, {:order_by, order_bys}),
+    do: Enum.reduce(order_bys, query, &filter(&2, &1))
+
+  defp filter(query, {:where, conditions}),
+    do: Enum.reduce(conditions, query, &filter(&2, &1))
+
+  defp filter(query, {:date, directive}),
+    do: order_by(query, [s], {^directive, s.date})
+
+  defp filter(query, {:id, directive}),
+    do: order_by(query, [s], {^directive, s.id})
+
+  defp filter(query, {:month, month}),
+    do: where(query, [s], fragment(@extract_month_from_date, ^month))
+
+  defp filter(query, {:year, year}),
+    do: where(query, [s], fragment(@extract_year_from_date, ^year))
+
+  defp filter(query, _), do: query
 
   def shifts_for_current_month(year, month),
     do:
       Shift
-      |> where([s], fragment("extract(month from date) = ?", ^month))
-      |> where([s], fragment("extract(year from date) = ?", ^year))
+      |> where([s], fragment(@extract_month_from_date, ^month))
+      |> where([s], fragment(@extract_year_from_date, ^year))
       |> order_by([s], desc: s.date)
       |> Repo.all()
 
