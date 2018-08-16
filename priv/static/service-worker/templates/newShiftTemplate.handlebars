@@ -1,0 +1,144 @@
+<div class="new-shift-main">
+  <form id="new-shift-form" class="ui form new-shift-form">
+    <div id="new-shift-form__error-main" class="ui negative message hidden new-shift-form__error-main">
+    </div>
+
+    <!-- SELECT OR CREATE META -->
+    <div class="ui top attached segment form__field select-meta">
+      <div class="ui top attached label">
+        Select Meta or create new.
+      </div>
+
+      <div class="meta-id ui right labeled input">
+        <select name="metaId" id="select-meta" class="ui search dropdown fluid">
+          <option value="">-----</option>
+
+        </select>
+
+        <div id="get-new-meta-form-button" class="ui label">
+          <i class="plus icon"></i>
+        </div>
+      </div>
+
+      <div class="new-shift-form__error form__error hidden"></div>
+      <input type="hidden" id="metaId-default" value="">
+    </div>
+    <!-- /SELECT OR CREATE META -->
+
+    <!-- SHIFT DATE -->
+    <div class="ui top attached segment date-segment form__field">
+      <div class="ui top attached label">
+        Date
+      </div>
+
+      <div class="new-shift-form__fields three">
+        <div>
+          <select name="dayOfMonth" id="day-of-month" class="ui search dropdown">
+            <option value="">Day</option>
+
+          </select>
+
+          <div class="new-shift-form__error form__error hidden"></div>
+        </div>
+
+        <div>
+          <select name="monthOfYear" id="month-of-year" class="ui search dropdown">
+            <option value="">Month</option>
+
+          </select>
+
+          <div class="new-shift-form__error form__error hidden"></div>
+        </div>
+
+        <div>
+          <select name="year" id="year" class="ui search dropdown">
+            <option value="">Year</option>
+
+          </select>
+
+          <div class="new-shift-form__error form__error hidden"></div>
+        </div>
+      </div>
+
+
+      <input type="hidden" id="dayOfMonth-default" value="">
+
+      <input type="hidden" id="monthOfYear-default" value="">
+
+      <input type="hidden" id="year-default" value="">
+    </div>
+    <!-- /SHIFT DATE -->
+
+    <!-- START TIME -->
+    <div class="ui top attached segment start-time-segment form__field">
+      <div class="ui top attached label">
+        Start time
+      </div>
+
+      <div class="new-shift-form__fields two">
+        <div>
+            <input name="startTimeHr" id="start-time-hour" name="start-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
+              maxlength="2" value="">
+
+            <div class="new-shift-form__error form__error hidden"></div>
+        </div>
+
+        <div>
+          <input name="startTimeMin" id="start-time-min" name="start-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
+            maxlength="2" value="">
+
+          <div class="new-shift-form__error form__error hidden"></div>
+        </div>
+      </div>
+
+      <input type="hidden" id="startTimeHr-default" value="">
+
+      <input type="hidden" id="startTimeMin-default" value="">
+    </div>
+    <!-- /START TIME -->
+
+    <!-- END TIME -->
+    <div class="ui top attached segment end-time-segment form__field">
+      <div class="ui top attached label">
+        End time
+      </div>
+
+      <div class="new-shift-form__fields two">
+        <div>
+            <input name="endTimeHr" id="end-time-hour" name="end-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
+              maxlength="2" value="">
+
+            <div class="new-shift-form__error form__error hidden"></div>
+        </div>
+
+        <div>
+          <input name="endTimeMin" id="end-time-min" name="end-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
+            maxlength="2" value="">
+
+          <div class="new-shift-form__error form__error hidden"></div>
+        </div>
+      </div>
+
+
+      <input type="hidden" id="endTimeHr-default" value="">
+
+      <input type="hidden" id="endTimeMin-default" value="">
+    </div>
+    <!-- /END TIME -->
+
+    <div class="new-shift-form__buttons">
+      <div class="ui buttons">
+        <button id="new-shift-form-submit" type="submit" class="ui positive button">
+          Save
+        </button>
+
+        <div class="or"></div>
+
+        <button id="new-shift-form-reset" type="button" class="ui button">
+          Reset
+        </button>
+      </div>
+    </div>
+  </form>
+
+</div>

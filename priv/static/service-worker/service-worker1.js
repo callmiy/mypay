@@ -1,6 +1,37 @@
+importScripts("handlebars.runtime.min.js", "templates/templates.js");
+
 const CACHE_PREFIX = "THE-SHIFT-WORKER-THINGS";
-const CACHE_VERSION = 2;
+const CACHE_VERSION = 5;
 const CACHE_NAME = `${CACHE_PREFIX}-v${CACHE_VERSION}`;
+const appShellTemplate = Handlebars.templates.appShellTemplate;
+
+const addAllToCache = data =>
+  caches.open(CACHE_NAME).then(cache => cache.addAll(data));
+
+const renderIndexPath = () =>
+  caches
+    .match("/offline-template-assigns")
+    .then(resp => resp.json())
+    .then(data => {
+      const html = appShellTemplate({
+        ...data,
+        pageMainContent: Handlebars.templates.indexTemplate()
+      });
+
+      return new Response(html, {
+        headers: {
+          "Content-Type": "text/html"
+        }
+      });
+    });
+
+const renderRoutes = {
+  "/": renderIndexPath
+};
+
+self.addEventListener("install", event => {
+  event.waitUntil(addAllToCache(["/offline-template-assigns"]));
+});
 
 self.addEventListener("activate", event => {
   event.waitUntil(
@@ -20,22 +51,33 @@ self.addEventListener("activate", event => {
 });
 
 self.addEventListener("fetch", event => {
-  event.respondWith(
-    caches.match(event.request).then(
-      resp =>
-        resp ||
-        fetch(event.request).then(response => {
-          const response1 = response.clone();
-          event.waitUntil(
-            caches
-              .open(CACHE_NAME)
-              .then(cache => cache.put(event.request, response1))
-          );
+  const url = new URL(event.request.url);
 
-          return response;
-        })
-    )
-  );
+  if (url.origin === location.origin) {
+    const renderFn = renderRoutes[url.pathname];
+    if (renderFn) {
+      return event.respondWith(renderFn());
+    }
+  }
+
+  if (true || !/sockjs-node/.test(url.pathname)) {
+    return event.respondWith(
+      caches.match(event.request).then(
+        resp =>
+          resp ||
+          fetch(event.request).then(response => {
+            const response1 = response.clone();
+            event.waitUntil(
+              caches
+                .open(CACHE_NAME)
+                .then(cache => cache.put(event.request, response1))
+            );
+
+            return response;
+          })
+      )
+    );
+  }
 });
 
 self.addEventListener("message", event => {

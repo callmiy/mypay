@@ -16,7 +16,12 @@ defmodule BurdaWeb.Router do
   scope "/", BurdaWeb do
     pipe_through(:browser)
 
-    get("/shell", IndexController, :app_shell)
+    get(
+      "/offline-template-assigns",
+      IndexController,
+      :get_index_offline_template_assigns
+    )
+
     get("/skeleton", IndexController, :index_skeleton)
     get("/", IndexController, :index)
     get("/shifts/new/skeleton", ShiftController, :new_skeleton)

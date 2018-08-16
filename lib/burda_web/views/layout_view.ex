@@ -8,6 +8,7 @@ defmodule BurdaWeb.LayoutView do
   @index_js_path "commons.js"
   @index_css_js_path "commons.js"
   @index_css_path "commons.css"
+  @offline_template_folder "priv/static/service-worker/templates"
 
   @css_map %{
     tag_name: "link",
@@ -260,6 +261,29 @@ defmodule BurdaWeb.LayoutView do
 
   def render_child_main_child_template(view_module, view_template, assigns),
     do: render(view_module, view_template, assigns)
+
+  def generate_offline_templates,
+    do:
+      [
+        {BurdaWeb.IndexController, :index_offline_templates},
+        {BurdaWeb.ShiftController, :new_offline_templates}
+      ]
+      |> Enum.flat_map(fn {module, templates_fun} ->
+        module
+        |> apply(templates_fun, [])
+        |> Enum.map(fn {template_fun, filename} ->
+          template_string = apply(module, template_fun, [])
+
+          filename =
+            Path.expand(
+              "#{filename}.handlebars",
+              @offline_template_folder
+            )
+
+          [filename, template_string]
+        end)
+      end)
+      |> Enum.map(fn [file, string] -> File.write!(file, string) end)
 
   defp get_mix_env(:prod), do: :prod
   defp get_mix_env(:prod_local), do: :prod

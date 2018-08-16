@@ -1,6 +1,6 @@
 <div class="ui inverted menu shift-route-menu ">
   <div class="ui container">
-    <a id="go-back-from-shift-route" class="item" href="<%=@go_back_url%>">
+    <a id="go-back-from-shift-route" class="item" href="<%= assigns[:go_back_url] || ~s({{ goBackUrl }}) %>">
       <i class="arrow left icon"></i>
     </a>
 

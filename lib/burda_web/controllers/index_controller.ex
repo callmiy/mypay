@@ -4,6 +4,8 @@ defmodule BurdaWeb.IndexController do
   # alias BurdaWeb.Schema
   # alias BurdaWeb.Query.Shift, as: Query
   alias Burda.Shift.Api
+  alias BurdaWeb.LayoutView
+  alias BurdaWeb.IndexView
 
   @page_js "routes/index.js"
   @page_css "routes/index.css"
@@ -16,6 +18,15 @@ defmodule BurdaWeb.IndexController do
   @page_top_menu_handlebar "{{{ pageTopMenu }}}"
   @app_html "app.html"
   @index_html "index.html"
+  @menu_html "menu.html"
+  @shift_detail "_shift-detail.html"
+
+  @index_offline_templates [
+    index_offline_template: "indexTemplate",
+    index_offline_menu_template: "indexMenuTemplate",
+    app_shell_offline_template: "appShellTemplate",
+    shift_detail_offline_template: "shiftDetailTemplate"
+  ]
 
   plug(:assign_defaults)
 
@@ -31,22 +42,9 @@ defmodule BurdaWeb.IndexController do
   end
 
   def index_skeleton(conn, _params) do
-    html =
-      Phoenix.View.render_to_string(
-        BurdaWeb.IndexView,
-        @index_html,
-        []
-      )
-
     conn
     |> put_resp_header("content-type", "text/html")
-    |> resp(200, html)
-  end
-
-  def app_shell(conn, _params) do
-    conn
-    |> put_resp_header("content-type", "text/html")
-    |> resp(200, app_shell_string())
+    |> resp(200, index_offline_template())
   end
 
   def assign_defaults(conn, _) do
@@ -61,7 +59,36 @@ defmodule BurdaWeb.IndexController do
     )
   end
 
-  def app_shell_string,
+  def index_offline_template,
+    do: Phoenix.View.render_to_string(IndexView, @index_html, [])
+
+  def index_offline_menu_template,
+    do: Phoenix.View.render_to_string(IndexView, @menu_html, [])
+
+  def shift_detail_offline_template,
+    do: Phoenix.View.render_to_string(IndexView, @shift_detail, [])
+
+  def index_offline_template_assigns,
+    do: %{
+      pageTitle: "Shift Times",
+      pageMainCss: LayoutView.page_css(@page_css, render: :string),
+      pageMainJs: LayoutView.page_css(@page_js, render: :string),
+      cacheStatic:
+        [
+          LayoutView.js_css_src(:css, @page_css),
+          LayoutView.js_css_src(:js, @page_js)
+        ]
+        |> Enum.map(fn {_, path} -> path end)
+    }
+
+  def get_index_offline_template_assigns(conn, _),
+    do:
+      conn
+      |> json(index_offline_template_assigns())
+
+  def index_offline_templates, do: @index_offline_templates
+
+  def app_shell_offline_template,
     do:
       Phoenix.View.render_to_string(
         BurdaWeb.LayoutView,

@@ -3,10 +3,19 @@ defmodule BurdaWeb.ShiftController do
 
   alias Burda.Meta.Api, as: MetaApi
   alias BurdaWeb.MetaWeb
+  alias BurdaWeb.LayoutView
+  alias BurdaWeb.ShiftView
 
+  @new_shift_html "new-shift.html"
+  @menu_html "menu.html"
   @page_css "routes/shift.css"
   @page_js "routes/shift.js"
   @shift_duration_hrs_seconds 8 * 60 * 60
+
+  @new_offline_templates [
+    new_offline_template: "newShiftTemplate",
+    new_offline_menu_template: "newShiftMenuTemplate"
+  ]
 
   @months_of_year [
                     "Jan",
@@ -100,7 +109,7 @@ defmodule BurdaWeb.ShiftController do
 
     render(
       conn,
-      "new-shift.html",
+      @new_shift_html,
       metas: all_metas,
       meta_id_default: latest_meta.id,
       year_default: year,
@@ -123,17 +132,26 @@ defmodule BurdaWeb.ShiftController do
   end
 
   def new_skeleton(conn, _params) do
-    html =
-      Phoenix.View.render_to_string(
-        BurdaWeb.ShiftView,
-        "new-shift.html",
-        []
-      )
-
     conn
     |> put_resp_header("content-type", "text/html")
-    |> resp(200, html)
+    |> resp(200, new_offline_template())
   end
+
+  def new_offline_template,
+    do: Phoenix.View.render_to_string(ShiftView, @new_shift_html, [])
+
+  def new_offline_menu_template,
+    do: Phoenix.View.render_to_string(ShiftView, @menu_html, [])
+
+  def new_offline_template_assigns,
+    do: %{
+      pageTitle: "New Shift",
+      pageMainCss: LayoutView.page_css(@page_css, render: :string),
+      pageMainJs: LayoutView.page_css(@page_js, render: :string),
+      pageOtherCss: MetaWeb.new_form_css()
+    }
+
+  def new_offline_templates, do: @new_offline_templates
 
   @spec assign_defaults(Plug.Conn.t(), any()) :: Plug.Conn.t()
   def assign_defaults(conn, _),
