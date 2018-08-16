@@ -3,6 +3,8 @@ defmodule BurdaWeb.Endpoint do
 
   socket("/socket", BurdaWeb.UserSocket)
 
+  plug(:put_service_worker_allowed_header)
+
   # Serve at "/" the static files from "priv/static" directory.
   #
   # You should set gzip to true if you are running phoenix.digest
@@ -21,8 +23,8 @@ defmodule BurdaWeb.Endpoint do
         js
         favicon
         robots.txt
+        service-worker
         service-worker.js
-        service-worker1.js
       )
   )
 
@@ -62,7 +64,6 @@ defmodule BurdaWeb.Endpoint do
     signing_salt: "AL7ymQAm"
   )
 
-  plug(:assign_all_resources)
   plug(BurdaWeb.Router)
 
   @doc """
@@ -83,11 +84,6 @@ defmodule BurdaWeb.Endpoint do
   @doc ~S"""
     Load all all CSS and JS files for all routes so we can do offline first.
   """
-  def assign_all_resources(conn, _),
-    do:
-      assign(
-        conn,
-        :resources,
-        BurdaWeb.LayoutView.resources(conn.request_path)
-      )
+  def put_service_worker_allowed_header(conn, _),
+    do: put_resp_header(conn, "Service-Worker-Allowed", "/")
 end
