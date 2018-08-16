@@ -34,6 +34,26 @@ defmodule BurdaWeb.IndexController do
     |> resp(200, html)
   end
 
+  def app_shell(conn, _params) do
+    html =
+      Phoenix.View.render_to_string(
+        BurdaWeb.LayoutView,
+        "app.html",
+        view_module_: true,
+        page_title: "{{ pageTitle }}",
+        page_main_css_handlebar: "{{{ pageMainCss }}}",
+        page_other_css_handlebar: "{{{ pageOtherCss }}}",
+        page_main_js_handlebar: "{{{ pageMainJs }}}",
+        page_other_js_handlebar: "{{{ pageOtherJs }}}",
+        page_main_content_handlebar: "{{{ pageMainContent }}}",
+        page_top_menu_handlebar: "{{{ pageTopMenu }}}"
+      )
+
+    conn
+    |> put_resp_header("content-type", "text/html")
+    |> resp(200, html)
+  end
+
   def assign_defaults(conn, _) do
     today = Date.utc_today()
 

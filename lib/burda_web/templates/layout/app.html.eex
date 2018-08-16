@@ -34,17 +34,21 @@
   <%= page_css(:index) %>
     <%= page_css(assigns[:page_css] ) %>
 
-      <%= for {:css, href} <- (assigns[:preload_resources] || []) do %>
-        <link rel="preload" href="<%=href%>" as="style" onload="this.rel='stylesheet'">
-        <%end%>
+      <%# Handlebar templates for app shell %>
+        <%= assigns[:page_main_css_handlebar] || ""  %>
+          <%= assigns[:page_other_css_handlebar] || ""  %>
 
-          <%= for {:css_js, href} <- (assigns[:preload_resources] || []) do %>
-            <link rel="preload" href="<%=href%>" as="script" onload="const script = document.createElement('script'); script.src = this.href; document.head.appendChild(script);">
-            <%end%>
+            <%= for {:css, href} <- (assigns[:preload_resources] || []) do %>
+              <link rel="preload" href="<%=href%>" as="style" onload="this.rel='stylesheet'">
+              <%end%>
 
-              <%= for {:js, href} <- (assigns[:preload_resources] || []) do %>
-                <link rel="preload" href="<%=href%>" as="script" onload="const script = document.createElement('script'); script.src = this.href; document.body.appendChild(script);">
-                <%end%>
+                <%= for {:css_js, href} <- (assigns[:preload_resources] || []) do %>
+                  <link rel="preload" href="<%=href%>" as="script" onload="const script = document.createElement('script'); script.src = this.href; document.head.appendChild(script);">
+                  <%end%>
+
+                    <%= for {:js, href} <- (assigns[:preload_resources] || []) do %>
+                      <link rel="preload" href="<%=href%>" as="script" onload="const script = document.createElement('script'); script.src = this.href; document.body.appendChild(script);">
+                      <%end%>
 
 </head>
 
@@ -73,13 +77,19 @@
 
     <!-- TOP MENU (if exported by child) -->
     <div class="app-main-menu">
-      <%= top_menu(@view_module, %{} = assigns) %>
+      <%= top_menu(@view_module, assigns) %>
+
+        <%# Handlebar template for app shell %>
+          <%= assigns[:page_top_menu_handlebar] || ""  %>
     </div>
     <!-- /TOP MENU -->
 
     <!-- MAIN CHILD TEMPLATE INSERT -->
     <main role="main">
-      <%= render @view_module, @view_template, assigns %>
+      <%= render_child_main_child_template( assigns[:view_module_] || @view_module, @view_template, assigns) %>
+
+        <%# Handlebar template for app shell %>
+          <%= assigns[:page_main_content_handlebar] || ""  %>
     </main>
     <!-- /MAIN CHILD TEMPLATE INSERT -->
   </div>
@@ -104,6 +114,10 @@
   </script>
   <%= page_js(:index) %>
     <%= page_js(assigns[:page_js] ) %>
+
+      <%# Handlebar templates for app shell %>
+        <%= assigns[:page_main_js_handlebar] || ""  %>
+          <%= assigns[:page_other_js_handlebar] || ""  %>
 </body>
 
 </html>

@@ -341,6 +341,17 @@ defmodule BurdaWeb.LayoutView do
   defp stringify_resource({:css_js, href}, :preload) when is_binary(href),
     do: {:css_js, preloaded_css_js(href: href)}
 
+  @doc ~S"""
+    For the App shell used in offline mode, the view_module argument will be
+    :true and we thus render no child template because the rendering will be
+    done client side.
+  """
+  @spec render_child_main_child_template(true | Atom.t(), any(), any()) :: any()
+  def render_child_main_child_template(true, _, _), do: ""
+
+  def render_child_main_child_template(view_module, view_template, assigns),
+    do: render(view_module, view_template, assigns)
+
   defp get_mix_env(:prod), do: :prod
   defp get_mix_env(:prod_local), do: :prod
   defp get_mix_env(:dev), do: :dev
