@@ -4,7 +4,6 @@ defmodule BurdaWeb.LayoutView do
   require EEx
 
   alias BurdaWeb.Endpoint
-  alias BurdaWeb.Router.Helpers
 
   @index_js_path "commons.js"
   @index_css_js_path "commons.js"
@@ -143,7 +142,7 @@ defmodule BurdaWeb.LayoutView do
   # -------------------------------------------PAGE CSS---------------------
 
   @spec page_css(:index | nil | binary(), any()) :: any()
-  def page_css(path, opts \\ [render: :string, type: :raw])
+  def page_css(path, opts \\ @default_css_js_opts)
 
   def page_css(nil, _opts), do: ""
 
@@ -251,96 +250,6 @@ defmodule BurdaWeb.LayoutView do
   def js_css_src(:prod, :js, href) when is_binary(href),
     do: {:js, Endpoint.static_path("/js/#{href}")}
 
-  def resources(path) when is_binary(path) do
-    all_js_css = %{
-      Helpers.index_path(Endpoint, :index) => %{
-        main: [
-          js_css_src(:js, "routes/index.js"),
-          js_css_src(:css, "routes/index.css")
-        ]
-      },
-      Helpers.shift_path(Endpoint, :new) => %{
-        main: [
-          js_css_src(:js, "routes/shift.js"),
-          js_css_src(:css, "routes/shift.css")
-        ],
-        others: [
-          js_css_src(:css, "components/new-meta-form.css")
-        ]
-      }
-    }
-
-    all_resources =
-      case all_js_css[path] do
-        %{} = current ->
-          current
-          |> Enum.flat_map(&stringify_resource/1)
-          |> Enum.concat(
-            all_js_css
-            |> Map.delete(path)
-            |> Map.values()
-            |> Enum.flat_map(&stringify_resource/1)
-          )
-
-        _ ->
-          all_js_css
-          |> Map.values()
-          |> Enum.flat_map(&Map.values/1)
-          |> List.flatten()
-          |> Enum.map(&stringify_resource(&1, :preload))
-      end
-
-    {_, commons_css} =
-      js_css_src(:css, @index_css_path)
-      |> stringify_resource()
-
-    {_, commons_js} =
-      js_css_src(:js, @index_js_path)
-      |> stringify_resource()
-
-    %{
-      css:
-        [commons_css | for({k, v} <- all_resources, not_js?(k), do: v)]
-        |> Enum.join("\n")
-        |> raw(),
-      js:
-        [commons_js | for({:js, v} <- all_resources, do: v)]
-        |> Enum.join("\n")
-        |> raw()
-    }
-  end
-
-  defp stringify_resource(%{} = resource),
-    do:
-      resource
-      |> Map.values()
-      |> List.flatten()
-      |> Enum.map(&stringify_resource(&1, :preload))
-
-  defp stringify_resource({:css, href}) when is_binary(href),
-    do: {:css, css_tag_eex(href: href)}
-
-  defp stringify_resource({:css_js, src}) when is_binary(src),
-    do: {:css_js, js_tag_eex(src: src)}
-
-  defp stringify_resource({:js, src}) when is_binary(src),
-    do: {:js, js_tag_eex(src: src)}
-
-  defp stringify_resource({:main, resources}),
-    do: Enum.map(resources, &stringify_resource/1)
-
-  defp stringify_resource({:others, resources}),
-    do: Enum.map(resources, &stringify_resource(&1, :preload))
-
-  defp stringify_resource({:js, src}, :preload) when is_binary(src),
-    do: {:js, js_tag_eex(src: src)}
-
-  defp stringify_resource({:css, href}, :preload) when is_binary(href),
-    do: {:css, preloaded_css(href: href)}
-
-  defp stringify_resource({:css_js, href}, :preload) when is_binary(href),
-    do: {:css_js, preloaded_css_js(href: href)}
-
   @doc ~S"""
     For the App shell used in offline mode, the view_module argument will be
     :true and we thus render no child template because the rendering will be
@@ -356,6 +265,4 @@ defmodule BurdaWeb.LayoutView do
   defp get_mix_env(:prod_local), do: :prod
   defp get_mix_env(:dev), do: :dev
   defp get_mix_env(_), do: :prod
-
-  defp not_js?(k), do: k != :js
 end
