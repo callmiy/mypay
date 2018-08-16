@@ -72,7 +72,7 @@ defmodule BurdaWeb.IndexController do
     do: %{
       pageTitle: "Shift Times",
       pageMainCss: LayoutView.page_css(@page_css, render: :string),
-      pageMainJs: LayoutView.page_css(@page_js, render: :string),
+      pageMainJs: LayoutView.page_js(@page_js, render: :string),
       cacheStatic:
         [
           LayoutView.js_css_src(:css, @page_css),
