@@ -7,6 +7,15 @@ defmodule BurdaWeb.IndexController do
 
   @page_js "routes/index.js"
   @page_css "routes/index.css"
+  @page_title_handlebar "{{ pageTitle }}"
+  @page_main_css_handlebar "{{{ pageMainCss }}}"
+  @page_other_css_handlebar "{{{ pageOtherCss }}}"
+  @page_main_js_handlebar "{{{ pageMainJs }}}"
+  @page_other_js_handlebar "{{{ pageOtherJs }}}"
+  @page_main_content_handlebar "{{{ pageMainContent }}}"
+  @page_top_menu_handlebar "{{{ pageTopMenu }}}"
+  @app_html "app.html"
+  @index_html "index.html"
 
   plug(:assign_defaults)
 
@@ -16,7 +25,7 @@ defmodule BurdaWeb.IndexController do
 
     render(
       conn,
-      "index.html",
+      @index_html,
       all_shifts: Api.shifts_for_current_month(today.year, today.month)
     )
   end
@@ -25,7 +34,7 @@ defmodule BurdaWeb.IndexController do
     html =
       Phoenix.View.render_to_string(
         BurdaWeb.IndexView,
-        "index.html",
+        @index_html,
         []
       )
 
@@ -35,23 +44,9 @@ defmodule BurdaWeb.IndexController do
   end
 
   def app_shell(conn, _params) do
-    html =
-      Phoenix.View.render_to_string(
-        BurdaWeb.LayoutView,
-        "app.html",
-        view_module_: true,
-        page_title: "{{ pageTitle }}",
-        page_main_css_handlebar: "{{{ pageMainCss }}}",
-        page_other_css_handlebar: "{{{ pageOtherCss }}}",
-        page_main_js_handlebar: "{{{ pageMainJs }}}",
-        page_other_js_handlebar: "{{{ pageOtherJs }}}",
-        page_main_content_handlebar: "{{{ pageMainContent }}}",
-        page_top_menu_handlebar: "{{{ pageTopMenu }}}"
-      )
-
     conn
     |> put_resp_header("content-type", "text/html")
-    |> resp(200, html)
+    |> resp(200, app_shell_string())
   end
 
   def assign_defaults(conn, _) do
@@ -65,4 +60,19 @@ defmodule BurdaWeb.IndexController do
       today: today
     )
   end
+
+  def app_shell_string,
+    do:
+      Phoenix.View.render_to_string(
+        BurdaWeb.LayoutView,
+        @app_html,
+        view_module_: true,
+        page_title: @page_title_handlebar,
+        page_main_css_handlebar: @page_main_css_handlebar,
+        page_other_css_handlebar: @page_other_css_handlebar,
+        page_main_js_handlebar: @page_main_js_handlebar,
+        page_other_js_handlebar: @page_other_js_handlebar,
+        page_main_content_handlebar: @page_main_content_handlebar,
+        page_top_menu_handlebar: @page_top_menu_handlebar
+      )
 end
