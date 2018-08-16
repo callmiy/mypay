@@ -8,3 +8,8 @@ alias Burda.Meta
 alias Burda.Meta.Api, as: MetaApi
 alias Burda.Factory, as: FactoryUtils
 alias Burda.Factory.Meta, as: MetaFactory
+alias BurdaWeb.LayoutView
+alias BurdaWeb.IndexController
+alias BurdaWeb.IndexView
+alias BurdaWeb.ShiftController
+alias BurdaWeb.ShiftView
