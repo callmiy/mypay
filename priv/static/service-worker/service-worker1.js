@@ -15,7 +15,8 @@ const renderIndexPath = () =>
     .then(data => {
       const html = appShellTemplate({
         ...data,
-        pageMainContent: Handlebars.templates.indexTemplate()
+        pageMainContent: Handlebars.templates.indexTemplate(),
+        pageTopMenu: Handlebars.templates.indexMenuTemplate()
       });
 
       return new Response(html, {
