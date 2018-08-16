@@ -11,7 +11,7 @@ defmodule BurdaWeb.Schema.Meta do
     field(:id, non_null(:id))
 
     field :_id, non_null(:id) do
-      resolve(fn meta, _, _ -> {:ok, meta.id} end)
+      resolve(fn _, _, _ -> {:ok, DateTime.to_iso8601(DateTime.utc_now())} end)
     end
 
     field(:break_time_secs, non_null(:integer))

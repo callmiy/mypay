@@ -13,7 +13,7 @@ defmodule BurdaWeb.Schema.Shift do
     field(:id, non_null(:id))
 
     field :_id, non_null(:id) do
-      resolve(fn shift, _, _ -> {:ok, shift.id} end)
+      resolve(fn _, _, _ -> {:ok, DateTime.to_iso8601(DateTime.utc_now())} end)
     end
 
     field(:date, non_null(:date))

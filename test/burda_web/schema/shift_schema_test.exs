@@ -9,6 +9,7 @@ defmodule BurdaWeb.Schema.ShiftTest do
 
   @iso_time "{ISOtime}"
   @iso_date "{ISOdate}"
+  @date_time_pattern ~r/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z/
 
   describe "query" do
     test "Get all shifts no filter" do
@@ -36,7 +37,7 @@ defmodule BurdaWeb.Schema.ShiftTest do
                   "shifts" => [
                     %{
                       "id" => ^id,
-                      "_id" => ^id,
+                      "_id" => id_,
                       "date" => ^date,
                       "startTime" => ^start_time,
                       "endTime" => ^end_time,
@@ -55,6 +56,8 @@ defmodule BurdaWeb.Schema.ShiftTest do
                   ]
                 }
               }} = Absinthe.run(Query.query_all(), Schema)
+
+      assert Regex.match?(@date_time_pattern, id_)
     end
 
     test "Get all shifts filtered by year and month ordered by date desc" do
