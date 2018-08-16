@@ -7,6 +7,7 @@ defmodule BurdaWeb.Query.Shift do
     fragment = """
       fragment #{name} on Shift {
         id
+        _id
         date
         startTime
         endTime

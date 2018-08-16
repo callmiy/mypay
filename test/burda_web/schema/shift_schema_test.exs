@@ -36,6 +36,7 @@ defmodule BurdaWeb.Schema.ShiftTest do
                   "shifts" => [
                     %{
                       "id" => ^id,
+                      "_id" => ^id,
                       "date" => ^date,
                       "startTime" => ^start_time,
                       "endTime" => ^end_time,

@@ -11,6 +11,11 @@ defmodule BurdaWeb.Schema.Shift do
   @desc "A shift"
   object :shift do
     field(:id, non_null(:id))
+
+    field :_id, non_null(:id) do
+      resolve(fn shift, _, _ -> {:ok, shift.id} end)
+    end
+
     field(:date, non_null(:date))
     field(:start_time, non_null(:time))
     field(:end_time, non_null(:time))

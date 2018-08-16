@@ -6,6 +6,7 @@ defmodule BurdaWeb.Query.Meta do
     fragment = """
       fragment #{name} on Meta {
         id
+        _id
         breakTimeSecs
         payPerHr
         nightSupplPayPct

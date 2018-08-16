@@ -9,6 +9,11 @@ defmodule BurdaWeb.Schema.Meta do
   @desc "A Meta"
   object :meta do
     field(:id, non_null(:id))
+
+    field :_id, non_null(:id) do
+      resolve(fn meta, _, _ -> {:ok, meta.id} end)
+    end
+
     field(:break_time_secs, non_null(:integer))
     field(:pay_per_hr, non_null(:decimal))
     field(:night_suppl_pay_pct, non_null(:decimal))

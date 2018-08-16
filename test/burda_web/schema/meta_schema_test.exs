@@ -15,6 +15,7 @@ defmodule BurdaWeb.Schema.MetaTest do
               data: %{
                 "meta" => %{
                   "id" => _,
+                  "_id" => _,
                   "breakTimeSecs" => _
                 }
               }
