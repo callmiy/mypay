@@ -23,7 +23,7 @@
   },
   "include": [
     "src/**/*",
-    "./../priv/static/service-worker1.js",
+    "./../priv/static/offline/service-worker1.js",
     "webpacks/**/*"
   ],
   "exclude": [
