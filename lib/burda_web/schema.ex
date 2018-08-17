@@ -5,12 +5,14 @@ defmodule BurdaWeb.Schema do
   import_types(BurdaWeb.Schema.Types)
   import_types(BurdaWeb.Schema.Shift)
   import_types(BurdaWeb.Schema.Meta)
+  import_types(BurdaWeb.Schema.Adhoc)
 
   alias Burda.Shift.Api, as: ShiftApi
   alias Burda.Meta.Api, as: MetaApi
 
   query do
     import_fields(:shift_query)
+    import_fields(:adhoc_query)
   end
 
   mutation do

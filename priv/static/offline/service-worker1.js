@@ -61,7 +61,10 @@ self.addEventListener("fetch", event => {
     }
   }
 
-  if (!/sockjs-node/.test(url.pathname)) {
+  if (
+    !/sockjs-node/.test(url.pathname) &&
+    !/phoenix\/live_reload/.test(url.pathname)
+  ) {
     return event.respondWith(
       caches.match(event.request).then(
         resp =>

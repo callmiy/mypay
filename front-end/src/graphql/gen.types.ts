@@ -50,7 +50,7 @@ export interface CreateShift_shift {
   sundaySupplPay: any;
   totalPay: any;
   meta: CreateShift_shift_meta | null;
-  __typename: "Shift";
+  schemaType: string;
 }
 
 export interface CreateShift {
@@ -66,14 +66,14 @@ export interface CreateShiftVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GetAllShifts
+// GraphQL query operation: GetInitialSocketData
 // ====================================================
 
-export interface GetAllShifts_shifts_meta {
+export interface GetInitialSocketData_shifts_meta {
   id: string;
 }
 
-export interface GetAllShifts_shifts {
+export interface GetInitialSocketData_shifts {
   id: string;
   _id: string;
   date: any;
@@ -87,16 +87,37 @@ export interface GetAllShifts_shifts {
   sundayHours: number;
   sundaySupplPay: any;
   totalPay: any;
-  meta: GetAllShifts_shifts_meta | null;
-  __typename: "Shift";
+  meta: GetInitialSocketData_shifts_meta | null;
+  schemaType: string;
 }
 
-export interface GetAllShifts {
-  shifts: (GetAllShifts_shifts | null)[] | null;  // Get all shifts
+export interface GetInitialSocketData_newShiftUrl {
+  _id: string;
+  url: string;
+  schemaType: string;
 }
 
-export interface GetAllShiftsVariables {
+export interface GetInitialSocketData {
+  shifts: (GetInitialSocketData_shifts | null)[] | null;  // Get all shifts
+  newShiftUrl: GetInitialSocketData_newShiftUrl | null;   // Get New shift URL
+}
+
+export interface GetInitialSocketDataVariables {
   shift?: GetShiftInput | null;
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL fragment: NewShiftUrlFragment
+// ====================================================
+
+export interface NewShiftUrlFragment {
+  _id: string;
+  url: string;
+  schemaType: string;
 }
 
 
@@ -126,7 +147,7 @@ export interface ShiftFragment {
   sundaySupplPay: any;
   totalPay: any;
   meta: ShiftFragment_meta | null;
-  __typename: "Shift";
+  schemaType: string;
 }
 
 /* tslint:disable */

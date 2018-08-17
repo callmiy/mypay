@@ -8,7 +8,7 @@ class Database {
 
   constructor() {
     this.db.createIndex({
-      index: { fields: ["typename__"] }
+      index: { fields: ["schemaType"] }
     });
   }
 
