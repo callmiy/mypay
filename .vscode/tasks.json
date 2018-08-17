@@ -79,21 +79,8 @@
     {
       "label": "Apollo code gen",
       "type": "shell",
-      "command": "apollo-codegen generate src/graphql/*.ts --schema src/graphql/schema.json --target typescript --output src/graphql/gen.types.ts",
-      "problemMatcher": [],
-      "options": {
-        "cwd": "./front-end"
-      }
-    },
-
-    {
-      "label": "introspect-schema",
-      "type": "shell",
-      "command": "apollo-codegen introspect-schema http://localhost:4018/graphql --output src/graphql/schema.json",
-      "problemMatcher": [],
-      "options": {
-        "cwd": "./front-end"
-      }
+      "command": "mix absinthe.schema.json front-end/src/graphql/schema.json && cd front-end && apollo-codegen generate src/graphql/*.ts --schema src/graphql/schema.json --target typescript --output src/graphql/gen.types.ts",
+      "problemMatcher": []
     },
 
     {
