@@ -93,7 +93,7 @@ class IndexController {
     }
 
     this.shiftEarningsSummaryEl.innerHTML = shiftEarningSummaryTemplate({
-      totalEarnings: shifts.reduce((a, b) => a + +b.totalPay, 0),
+      totalEarnings: shifts.reduce((a, b) => a + +b.totalPay, 0).toFixed(2),
       currentMonthYear
     });
 
