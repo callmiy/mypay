@@ -23,7 +23,7 @@ defmodule BurdaWeb.Endpoint do
         js
         favicon
         robots.txt
-        service-worker
+        offline
         service-worker.js
       )
   )

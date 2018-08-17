@@ -14,12 +14,12 @@ export const registerServiceWorker = async () => {
   }
 
   navigator.serviceWorker
-    .register("/service-worker/service-worker1.js", {
+    .register("/offline/service-worker1.js", {
       scope: "/"
     })
     .then(reg => {
-      // Page is not been controlled by service worker = user is getting contents
-      // from network, which is a good thing
+      // Page is not been controlled by service worker = user is getting
+      // contents from network, which is a good thing
       if (!navigator.serviceWorker.controller) {
         return;
       }
