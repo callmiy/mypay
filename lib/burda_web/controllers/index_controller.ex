@@ -7,6 +7,11 @@ defmodule BurdaWeb.IndexController do
   alias BurdaWeb.LayoutView
   alias BurdaWeb.IndexView
 
+  @main_css_handlebar "{{{ mainCss }}}"
+  @main_js_handlebar "{{{ mainJs }}}"
+  @index_css_path LayoutView.index_css_path()
+  @index_js_path LayoutView.index_css_js_path()
+
   @page_js "routes/index.js"
   @page_css "routes/index.css"
   @page_title_handlebar "{{ pageTitle }}"
@@ -78,6 +83,8 @@ defmodule BurdaWeb.IndexController do
       pageTitle: "Shift Times",
       pageMainCss: LayoutView.page_css(@page_css, render: :string),
       pageMainJs: LayoutView.page_js(@page_js, render: :string),
+      mainCss: LayoutView.page_css(@index_css_path, render: :string),
+      mainJs: LayoutView.page_js(@index_js_path, render: :string),
       cacheStatic:
         [
           LayoutView.js_css_src(:css, @page_css),
@@ -105,6 +112,8 @@ defmodule BurdaWeb.IndexController do
         page_main_js_handlebar: @page_main_js_handlebar,
         page_other_js_handlebar: @page_other_js_handlebar,
         page_main_content_handlebar: @page_main_content_handlebar,
-        page_top_menu_handlebar: @page_top_menu_handlebar
+        page_top_menu_handlebar: @page_top_menu_handlebar,
+        main_css_handlebar: @main_css_handlebar,
+        main_js_handlebar: @main_js_handlebar
       )
 end

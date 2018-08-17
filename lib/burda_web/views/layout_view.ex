@@ -120,9 +120,6 @@ defmodule BurdaWeb.LayoutView do
     do:
       :prod
       |> js_css_src(:js, src)
-      |> IO.inspect(label: "
-      -----------page css------------
-      ")
       |> script_tag(opts)
 
   def script_tag(:dev, src, opts) when is_binary(src),
@@ -178,9 +175,6 @@ defmodule BurdaWeb.LayoutView do
     do:
       :prod
       |> js_css_src(:css, href)
-      |> IO.inspect(label: "
-      -----------page css------------
-      ")
       |> link_tag(opts)
 
   def link_tag(:dev, :index, opts),
