@@ -1,15 +1,16 @@
+import showRefreshUI from "./show-refresh-ui";
+
 const updateReady = (worker: ServiceWorker | null) => {
   if (!worker) {
     return;
   }
 
-  // tslint:disable-next-line:no-console
-  console.log("\n\nnew update available from:\n", worker);
-  worker.postMessage({ action: "skipWaiting" });
+  showRefreshUI(worker);
 };
 
 export const registerServiceWorker = async () => {
-  if (!navigator.serviceWorker || process.env.NODE_ENV !== "development") {
+  // || process.env.NODE_ENV !== "development"
+  if (!navigator.serviceWorker) {
     return;
   }
 

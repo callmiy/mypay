@@ -9,6 +9,8 @@
 // To learn more about the benefits of this model, read https://goo.gl/KwvDNy.
 // This link also includes instructions on opting out of this behavior.
 
+import showRefreshUI from "./show-refresh-ui";
+
 const isLocalhost = Boolean(
   window.location.hostname === "localhost" ||
     // [::1] is the IPv6 localhost address.
@@ -110,41 +112,6 @@ function checkValidServiceWorker(swUrl: string) {
         "No internet connection found. App is running in offline mode."
       );
     });
-}
-
-function showRefreshUI() {
-  const div = document.createElement("div");
-  div.classList.add("ui", "green", "inverted", "menu");
-  const textNode = document.createTextNode(
-    "New content is available; please click to refresh."
-  );
-  div.appendChild(textNode);
-  div.style.cssText = `
-  border: 1px solid #b7b7b7;
-  padding: 10px;
-  border-radius: 3px;
-  color: #ffffffe6;
-  `;
-
-  const parent = document.createElement("div");
-  parent.style.cssText = `
-  cursor: pointer;
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 1;
-  background: #fdfdfdc2;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  `;
-  parent.appendChild(div);
-  document.body.appendChild(parent);
-  parent.addEventListener("click", () => window.location.reload(), {
-    once: true
-  });
 }
 
 export function unregister() {

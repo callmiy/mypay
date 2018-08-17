@@ -1,7 +1,7 @@
 import { AppSocket } from "./socket";
 import AppInterface from "./app_interface";
-import registerServiceWorker from "./register-service-worker";
-import registerServiceWorker1 from "./register-service-worker1";
+// import registerServiceWorker from "./register-service-worker";
+import registerServiceWorker1 from "./service-worker/register-service-worker1";
 
 declare global {
   interface Window {
@@ -46,5 +46,5 @@ const processSidebar = () => {
 
 docReady(processSidebar);
 
-registerServiceWorker();
+// registerServiceWorker();
 registerServiceWorker1();

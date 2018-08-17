@@ -109,6 +109,8 @@
   </div>
   <!-- /MODAL CONTAINER -->
 
+  <div class="insert-new-app-available-ui" id="insert-new-app-available-ui"></div>
+
   <script>
     window.appInterface = {};
   </script>
