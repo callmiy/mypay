@@ -33,7 +33,7 @@ defmodule BurdaWeb.Schema.Shift do
 
     field(:meta, :meta, resolve: dataloader(Burda.Meta.Api))
 
-    field :typename__, non_null(:string) do
+    field :schema_type, non_null(:string) do
       resolve(fn _, _, _ -> {:ok, "Shift"} end)
     end
   end

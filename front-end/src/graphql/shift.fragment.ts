@@ -18,7 +18,7 @@ export const shiftFragment = gql`
     meta {
       id
     }
-    typename__
+    schemaType
   }
 `;
 
