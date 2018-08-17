@@ -23,7 +23,7 @@
 
     <!-- LINK TO NEW SHIFT -->
 
-    <a id="new-shift-trigger" class="new-shift-trigger" data-off-line-link="true" href="<%= shift_path(BurdaWeb.Endpoint, :new) %>">
+    <a id="new-shift-trigger" class="new-shift-trigger" data-off-line-link="true" href="<%= assigns[:new_shift_path] || ~s({{ newShiftPath }}) %>">
       <span class="">&plus;</span>
     </a>
 

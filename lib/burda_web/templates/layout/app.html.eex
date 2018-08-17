@@ -31,7 +31,7 @@
     <%= assigns[:page_title] || "Shift times" %>
   </title>
 
-  <%= page_css(:index) %>
+  <%= assigns[:main_css_handlebar] || page_css(:index) || "" %>
     <%= page_css(assigns[:page_css] ) %>
 
       <%# Handlebar templates for app shell %>
@@ -114,7 +114,7 @@
   <script>
     window.appInterface = {};
   </script>
-  <%= page_js(:index) %>
+  <%= assigns[:main_js_handlebar] || page_js(:index) || "" %>
     <%= page_js(assigns[:page_js] ) %>
 
       <%# Handlebar templates for app shell %>

@@ -5,6 +5,8 @@ defmodule Mix.Tasks.Deploy do
   Tasks for managing deployment of burda app
   """
 
+  alias BurdaWeb.LayoutView
+
   @moduledoc ~S"""
   Task for deploying to heroku
   """
@@ -14,13 +16,39 @@ defmodule Mix.Tasks.Deploy do
   @front_end_folder Path.expand("front-end")
   @win_cmd "cmd.exe"
   @yarn "yarn"
+  @dummy_string1 "defmodule Dummy do\nend\n"
+  @dummy_string2 "defmodule Dummy do\n  def dummy, do: nil\nend\n"
+  @dummy_path Path.expand("lib/mix/dummy.ex")
 
   @spec run([<<_::32>>, ...]) :: :ok
   def run(args), do: deploy(args)
 
+  defp deploy(["compile", "templates", "prod"]) do
+    LayoutView.generate_offline_templates()
+
+    :ok =
+      run_cmd(
+        @yarn,
+        ["compile-handlebars-server-prod"],
+        cd: @front_end_folder
+      )
+  end
+
+  defp deploy(["compile", "templates", "dev"]) do
+    LayoutView.generate_offline_templates()
+
+    :ok =
+      run_cmd(
+        @yarn,
+        ["compile-handlebars-server"],
+        cd: @front_end_folder
+      )
+  end
+
   defp deploy(["local"]) do
     :ok = copy_static_folder()
     :ok = reset_static_folder()
+    deploy(["compile", "templates", "dev"])
     :ok = process_static_files()
   end
 
@@ -31,6 +59,7 @@ defmodule Mix.Tasks.Deploy do
 
     :ok = copy_static_folder()
     :ok = reset_static_folder()
+    deploy(["compile", "templates", "prod"])
     :ok = process_static_files()
     :ok = run_cmd("git", ["checkout", "dev"])
     :ok = run_cmd("git", ["add", "."])
@@ -79,7 +108,16 @@ defmodule Mix.Tasks.Deploy do
   defp process_static_files do
     :ok = run_cmd(@yarn, ["deploy"], cd: @front_end_folder)
     Mix.Task.run("phx.digest")
-    :ok
+
+    toggle_dummy()
+  end
+
+  @spec toggle_dummy() :: :ok
+  defp toggle_dummy do
+    case File.read!(@dummy_path) == @dummy_string1 do
+      true -> File.write!(@dummy_path, @dummy_string2, [:write])
+      _ -> File.write!(@dummy_path, @dummy_string1, [:write])
+    end
   end
 
   defp run_cmd(command, args), do: run_cmd(command, args, [])

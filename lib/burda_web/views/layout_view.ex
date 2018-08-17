@@ -5,10 +5,20 @@ defmodule BurdaWeb.LayoutView do
 
   alias BurdaWeb.Endpoint
 
+  @static_asset_pattern ~r/\.(jpe?g|png|gif|svg|ico|woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?)|(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?|otf(\?.*)?$/
   @index_js_path "commons.js"
   @index_css_js_path "commons.js"
   @index_css_path "commons.css"
   @offline_template_folder "front-end/src/templates"
+  @manifest_file "priv/static/cache_manifest.json"
+                 |> Path.expand()
+                 |> File.read!()
+                 |> Poison.decode!()
+                 |> Map.get("latest")
+                 |> Enum.reject(fn {k, _} ->
+                   Regex.match?(@static_asset_pattern, k)
+                 end)
+                 |> Enum.into(%{})
 
   @css_map %{
     tag_name: "link",
@@ -110,6 +120,9 @@ defmodule BurdaWeb.LayoutView do
     do:
       :prod
       |> js_css_src(:js, src)
+      |> IO.inspect(label: "
+      -----------page css------------
+      ")
       |> script_tag(opts)
 
   def script_tag(:dev, src, opts) when is_binary(src),
@@ -165,6 +178,9 @@ defmodule BurdaWeb.LayoutView do
     do:
       :prod
       |> js_css_src(:css, href)
+      |> IO.inspect(label: "
+      -----------page css------------
+      ")
       |> link_tag(opts)
 
   def link_tag(:dev, :index, opts),
@@ -245,11 +261,18 @@ defmodule BurdaWeb.LayoutView do
   def js_css_src(:dev, :js, src) when is_binary(src),
     do: {:js, webpack_server_url(path1: "js", path2: src)}
 
-  def js_css_src(:prod, :css, href) when is_binary(href),
-    do: {:css, Endpoint.static_path("/css/#{href}")}
+  def js_css_src(:prod, :css, href) when is_binary(href) do
+    {:css, path_from_manifest("css", href)}
+  end
 
   def js_css_src(:prod, :js, href) when is_binary(href),
-    do: {:js, Endpoint.static_path("/js/#{href}")}
+    do: {:js, path_from_manifest("js", href)}
+
+  defp path_from_manifest(base, path) do
+    path = String.trim(path, "/")
+    path = "#{base}/#{path}"
+    Endpoint.static_path("/#{get_from_manifest(path)}")
+  end
 
   @doc ~S"""
     For the App shell used in offline mode, the view_module argument will be
@@ -289,4 +312,6 @@ defmodule BurdaWeb.LayoutView do
   defp get_mix_env(:prod_local), do: :prod
   defp get_mix_env(:dev), do: :dev
   defp get_mix_env(_), do: :prod
+
+  defp get_from_manifest(href), do: Map.get(@manifest_file, href)
 end
