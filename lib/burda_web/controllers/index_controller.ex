@@ -44,7 +44,8 @@ defmodule BurdaWeb.IndexController do
     render(
       conn,
       @index_html,
-      all_shifts: Api.shifts_for_current_month(today.year, today.month)
+      all_shifts: Api.shifts_for_current_month(today.year, today.month),
+      new_shift_path: BurdaWeb.Router.Helpers.shift_path(conn, :new)
     )
   end
 
