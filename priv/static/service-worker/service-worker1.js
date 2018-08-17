@@ -61,7 +61,7 @@ self.addEventListener("fetch", event => {
     }
   }
 
-  if (true || !/sockjs-node/.test(url.pathname)) {
+  if (!/sockjs-node/.test(url.pathname)) {
     return event.respondWith(
       caches.match(event.request).then(
         resp =>
