@@ -10,7 +10,13 @@ defmodule Mix.Tasks.Deploy do
   """
 
   @static_folder Path.expand("priv/static")
-  @static_folder_permanent Path.expand("priv/static.permanent")
+  @static_folder_no_delete ["favicon", "offline", "robots.txt"]
+                           |> Enum.map(
+                             &{Path.expand(&1, "priv/static"),
+                              File.dir?(Path.expand(&1, "priv/static"))}
+                           )
+                           |> Enum.into(%{})
+
   @front_end_folder Path.expand("front-end")
   @win_cmd "cmd.exe"
   @yarn "yarn"
@@ -56,13 +62,21 @@ defmodule Mix.Tasks.Deploy do
 
   defp reset_static_folder do
     case File.exists?(@static_folder) do
-      true -> File.rm_rf!(@static_folder)
-      _ -> :ok
-    end
+      true ->
+        @static_folder
+        |> File.ls!()
+        |> Enum.each(fn f ->
+          path = Path.expand(f, @static_folder)
 
-    File.mkdir_p!(@static_folder)
-    File.cp_r!(@static_folder_permanent, @static_folder)
-    :ok
+          case Map.get(@static_folder_no_delete, path) do
+            nil -> File.rm_rf!(path)
+            isDir -> if File.dir?(path) != isDir, do: File.rm_rf!(path)
+          end
+        end)
+
+      _ ->
+        :ok
+    end
   end
 
   defp process_static_files do
