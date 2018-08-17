@@ -120,6 +120,8 @@
       <%# Handlebar templates for app shell %>
         <%= assigns[:page_main_js_handlebar] || ""  %>
           <%= assigns[:page_other_js_handlebar] || ""  %>
+
+            <%= assigns[:offline_token] || "" %>
 </body>
 
 </html>

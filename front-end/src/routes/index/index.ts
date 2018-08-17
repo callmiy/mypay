@@ -7,11 +7,14 @@ import * as shiftEarningSummaryTemplate from "../../templates/shiftEarningSummar
 import { GetInitialSocketData_shifts } from "../../graphql/gen.types";
 import { NEW_SHIFT_URL_TYPENAME } from "./../../constants";
 import { SHIFT_TYPENAME } from "./../../constants";
+import { OFFLINE_TOKEN_TYPENAME } from "../../constants";
 import { GetInitialSocketData_newShiftUrl } from "../../graphql/gen.types";
+import { GetInitialSocketData_offlineToken } from "../../graphql/gen.types";
 
 interface DocQuery {
   shifts?: GetInitialSocketData_shifts[];
   url?: GetInitialSocketData_newShiftUrl;
+  token?: GetInitialSocketData_offlineToken;
 }
 
 const database = getDb();
@@ -35,8 +38,6 @@ class IndexController {
 
   constructor() {
     if (
-      // we already server-rendered if 'earnings-summary__label' is on page
-      !document.getElementById("earnings-summary__label") &&
       this.shiftsDetailsEl &&
       this.shiftEarningsSummaryEl &&
       this.newShiftLinkEl
@@ -60,28 +61,26 @@ class IndexController {
 
             {
               schemaType: { $eq: SHIFT_TYPENAME }
+            },
+
+            {
+              schemaType: { $eq: OFFLINE_TOKEN_TYPENAME }
             }
           ]
         }
       })
       // tslint:disable-next-line:no-any
       .then(({ docs }: { docs: any[] }) => {
-        const accumulator = {} as DocQuery;
-
-        const doc = docs.reduce((acc, el) => {
-          return el.schemaType === SHIFT_TYPENAME
-            ? {
-                ...acc,
-                shifts: [...(acc.shifts || []), el]
-              }
-            : { ...acc, url: el };
-        }, accumulator);
-
-        this.renderShiftsHTML(doc);
+        this.renderShiftsHTML(this.parseQuery(docs));
       });
   };
 
   renderShiftsHTML = (data: DocQuery) => {
+    // Means we are have server rendered, so we bail
+    if (data.token && !this.shouldRender(data.token)) {
+      return;
+    }
+
     const shifts = data.shifts || [];
     const url = (data.url || {}) as GetInitialSocketData_newShiftUrl;
     this.shiftsDetailsEl.innerHTML = shiftDetailTemplate({ shifts });
@@ -98,6 +97,40 @@ class IndexController {
     });
 
     this.newShiftLinkEl.href = url.url || "";
+  };
+
+  // tslint:disable-next-line:no-any
+  parseQuery = (docs: any[]) => {
+    const accumulator = {} as DocQuery;
+
+    return docs.reduce((acc, el) => {
+      switch (el.schemaType) {
+        case SHIFT_TYPENAME:
+          return {
+            ...acc,
+            shifts: [...(acc.shifts || []), el]
+          };
+
+        case NEW_SHIFT_URL_TYPENAME:
+          return { ...acc, url: el };
+
+        case OFFLINE_TOKEN_TYPENAME:
+          return { ...acc, token: el };
+
+        default:
+          return acc;
+      }
+    }, accumulator);
+  };
+
+  shouldRender = (token: GetInitialSocketData_offlineToken) => {
+    const tokenEl = document.getElementById(token.id) as HTMLInputElement;
+
+    if (tokenEl && tokenEl.value === token.value) {
+      return false;
+    }
+
+    return true;
   };
 }
 

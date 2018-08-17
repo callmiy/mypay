@@ -97,9 +97,17 @@ export interface GetInitialSocketData_newShiftUrl {
   schemaType: string;
 }
 
+export interface GetInitialSocketData_offlineToken {
+  id: string;
+  _id: string;
+  value: string;
+  schemaType: string;
+}
+
 export interface GetInitialSocketData {
-  shifts: (GetInitialSocketData_shifts | null)[] | null;  // Get all shifts
-  newShiftUrl: GetInitialSocketData_newShiftUrl | null;   // Get New shift URL
+  shifts: (GetInitialSocketData_shifts | null)[] | null;   // Get all shifts
+  newShiftUrl: GetInitialSocketData_newShiftUrl | null;    // Get New shift URL
+  offlineToken: GetInitialSocketData_offlineToken | null;  // Get Offline Token
 }
 
 export interface GetInitialSocketDataVariables {
@@ -117,6 +125,21 @@ export interface GetInitialSocketDataVariables {
 export interface NewShiftUrlFragment {
   _id: string;
   url: string;
+  schemaType: string;
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL fragment: OfflineTokenFragment
+// ====================================================
+
+export interface OfflineTokenFragment {
+  id: string;
+  _id: string;
+  value: string;
   schemaType: string;
 }
 

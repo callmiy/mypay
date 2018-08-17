@@ -7,9 +7,11 @@ import { SortingDirective } from "./graphql/gen.types";
 import { GetInitialSocketData } from "./graphql/gen.types";
 import { GetInitialSocketData_shifts } from "./graphql/gen.types";
 import { GetInitialSocketData_newShiftUrl } from "./graphql/gen.types";
+import { GetInitialSocketData_offlineToken } from "./graphql/gen.types";
 import { getDb } from "./database";
 import { NEW_SHIFT_URL_TYPENAME } from "./constants";
 import { SHIFT_TYPENAME } from "./constants";
+import { OFFLINE_TOKEN_TYPENAME } from "./constants";
 
 const database = getDb();
 
@@ -40,7 +42,7 @@ export class AppSocket {
     });
     this.socket.onError(() => (window.appInterface.serverOnlineStatus = false));
     this.joinDataChannel();
-    this.getAllShiftsForMonth();
+    this.getInitialData();
   }
 
   joinDataChannel = () => {
@@ -48,7 +50,7 @@ export class AppSocket {
     this.channelJoin(this.dataChannelName, this.dataChannel);
   };
 
-  getAllShiftsForMonth = () => {
+  getInitialData = () => {
     const today = new Date();
     const variables: GetInitialSocketDataVariables = {
       shift: {
@@ -63,7 +65,7 @@ export class AppSocket {
       }
     };
 
-    const shiftQuery = toRunableDocument<GetInitialSocketDataVariables>(
+    const initialDataQuery = toRunableDocument<GetInitialSocketDataVariables>(
       INITIAL_DATA_GQL,
       variables
     );
@@ -71,82 +73,8 @@ export class AppSocket {
     this.sendChannelMsg(this.dataChannelName, this.dataChannel, {
       topic: "all-shifts",
 
-      ok: (data: GetInitialSocketData) => {
-        const allShifts = (data.shifts || []) as GetInitialSocketData_shifts[];
-
-        database.db
-          .find({
-            selector: {
-              schemaType: { $eq: SHIFT_TYPENAME }
-            }
-          })
-          // tslint:disable-next-line:no-any
-          .then((foundShifts: { docs: any }) => {
-            if (
-              foundShifts.docs &&
-              foundShifts.docs.map &&
-              foundShifts.docs.length
-            ) {
-              const ids = foundShifts.docs.map(
-                (s: GetInitialSocketData_shifts) => {
-                  return s.id;
-                }
-              );
-
-              const filteredAllShifts = allShifts.filter(
-                s => !ids.includes(s.id)
-              );
-
-              if (filteredAllShifts.length) {
-                database.db.bulkDocs(filteredAllShifts);
-              }
-            } else {
-              database.db.bulkDocs(allShifts);
-            }
-
-            return true;
-          })
-          .then(() => {
-            return database.db.find({
-              selector: {
-                schemaType: { $eq: NEW_SHIFT_URL_TYPENAME }
-              }
-            });
-          })
-          // tslint:disable-next-line:no-any
-          .then(({ docs }: { docs: any }) => {
-            const newShiftUrl = data.newShiftUrl as GetInitialSocketData_newShiftUrl;
-
-            if (!newShiftUrl) {
-              return;
-            }
-
-            const newShiftUrls = docs as GetInitialSocketData_newShiftUrl[];
-
-            // this is our first insert = happy
-            if (!newShiftUrls.length) {
-              database.db.put(newShiftUrl);
-              return;
-            }
-
-            const newShiftUrlFromDoc = newShiftUrls[0];
-
-            // we only care about the URL. If one exists with similar url, bail
-            if (newShiftUrlFromDoc.url === newShiftUrl.url) {
-              return;
-            }
-
-            // ok we have a new URL - update existing doc so we only have 1 copy
-            database.db.get(newShiftUrlFromDoc._id).then(doc => {
-              return database.db.put({
-                ...newShiftUrl,
-                _id: newShiftUrlFromDoc._id,
-                _rev: doc._rev
-              });
-            });
-          });
-      },
-      params: shiftQuery
+      ok: this.writeInitialDataToDb,
+      params: initialDataQuery
     });
   };
 
@@ -196,6 +124,121 @@ export class AppSocket {
       .receive("timeout", () => {
         // tslint:disable-next-line:no-console
         console.log("Networking issue...");
+      });
+  };
+
+  writeInitialDataToDb = (data: GetInitialSocketData) => {
+    const allShifts = (data.shifts || []) as GetInitialSocketData_shifts[];
+
+    database.db
+      .find({
+        selector: {
+          schemaType: { $eq: SHIFT_TYPENAME }
+        }
+      })
+      // tslint:disable-next-line:no-any
+      .then((foundShifts: { docs: any }) => {
+        if (
+          foundShifts.docs &&
+          foundShifts.docs.map &&
+          foundShifts.docs.length
+        ) {
+          const ids = foundShifts.docs.map((s: GetInitialSocketData_shifts) => {
+            return s.id;
+          });
+
+          const filteredAllShifts = allShifts.filter(s => !ids.includes(s.id));
+
+          if (filteredAllShifts.length) {
+            database.db.bulkDocs(filteredAllShifts);
+          }
+        } else {
+          database.db.bulkDocs(allShifts);
+        }
+
+        return true;
+      });
+
+    database.db
+      .find({
+        selector: {
+          schemaType: { $eq: NEW_SHIFT_URL_TYPENAME }
+        }
+      })
+      // tslint:disable-next-line:no-any
+      .then(({ docs }: { docs: any }) => {
+        const newShiftUrl = data.newShiftUrl as GetInitialSocketData_newShiftUrl;
+
+        if (!newShiftUrl) {
+          return;
+        }
+
+        const newShiftUrls = docs as GetInitialSocketData_newShiftUrl[];
+
+        // this is our first insert = happy
+        if (!newShiftUrls.length) {
+          database.db.put(newShiftUrl);
+          return;
+        }
+
+        const newShiftUrlFromDoc = newShiftUrls[0];
+
+        // we only care about the URL. If one exists with similar url, bail
+        if (newShiftUrlFromDoc.url === newShiftUrl.url) {
+          return;
+        }
+
+        // ok we have a new URL - update existing doc so we only have 1 copy
+        database.db.get(newShiftUrlFromDoc._id).then(doc => {
+          return database.db.put({
+            ...newShiftUrl,
+            _id: newShiftUrlFromDoc._id,
+            _rev: doc._rev
+          });
+        });
+      });
+
+    database.db
+      .find({
+        selector: {
+          schemaType: { $eq: OFFLINE_TOKEN_TYPENAME }
+        }
+      }) // tslint:disable-next-line:no-any
+      .then(({ docs }: { docs: any }) => {
+        const offlineToken = data.offlineToken as GetInitialSocketData_offlineToken;
+
+        if (!offlineToken) {
+          return;
+        }
+
+        const offlineTokens = docs as GetInitialSocketData_offlineToken[];
+
+        // this is our first insert = happy
+        if (!offlineTokens.length) {
+          database.db.put(offlineToken);
+          return;
+        }
+
+        const offlineTokenFromDoc = offlineTokens[0];
+
+        // we only care about the id and value fields.
+        // If we got one with these values, we bail
+        if (
+          offlineTokenFromDoc.id === offlineToken.id &&
+          offlineTokenFromDoc.value === offlineToken.value
+        ) {
+          return;
+        }
+
+        // ok we have a new token - update existing doc so we
+        // only have 1 copy
+        database.db.get(offlineTokenFromDoc._id).then(doc => {
+          return database.db.put({
+            ...offlineToken,
+            _id: doc._id,
+            _rev: doc._rev
+          });
+        });
       });
   };
 }
