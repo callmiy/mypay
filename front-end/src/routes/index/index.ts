@@ -29,6 +29,23 @@ class IndexController {
         }
       })
       .then(({ docs: shifts }) => {
+        // tslint:disable-next-line:no-console
+        console.log(
+          `
+
+
+        logging starts
+
+
+        shifts`,
+          shifts,
+          `
+
+        logging ends
+
+
+        `
+        );
         shiftsDetailsEl.innerHTML = shiftDetailTemplate({ shifts });
       });
   };

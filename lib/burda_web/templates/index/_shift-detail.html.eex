@@ -3,7 +3,7 @@
     <div class="shift-detail-row">
       <div class="date-times">
         <span>
-          <%= format_week_day_name_month_day(shift[:date]) || "{{ shiftDate }}" %>
+          <%= format_week_day_name_month_day(shift[:date]) || "{{formatWeekDayMonthNum date }}" %>
         </span>
 
         <div class="times">
