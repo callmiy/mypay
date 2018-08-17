@@ -76,6 +76,8 @@ config :logger, level: :info
 #     config :burda, BurdaWeb.Endpoint, server: true
 #
 
+config :burda, :frontend, asset: :prod
+
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
 # import_config "prod.secret.exs"

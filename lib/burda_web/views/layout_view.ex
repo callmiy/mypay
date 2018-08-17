@@ -6,8 +6,8 @@ defmodule BurdaWeb.LayoutView do
   alias BurdaWeb.Endpoint
 
   @static_asset_pattern ~r/\.(jpe?g|png|gif|svg|ico|woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?)|(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?|otf(\?.*)?$/
+
   @index_js_path "commons.js"
-  @index_css_js_path "commons.js"
   @index_css_path "commons.css"
   @offline_template_folder "front-end/src/templates"
   @manifest_file "priv/static/cache_manifest.json"
@@ -19,19 +19,6 @@ defmodule BurdaWeb.LayoutView do
                    Regex.match?(@static_asset_pattern, k)
                  end)
                  |> Enum.into(%{})
-
-  @css_map %{
-    tag_name: "link",
-    attributes: %{
-      text: "text/css",
-      media: "screen,projection"
-    }
-  }
-
-  @js_map %{
-    tag_name: "script",
-    attributes: %{}
-  }
 
   EEx.function_from_string(
     :def,
@@ -54,35 +41,12 @@ defmodule BurdaWeb.LayoutView do
     [:assigns]
   )
 
-  EEx.function_from_string(
-    :def,
-    :preloaded_css,
-    ~s(<link rel="preload" href="<%=@href%>" as="style" onload="this.rel='stylesheet'">),
-    [:assigns]
-  )
-
-  EEx.function_from_string(
-    :def,
-    :preloaded_css_js,
-    ~s/<link rel="preload" href="<%=@href%>" as="script" onload="const script = document.createElement('script'); script.src = this.href; document.head.appendChild(script);">/,
-    [:assigns]
-  )
-
-  EEx.function_from_string(
-    :def,
-    :preloaded_js,
-    ~s/<link rel="preload" href="<%=@href%>" as="script" onload="const script = document.createElement('script'); script.src = this.href; document.body.appendChild(script);">/,
-    [:assigns]
-  )
-
-  @default_css_js_opts [render: :string, type: :raw]
-
   # EXPORTS FOR TEST
   @spec index_css_path() :: <<_::88>>
   def index_css_path, do: @index_css_path
 
-  @spec index_css_js_path() :: <<_::80>>
-  def index_css_js_path, do: @index_css_js_path
+  @spec index_js_path() :: <<_::80>>
+  def index_js_path, do: @index_js_path
   # / EXPORTS FOR TEST
 
   # ---------------------------------------PAGE TOP MENU---------------------
@@ -100,150 +64,69 @@ defmodule BurdaWeb.LayoutView do
 
   # -------------------------------------------PAGE JS---------------------
 
-  def page_js(path, opts \\ @default_css_js_opts)
+  def page_js(path, raw? \\ :raw)
 
-  def page_js(nil, _opts), do: ""
+  def page_js(nil, _raw?), do: ""
 
-  def page_js(:index, opts),
+  def page_js(:index, raw?),
     do:
-      Mix.env()
-      |> get_mix_env()
-      |> script_tag(@index_js_path, opts)
+      :js
+      |> js_css_src(@index_js_path)
+      |> html_tag(raw?)
 
-  def page_js(path, opts),
+  def page_js(path, raw?),
     do:
-      Mix.env()
-      |> get_mix_env()
-      |> script_tag(path, opts)
-
-  def script_tag(:prod, src, opts) when is_binary(src),
-    do:
-      :prod
-      |> js_css_src(:js, src)
-      |> script_tag(opts)
-
-  def script_tag(:dev, src, opts) when is_binary(src),
-    do:
-      :dev
-      |> js_css_src(:js, src)
-      |> script_tag(opts)
-
-  def script_tag({:js, src}, opts) when is_list(opts) do
-    html =
-      case Keyword.fetch!(opts, :render) do
-        :string ->
-          js_tag_eex(src: src)
-
-        :map ->
-          Map.update!(@js_map, :attributes, &Map.put(&1, :src, src))
-      end
-
-    case Keyword.fetch(opts, :type) do
-      {:ok, type} ->
-        script_tag(html, type)
-
-      :error ->
-        script_tag(html, nil)
-    end
-  end
-
-  def script_tag(html, :raw) when is_binary(html), do: raw(html)
-  def script_tag(html, _), do: html
+      :js
+      |> js_css_src(path)
+      |> html_tag(raw?)
 
   # -------------------------------------------PAGE CSS---------------------
 
-  @spec page_css(:index | nil | binary(), any()) :: any()
-  def page_css(path, opts \\ @default_css_js_opts)
+  def page_css(path, raw? \\ :raw)
 
-  def page_css(nil, _opts), do: ""
+  def page_css(nil, _raw?), do: ""
 
-  def page_css(:index, opts),
-    do:
-      Mix.env()
-      |> get_mix_env()
-      |> link_tag(:index, opts)
-
-  def page_css(path, opts),
-    do:
-      Mix.env()
-      |> get_mix_env()
-      |> link_tag(path, opts)
-
-  def link_tag(:prod, :index, opts), do: link_tag(:prod, @index_css_path, opts)
-
-  def link_tag(:prod, href, opts) when is_binary(href),
-    do:
-      :prod
-      |> js_css_src(:css, href)
-      |> link_tag(opts)
-
-  def link_tag(:dev, :index, opts),
-    do: link_tag(:dev, @index_css_js_path, opts)
-
-  def link_tag(:dev, src, opts) when is_binary(src),
-    do:
-      :dev
-      |> js_css_src(:css, src)
-      |> link_tag(opts)
-
-  @spec link_tag(any(), any()) :: any()
-  def link_tag({:css, href}, opts) when is_binary(href) do
-    case Keyword.fetch!(opts, :render) do
-      :string ->
-        css_tag_eex(href: href)
-
-      :map ->
-        Map.update!(@css_map, :attributes, &Map.put(&1, :href, href))
-    end
-    |> link_tag(opts)
-  end
-
-  def link_tag({:css_js, src}, opts) when is_binary(src),
-    do: link_tag({:js, src}, opts)
-
-  def link_tag({:js, src}, opts) when is_binary(src) do
-    case Keyword.fetch!(opts, :render) do
-      :string ->
-        js_tag_eex(src: src)
-
-      :map ->
-        Map.update!(@js_map, :attributes, &Map.put(&1, :src, src))
-    end
-    |> link_tag(opts)
-  end
-
-  def link_tag(html, opts) when is_list(opts) do
-    type =
-      case Keyword.fetch(opts, :type) do
-        {:ok, type} -> type
-        :error -> nil
+  def page_css(:index, raw?) do
+    path =
+      case get_frontend_env(:asset) do
+        :prod -> @index_css_path
+        :dev -> @index_js_path
       end
 
-    link_tag(html, type)
+    js_css_src(:css, path)
+    |> html_tag(raw?)
   end
 
-  def link_tag(html, :raw) when is_binary(html), do: raw(html)
-  def link_tag(html, _), do: html
+  def page_css(path, raw?),
+    do:
+      js_css_src(:css, path)
+      |> html_tag(raw?)
+
+  defp html_tag({:css, href}, raw?) when is_binary(href),
+    do:
+      css_tag_eex(href: href)
+      |> html_tag(raw?)
+
+  defp html_tag({:css_js, src}, raw?) when is_binary(src),
+    do: html_tag({:js, src}, raw?)
+
+  defp html_tag({:js, src}, raw?) when is_binary(src),
+    do:
+      js_tag_eex(src: src)
+      |> html_tag(raw?)
+
+  defp html_tag(html, :raw) when is_binary(html), do: raw(html)
+  defp html_tag(html, _), do: html
 
   # ------------------------------UTILITIES--------------------------------
 
-  @spec js_css_src(
-          resource_type :: :css | :js,
-          path :: nil | String.t()
-        ) :: nil | {:css, String.t()} | {:js, String.t()}
   def js_css_src(_, nil), do: nil
 
   def js_css_src(type, href) when is_binary(href),
     do:
-      Mix.env()
-      |> get_mix_env()
+      :asset
+      |> get_frontend_env()
       |> js_css_src(type, href)
-
-  @spec js_css_src(
-          mix_env :: :dev | :prod,
-          resource_type :: :css | :js,
-          path :: String.t()
-        ) :: {:css, String.t()} | {:js, String.t()}
 
   def js_css_src(:dev, :css, src) when is_binary(src) do
     src = String.replace(src, ~r/\.css$/, ".js")
@@ -302,10 +185,19 @@ defmodule BurdaWeb.LayoutView do
       end)
       |> Enum.map(fn [file, string] -> File.write!(file, string) end)
 
-  defp get_mix_env(:prod), do: :prod
-  defp get_mix_env(:prod_local), do: :prod
-  defp get_mix_env(:dev), do: :dev
-  defp get_mix_env(_), do: :prod
+  @spec get_frontend_env(key :: Atom.t()) :: Atom.t()
+  def get_frontend_env(key),
+    do:
+      :burda
+      |> Application.get_env(:frontend)
+      |> get_frontend_env(key)
 
-  defp get_from_manifest(href), do: Map.get(@manifest_file, href)
+  @spec get_frontend_env(env :: nil | keyword(), key :: Atom.t()) :: Atom.t()
+  def get_frontend_env(nil, _), do: nil
+  def get_frontend_env([], _), do: nil
+
+  def get_frontend_env(env, key) when is_list(env),
+    do: Keyword.fetch!(env, key)
+
+  defp get_from_manifest(href), do: Map.get(@manifest_file, href, "")
 end

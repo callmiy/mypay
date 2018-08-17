@@ -146,8 +146,8 @@ defmodule BurdaWeb.ShiftController do
   def new_offline_template_assigns,
     do: %{
       pageTitle: "New Shift",
-      pageMainCss: LayoutView.page_css(@page_css, render: :string),
-      pageMainJs: LayoutView.page_css(@page_js, render: :string),
+      pageMainCss: LayoutView.page_css(@page_css, nil),
+      pageMainJs: LayoutView.page_css(@page_js, nil),
       pageOtherCss: MetaWeb.new_form_css()
     }
 

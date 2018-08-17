@@ -75,3 +75,5 @@ config :burda, Burda.Repo,
   database: "burda_dev",
   hostname: "localhost",
   pool_size: 10
+
+config :burda, :frontend, asset: :prod

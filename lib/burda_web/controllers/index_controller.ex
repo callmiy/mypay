@@ -10,7 +10,7 @@ defmodule BurdaWeb.IndexController do
   @main_css_handlebar "{{{ mainCss }}}"
   @main_js_handlebar "{{{ mainJs }}}"
   @index_css_path LayoutView.index_css_path()
-  @index_js_path LayoutView.index_css_js_path()
+  @index_js_path LayoutView.index_js_path()
 
   @page_js "routes/index.js"
   @page_css "routes/index.css"
@@ -81,10 +81,10 @@ defmodule BurdaWeb.IndexController do
   def index_offline_template_assigns,
     do: %{
       pageTitle: "Shift Times",
-      pageMainCss: LayoutView.page_css(@page_css, render: :string),
-      pageMainJs: LayoutView.page_js(@page_js, render: :string),
-      mainCss: LayoutView.page_css(@index_css_path, render: :string),
-      mainJs: LayoutView.page_js(@index_js_path, render: :string),
+      pageMainCss: LayoutView.page_css(@page_css, nil),
+      pageMainJs: LayoutView.page_js(@page_js, nil),
+      mainCss: LayoutView.page_css(@index_css_path, nil),
+      mainJs: LayoutView.page_js(@index_js_path, nil),
       cacheStatic:
         [
           LayoutView.js_css_src(:css, @page_css),

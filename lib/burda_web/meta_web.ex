@@ -29,5 +29,5 @@ defmodule BurdaWeb.MetaWeb do
     ]
 
   def new_form_css,
-    do: LayoutView.page_css(@new_form_css_path, render: :string)
+    do: LayoutView.page_css(@new_form_css_path, nil)
 end
