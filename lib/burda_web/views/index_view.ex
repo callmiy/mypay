@@ -14,7 +14,7 @@ defmodule BurdaWeb.IndexView do
       |> Timex.format!(@iso_time)
       |> String.slice(0, 8)
 
-  def format_time_iso(_), do: ""
+  def format_time_iso(_), do: nil
 
   @spec total_earnings([%Shift{}] | any()) :: Decimal.t()
   def total_earnings([]), do: ""
@@ -34,5 +34,5 @@ defmodule BurdaWeb.IndexView do
   def format_week_day_name_month_day(%Date{} = date),
     do: Timex.format!(date, @week_day_name_month_day_format)
 
-  def format_week_day_name_month_day(_), do: ""
+  def format_week_day_name_month_day(_), do: nil
 end

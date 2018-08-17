@@ -8,6 +8,7 @@ defmodule BurdaWeb.UserSocket do
   ## Channels
   channel("meta:*", BurdaWeb.MetaChannel)
   channel("shift:*", BurdaWeb.ShiftChannel)
+  channel("data:*", BurdaWeb.DataChannel)
 
   ## Transports
   transport(

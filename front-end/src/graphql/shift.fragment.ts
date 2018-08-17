@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 export const shiftFragment = gql`
   fragment ShiftFragment on Shift {
     id
+    _id
     date
     startTime
     endTime
@@ -14,6 +15,10 @@ export const shiftFragment = gql`
     sundayHours
     sundaySupplPay
     totalPay
+    meta {
+      id
+    }
+    typename__
   }
 `;
 

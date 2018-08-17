@@ -31,8 +31,13 @@ export interface CreateMetaVariables {
 // GraphQL mutation operation: CreateShift
 // ====================================================
 
+export interface CreateShift_shift_meta {
+  id: string;
+}
+
 export interface CreateShift_shift {
   id: string;
+  _id: string;
   date: any;
   startTime: any;
   endTime: any;
@@ -44,6 +49,8 @@ export interface CreateShift_shift {
   sundayHours: number;
   sundaySupplPay: any;
   totalPay: any;
+  meta: CreateShift_shift_meta | null;
+  __typename: "Shift";
 }
 
 export interface CreateShift {
@@ -59,11 +66,16 @@ export interface CreateShiftVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL fragment: ShiftFragment
+// GraphQL query operation: GetAllShifts
 // ====================================================
 
-export interface ShiftFragment {
+export interface GetAllShifts_shifts_meta {
   id: string;
+}
+
+export interface GetAllShifts_shifts {
+  id: string;
+  _id: string;
   date: any;
   startTime: any;
   endTime: any;
@@ -75,6 +87,46 @@ export interface ShiftFragment {
   sundayHours: number;
   sundaySupplPay: any;
   totalPay: any;
+  meta: GetAllShifts_shifts_meta | null;
+  __typename: "Shift";
+}
+
+export interface GetAllShifts {
+  shifts: (GetAllShifts_shifts | null)[] | null;  // Get all shifts
+}
+
+export interface GetAllShiftsVariables {
+  shift?: GetShiftInput | null;
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL fragment: ShiftFragment
+// ====================================================
+
+export interface ShiftFragment_meta {
+  id: string;
+}
+
+export interface ShiftFragment {
+  id: string;
+  _id: string;
+  date: any;
+  startTime: any;
+  endTime: any;
+  hoursGross: number;
+  normalHours: number;
+  normalPay: any;
+  nightHours: number;
+  nightSupplPay: any;
+  sundayHours: number;
+  sundaySupplPay: any;
+  totalPay: any;
+  meta: ShiftFragment_meta | null;
+  __typename: "Shift";
 }
 
 /* tslint:disable */
@@ -83,6 +135,12 @@ export interface ShiftFragment {
 //==============================================================
 // START Enums and Input Objects
 //==============================================================
+
+// Sorting directive
+export enum SortingDirective {
+  ASC = "ASC",
+  DESC = "DESC",
+}
 
 // Inputs for creating a meta
 export interface CreateMetaInput {
@@ -98,6 +156,24 @@ export interface CreateShiftInput {
   endTime: any;
   metaId: string;
   startTime: any;
+}
+
+// Inputs for getting shift
+export interface GetShiftInput {
+  orderBy?: Sorting | null;
+  where?: WhereCondition | null;
+}
+
+// input for sorting
+export interface Sorting {
+  date?: SortingDirective | null;
+  id?: SortingDirective | null;
+}
+
+// Where condition for retrieving a shift
+export interface WhereCondition {
+  month?: number | null;
+  year?: number | null;
 }
 
 //==============================================================

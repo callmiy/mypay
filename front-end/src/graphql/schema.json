@@ -174,6 +174,37 @@
         },
         {
           "possibleTypes": null,
+          "name": "GetShiftInput",
+          "kind": "INPUT_OBJECT",
+          "interfaces": null,
+          "inputFields": [
+            {
+              "type": {
+                "ofType": null,
+                "name": "Sorting",
+                "kind": "INPUT_OBJECT"
+              },
+              "name": "orderBy",
+              "description": null,
+              "defaultValue": null
+            },
+            {
+              "type": {
+                "ofType": null,
+                "name": "WhereCondition",
+                "kind": "INPUT_OBJECT"
+              },
+              "name": "where",
+              "description": null,
+              "defaultValue": null
+            }
+          ],
+          "fields": null,
+          "enumValues": null,
+          "description": "Inputs for getting shift"
+        },
+        {
+          "possibleTypes": null,
           "name": "ID",
           "kind": "SCALAR",
           "interfaces": null,
@@ -209,6 +240,22 @@
           "interfaces": [],
           "inputFields": null,
           "fields": [
+            {
+              "type": {
+                "ofType": {
+                  "ofType": null,
+                  "name": "ID",
+                  "kind": "SCALAR"
+                },
+                "name": null,
+                "kind": "NON_NULL"
+              },
+              "name": "_id",
+              "isDeprecated": false,
+              "description": null,
+              "deprecationReason": null,
+              "args": []
+            },
             {
               "type": {
                 "ofType": {
@@ -411,7 +458,18 @@
               "isDeprecated": false,
               "description": "Get all shifts",
               "deprecationReason": null,
-              "args": []
+              "args": [
+                {
+                  "type": {
+                    "ofType": null,
+                    "name": "GetShiftInput",
+                    "kind": "INPUT_OBJECT"
+                  },
+                  "name": "shift",
+                  "description": null,
+                  "defaultValue": null
+                }
+              ]
             }
           ],
           "enumValues": null,
@@ -424,6 +482,22 @@
           "interfaces": [],
           "inputFields": null,
           "fields": [
+            {
+              "type": {
+                "ofType": {
+                  "ofType": null,
+                  "name": "ID",
+                  "kind": "SCALAR"
+                },
+                "name": null,
+                "kind": "NON_NULL"
+              },
+              "name": "_id",
+              "isDeprecated": false,
+              "description": null,
+              "deprecationReason": null,
+              "args": []
+            },
             {
               "type": {
                 "ofType": {
@@ -666,6 +740,60 @@
         },
         {
           "possibleTypes": null,
+          "name": "Sorting",
+          "kind": "INPUT_OBJECT",
+          "interfaces": null,
+          "inputFields": [
+            {
+              "type": {
+                "ofType": null,
+                "name": "SortingDirective",
+                "kind": "ENUM"
+              },
+              "name": "date",
+              "description": null,
+              "defaultValue": null
+            },
+            {
+              "type": {
+                "ofType": null,
+                "name": "SortingDirective",
+                "kind": "ENUM"
+              },
+              "name": "id",
+              "description": null,
+              "defaultValue": null
+            }
+          ],
+          "fields": null,
+          "enumValues": null,
+          "description": "input for sorting"
+        },
+        {
+          "possibleTypes": null,
+          "name": "SortingDirective",
+          "kind": "ENUM",
+          "interfaces": null,
+          "inputFields": null,
+          "fields": null,
+          "enumValues": [
+            {
+              "name": "ASC",
+              "isDeprecated": false,
+              "description": "Sort from smallest to largest",
+              "deprecationReason": null
+            },
+            {
+              "name": "DESC",
+              "isDeprecated": false,
+              "description": "Sort from largest to smallest",
+              "deprecationReason": null
+            }
+          ],
+          "description": "Sorting directive"
+        },
+        {
+          "possibleTypes": null,
           "name": "Time",
           "kind": "SCALAR",
           "interfaces": null,
@@ -673,6 +801,37 @@
           "fields": null,
           "enumValues": null,
           "description": "The `Time` scalar type represents a time. The Time appears in a JSON\nresponse as an ISO8601 formatted string."
+        },
+        {
+          "possibleTypes": null,
+          "name": "WhereCondition",
+          "kind": "INPUT_OBJECT",
+          "interfaces": null,
+          "inputFields": [
+            {
+              "type": {
+                "ofType": null,
+                "name": "Int",
+                "kind": "SCALAR"
+              },
+              "name": "month",
+              "description": null,
+              "defaultValue": null
+            },
+            {
+              "type": {
+                "ofType": null,
+                "name": "Int",
+                "kind": "SCALAR"
+              },
+              "name": "year",
+              "description": null,
+              "defaultValue": null
+            }
+          ],
+          "fields": null,
+          "enumValues": null,
+          "description": "Where condition for retrieving a shift"
         },
         {
           "possibleTypes": null,

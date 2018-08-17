@@ -3,21 +3,21 @@
   <div class="shift-detail-row">
     <div class="date-times">
       <span>
-        <%= format_week_day_name_month_day(shift[:date]) %>
+        <%= format_week_day_name_month_day(shift[:date]) || "{{ shiftDate }}" %>
       </span>
 
       <div class="times">
         <span>
-          <%= format_time_iso(shift[:start_time]) %>
+          <%= format_time_iso(shift[:start_time]) || "{{ startTime }}" %>
         </span>
         -
         <span>
-          <%= format_time_iso(shift[:end_time]) %>
+          <%= format_time_iso(shift[:end_time]) || "{{ endTime }}" %>
         </span>
       </div>
 
       <span>
-        <%= shift[:hours_gross] %> hours &nbsp;&nbsp; (gross)
+        <%= shift[:hours_gross] || "{{ hoursGross }}" %> hours &nbsp;&nbsp; (gross)
       </span>
     </div>
 
@@ -25,36 +25,36 @@
       <div class="hours-earnings detail">
         <span>Shift</span>
         <span>
-          <%= shift[:normal_hours] || "" %>
+          <%= shift[:normal_hours] || "{{ normalHours }}" %>
         </span>
         <span>&euro;
-          <%= shift[:normal_pay] || "" %>
+          <%= shift[:normal_pay] || "{{ normalPay }}" %>
         </span>
       </div>
 
       <div class="hours-earnings detail">
         <span>Night</span>
         <span>
-          <%= shift[:night_hours] || "" %>
+          <%= shift[:night_hours] || "{{ nightHours }}" %>
         </span>
         <span>&euro;
-          <%= shift[:night_suppl_pay] || "" %>
+          <%= shift[:night_suppl_pay] || "{{ nightSupplPay }}" %>
         </span>
       </div>
 
       <div class="hours-earnings detail">
         <span>Sunday</span>
         <span>
-          <%= shift[:sunday_hours] || "" %>
+          <%= shift[:sunday_hours] || "{{ sundayHours }}" %>
         </span>
         <span>&euro;
-          <%= shift[:sunday_suppl_pay] || "" %>
+          <%= shift[:sunday_suppl_pay] || "{{ sundaySupplPay }}" %>
         </span>
       </div>
     </div>
 
     <div class="total-earning"> Total: &euro;
-      <%= shift[:total_pay] || "" %>
+      <%= shift[:total_pay] || "{{ totalPay }}" %>
     </div>
 
   </div>

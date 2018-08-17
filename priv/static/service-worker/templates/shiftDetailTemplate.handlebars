@@ -2,18 +2,18 @@
   <div class="shift-detail-row">
     <div class="date-times">
       <span>
-      </span>
+{{ shiftDate }}      </span>
 
       <div class="times">
         <span>
-        </span>
+{{ startTime }}        </span>
         -
         <span>
-        </span>
+{{ endTime }}        </span>
       </div>
 
       <span>
-         hours &nbsp;&nbsp; (gross)
+        {{ hoursGross }} hours &nbsp;&nbsp; (gross)
       </span>
     </div>
 
@@ -21,29 +21,29 @@
       <div class="hours-earnings detail">
         <span>Shift</span>
         <span>
-        </span>
+{{ normalHours }}        </span>
         <span>&euro;
-        </span>
+{{ normalPay }}        </span>
       </div>
 
       <div class="hours-earnings detail">
         <span>Night</span>
         <span>
-        </span>
+{{ nightHours }}        </span>
         <span>&euro;
-        </span>
+{{ nightSupplPay }}        </span>
       </div>
 
       <div class="hours-earnings detail">
         <span>Sunday</span>
         <span>
-        </span>
+{{ sundayHours }}        </span>
         <span>&euro;
-        </span>
+{{ sundaySupplPay }}        </span>
       </div>
     </div>
 
     <div class="total-earning"> Total: &euro;
-    </div>
+{{ totalPay }}    </div>
 
   </div>

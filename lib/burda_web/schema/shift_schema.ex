@@ -32,6 +32,10 @@ defmodule BurdaWeb.Schema.Shift do
     field(:updated_at, non_null(:iso_datetime))
 
     field(:meta, :meta, resolve: dataloader(Burda.Meta.Api))
+
+    field :typename__, non_null(:string) do
+      resolve(fn _, _, _ -> {:ok, "Shift"} end)
+    end
   end
 
   @desc "Inputs for creating shift"

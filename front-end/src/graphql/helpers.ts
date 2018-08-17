@@ -3,7 +3,7 @@ import { GraphQLError } from "graphql";
 
 import { capitalize } from "../utils/utils";
 
-export const toRunableDocument = <TGraphQLVariables = {}>(
+export const toRunableDocument = <TGraphQLVariables>(
   document: DocumentNode,
   variables?: TGraphQLVariables
 ) => {
