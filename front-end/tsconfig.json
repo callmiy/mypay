@@ -34,7 +34,8 @@
     "jest",
     "src/setupTests.ts",
     "semantic-theme",
-    "postcss.config.js"
+    "postcss.config.js",
+    "src/templates.js"
   ],
   "plugins": [
     {

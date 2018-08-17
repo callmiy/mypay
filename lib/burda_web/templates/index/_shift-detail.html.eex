@@ -1,60 +1,61 @@
 <% shift = assigns[:shift] || %{} %>
-
-  <div class="shift-detail-row">
-    <div class="date-times">
-      <span>
-        <%= format_week_day_name_month_day(shift[:date]) || "{{ shiftDate }}" %>
-      </span>
-
-      <div class="times">
+  <%= if shift == %{}, do: "{{#each shifts}}", else: "" %>
+    <div class="shift-detail-row">
+      <div class="date-times">
         <span>
-          <%= format_time_iso(shift[:start_time]) || "{{ startTime }}" %>
+          <%= format_week_day_name_month_day(shift[:date]) || "{{ shiftDate }}" %>
         </span>
-        -
+
+        <div class="times">
+          <span>
+            <%= format_time_iso(shift[:start_time]) || "{{truncateString startTime }}" %>
+          </span>
+          -
+          <span>
+            <%= format_time_iso(shift[:end_time]) || "{{truncateString endTime }}" %>
+          </span>
+        </div>
+
         <span>
-          <%= format_time_iso(shift[:end_time]) || "{{ endTime }}" %>
+          <%= shift[:hours_gross] || "{{ hoursGross }}" %> hours &nbsp;&nbsp; (gross)
         </span>
       </div>
 
-      <span>
-        <%= shift[:hours_gross] || "{{ hoursGross }}" %> hours &nbsp;&nbsp; (gross)
-      </span>
+      <div class="hours-earnings-container">
+        <div class="hours-earnings detail">
+          <span>Shift</span>
+          <span>
+            <%= shift[:normal_hours] || "{{ normalHours }}" %>
+          </span>
+          <span>&euro;
+            <%= shift[:normal_pay] || "{{ normalPay }}" %>
+          </span>
+        </div>
+
+        <div class="hours-earnings detail">
+          <span>Night</span>
+          <span>
+            <%= shift[:night_hours] || "{{ nightHours }}" %>
+          </span>
+          <span>&euro;
+            <%= shift[:night_suppl_pay] || "{{ nightSupplPay }}" %>
+          </span>
+        </div>
+
+        <div class="hours-earnings detail">
+          <span>Sunday</span>
+          <span>
+            <%= shift[:sunday_hours] || "{{ sundayHours }}" %>
+          </span>
+          <span>&euro;
+            <%= shift[:sunday_suppl_pay] || "{{ sundaySupplPay }}" %>
+          </span>
+        </div>
+      </div>
+
+      <div class="total-earning"> Total: &euro;
+        <%= shift[:total_pay] || "{{ totalPay }}" %>
+      </div>
+
     </div>
-
-    <div class="hours-earnings-container">
-      <div class="hours-earnings detail">
-        <span>Shift</span>
-        <span>
-          <%= shift[:normal_hours] || "{{ normalHours }}" %>
-        </span>
-        <span>&euro;
-          <%= shift[:normal_pay] || "{{ normalPay }}" %>
-        </span>
-      </div>
-
-      <div class="hours-earnings detail">
-        <span>Night</span>
-        <span>
-          <%= shift[:night_hours] || "{{ nightHours }}" %>
-        </span>
-        <span>&euro;
-          <%= shift[:night_suppl_pay] || "{{ nightSupplPay }}" %>
-        </span>
-      </div>
-
-      <div class="hours-earnings detail">
-        <span>Sunday</span>
-        <span>
-          <%= shift[:sunday_hours] || "{{ sundayHours }}" %>
-        </span>
-        <span>&euro;
-          <%= shift[:sunday_suppl_pay] || "{{ sundaySupplPay }}" %>
-        </span>
-      </div>
-    </div>
-
-    <div class="total-earning"> Total: &euro;
-      <%= shift[:total_pay] || "{{ totalPay }}" %>
-    </div>
-
-  </div>
+    <%= if shift == %{}, do: "{{/each}}", else: "" %>

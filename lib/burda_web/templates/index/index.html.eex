@@ -22,7 +22,7 @@
 
     </div>
 
-    <div class="shift-details">
+    <div id="index-route-shifts-details" class="index-route-shifts-details">
       <%= for shift <- all_shifts do %>
         <% shift = Map.from_struct(shift) %>
           <%= render("_shift-detail.html", shift: shift) %>

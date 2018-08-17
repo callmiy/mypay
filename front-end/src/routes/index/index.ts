@@ -1,5 +1,6 @@
 import { getDb } from "../../database";
 import { docReady } from "../../app";
+import * as shiftDetailTemplate from "../../templates/shiftDetailTemplate.handlebars";
 
 const database = getDb();
 
@@ -13,15 +14,22 @@ class IndexController {
       return;
     }
 
+    const shiftsDetailsEl = document.getElementById(
+      "index-route-shifts-details"
+    );
+
+    if (!shiftsDetailsEl) {
+      return;
+    }
+
     database.db
       .find({
         selector: {
           typename__: { $eq: "Shift" }
         }
       })
-      .then(shifts => {
-        // tslint:disable-next-line:no-console
-        console.log("\n\n\n\ndb info on shifts:\n", shifts, "\n\n\n\n");
+      .then(({ docs: shifts }) => {
+        shiftsDetailsEl.innerHTML = shiftDetailTemplate({ shifts });
       });
   };
 }

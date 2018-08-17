@@ -12,7 +12,7 @@
     "deploy": "cross-env NODE_ENV=production webpack --port=4019 --config=config/webpacks/prod.js",
     "start": "cross-env NODE_ENV=development WEBPACK_DEV_SERVER_URL=http://localhost:4019 yarn run watch",
     "watch": "webpack-dev-server --port=4019 --config=config/webpacks/dev.js --colors --watch-stdin",
-    "compile-handlebars": "node_modules/.bin/handlebars ../priv/static/service-worker/templates/ -f ../priv/static/service-worker/templates/templates.js"
+    "compile-handlebars-server": "node_modules/.bin/handlebars src/templates/ -f ../priv/static/service-worker/templates.js"
   },
   "keywords": [
     "shift",
@@ -43,6 +43,7 @@
     "fork-ts-checker-webpack-plugin": "^0.4.3",
     "glob-all": "^3.1.0",
     "graphql": "^0.13.2",
+    "handlebars-loader": "^1.7.0",
     "image-webpack-loader": "^4.3.1",
     "less": "^3.0.4",
     "less-loader": "^4.1.0",

@@ -8,7 +8,7 @@ defmodule BurdaWeb.LayoutView do
   @index_js_path "commons.js"
   @index_css_js_path "commons.js"
   @index_css_path "commons.css"
-  @offline_template_folder "priv/static/service-worker/templates"
+  @offline_template_folder "front-end/src/templates"
 
   @css_map %{
     tag_name: "link",

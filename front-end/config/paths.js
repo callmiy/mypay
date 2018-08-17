@@ -1,3 +1,4 @@
+// tslint:disable:object-literal-sort-keys
 "use strict";
 
 const path = require("path");
@@ -9,15 +10,15 @@ const entryJs = (name, entry) => ({
   name: `js/${name}`,
   path: resolveApp(entry ? `src/${name}/${entry}` : "src/app.ts")
 });
-const entryCss = (name, path) => {
-  if (path.map === undefined) {
+const entryCss = (name, pathStr) => {
+  if (pathStr.map === undefined) {
     // it's a string
-    path = resolveApp(`src/${name}/${path}`);
+    pathStr = resolveApp(`src/${name}/${pathStr}`);
   }
 
   return {
     name: "css/" + name,
-    path
+    path: pathStr
   };
 };
 
@@ -71,5 +72,7 @@ module.exports = {
   // appTsProdConfig: resolveApp("tsconfig.prod.json"),
   appTsLint: resolveApp("tslint.json"),
 
-  semanticThemeConfig: resolveApp("semantic-theme/theme.config")
+  semanticThemeConfig: resolveApp("semantic-theme/theme.config"),
+
+  handleBarsHelperDir: resolveApp("src/templates/helpers")
 };

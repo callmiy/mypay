@@ -1,4 +1,4 @@
-importScripts("handlebars.runtime.min.js", "templates/templates.js");
+importScripts("handlebars.runtime.min.js", "templates.js");
 
 const CACHE_PREFIX = "THE-SHIFT-WORKER-THINGS";
 const CACHE_VERSION = 5;

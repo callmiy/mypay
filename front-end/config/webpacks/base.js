@@ -121,6 +121,14 @@ module.exports = {
         test: /graphql\/.+\.ts$/,
         exclude: /node_modules/,
         loader: "graphql-tag/loader"
+      },
+
+      {
+        test: /\.handlebars$/,
+        loader: "handlebars-loader",
+        query: {
+          helperDirs: paths.handleBarsHelperDir
+        }
       }
     ]
   },
@@ -163,11 +171,13 @@ module.exports = {
       ".tsx",
       ".web.js",
       ".js",
-      ".json"
+      ".json",
+      ".handlebars"
     ],
 
     alias: {
       "../../theme.config$": paths.semanticThemeConfig
+      // handlebars: "handlebars/lib/handlebars.runtime.js"
     }
   }
 };
