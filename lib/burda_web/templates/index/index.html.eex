@@ -2,16 +2,8 @@
 
   <div class="main-index">
     <div class="shift-summaries">
-      <div class="earnings-summary">
-        <span class="label">
-          Total Earnings &nbsp; &nbsp;
-          <%= assigns[:current_month] || "" %>
-        </span>
-
-        <span class="amount">
-          &euro;
-          <%= total_earnings(all_shifts) %>
-        </span>
+      <div id="shift__earnings-summary" class="shift__earnings-summary">
+        <%= render_shift_earnings_summary_template(current_month: assigns[:current_month], all_shifts: assigns[:all_shifts] ) || "" %>
       </div>
 
       <div class="hours-earnings header">

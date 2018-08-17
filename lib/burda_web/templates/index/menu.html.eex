@@ -4,7 +4,7 @@
       <i class="content icon"></i>
     </a>
 
-    <div class="item index-route-menu__title">
+    <div id="index-route-menu__title" class="item index-route-menu__title">
       <%= assigns[:current_month] || "{{ currentMonth }}" %>
     </div>
 
