@@ -13,15 +13,25 @@
         <select name="metaId" id="select-meta" class="ui search dropdown fluid">
           <option value="">-----</option>
 
-          <%= for meta_ <- (assigns[:metas] || []) do %>
-            <%{meta, selected} = meta_%>
-              <option value="<%= meta.id %>" <%=selected%> >
-                <%= Float.round(meta.break_time_secs/60, 1) %> min | &euro;
-                  <%= meta.pay_per_hr %> night:
-                    <%= meta.night_suppl_pay_pct %> &percnt; sunday:
-                      <%= meta.sunday_suppl_pay_pct %> &percnt;
-              </option>
-              <%end%>
+          <%= if assigns[:metas] do  %>
+
+            <%= for meta_ <- assigns[:metas] do %>
+              <%{meta, selected} = meta_%>
+                <option value="<%= meta.id %>" <%=selected%> >
+                  <%= Float.round(meta.break_time_secs/60, 1) %> min | &euro;
+                    <%= meta.pay_per_hr %> night:
+                      <%= meta.night_suppl_pay_pct %> &percnt; sunday:
+                        <%= meta.sunday_suppl_pay_pct %> &percnt;
+                </option>
+                <%end%>
+
+                  <% else %>
+                    {{#each metas}}
+                    <option value="{{id}}" {{selected}}>
+                      {{breakTimeSecs}} min | &euro; {{payPerHr}} night: {{nightSupplPayPct}} &percnt; sunday: {{sundaySupplPayPct}} &percnt;
+                    </option>
+                    {{/each}}
+                    <% end %>
         </select>
 
         <div id="get-new-meta-form-button" class="ui label">
@@ -44,13 +54,20 @@
         <div>
           <select name="dayOfMonth" id="day-of-month" class="ui search dropdown">
             <option value="">Day</option>
-
-            <%= for days_of_month <- (assigns[:days_of_month] || []) do %>
-              <%{day, val} = days_of_month%>
-                <option value="<%= day %>" <%=val.selected%>>
-                  <%= val.display %>
-                </option>
-                <%end%>
+            <%= if assigns[:days_of_month] do %>
+              <%= for days_of_month <- assigns[:days_of_month]  do %>
+                <%{day, val} = days_of_month%>
+                  <option value="<%= day %>" <%=val.selected%>>
+                    <%= val.display %>
+                  </option>
+                  <%end%>
+                    <% else %>
+                      {{#each daysOfMonth}}
+                      <option value="{{@key}}" {{selected}}>
+                        {{display}}
+                      </option>
+                      {{/each}}
+                      <%end%>
           </select>
 
           <div class="new-shift-form__error form__error hidden"></div>
@@ -60,12 +77,20 @@
           <select name="monthOfYear" id="month-of-year" class="ui search dropdown">
             <option value="">Month</option>
 
-            <%= for month_of_year <- assigns[:months_of_year] || [] do %>
-              <%{month, val} = month_of_year%>
-                <option value="<%= month %>" <%=val.selected%>>
-                  <%= val.display %>
-                </option>
-                <%end%>
+            <%= if assigns[:months_of_year] do %>
+              <%= for month_of_year <- assigns[:months_of_year] do %>
+                <%{month, val} = month_of_year%>
+                  <option value="<%= month %>" <%=val.selected%>>
+                    <%= val.display %>
+                  </option>
+                  <%end%>
+                    <% else %>
+                      {{#each monthOfYear}}
+                      <option value="{{@key}}" {{selected}}>
+                        {{display}}
+                      </option>
+                      {{/each}}
+                      <%end%>
           </select>
 
           <div class="new-shift-form__error form__error hidden"></div>
@@ -75,12 +100,20 @@
           <select name="year" id="year" class="ui search dropdown">
             <option value="">Year</option>
 
-            <%= for year_ <- (assigns[:years] || []) do %>
-              <%{year, selection} = year_%>
-                <option value="<%= year %>" <%=selection%>>
-                  <%= year %>
-                </option>
-                <%end%>
+            <%= if assigns[:years] do  %>
+              <%= for year_ <- assigns[:years] do %>
+                <%{year, selection} = year_%>
+                  <option value="<%= year %>" <%=selection%>>
+                    <%= year %>
+                  </option>
+                  <%end%>
+                    <% else %>
+                      {{#each years}}
+                      <option value="{{@key}}" {{selected}}>
+                        {{@key}}
+                      </option>
+                      {{/each}}
+                      <%end%>
           </select>
 
           <div class="new-shift-form__error form__error hidden"></div>
@@ -106,14 +139,14 @@
         <div>
           <%shift_start_time = assigns[:shift_start_time] || %{} %>
             <input name="startTimeHr" id="start-time-hour" name="start-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
-              maxlength="2" value="<%= shift_start_time[:hour] || ~s() %>">
+              maxlength="2" value="<%= shift_start_time[:hour] || ~s({{ startTimeHr }}) %>">
 
             <div class="new-shift-form__error form__error hidden"></div>
         </div>
 
         <div>
           <input name="startTimeMin" id="start-time-min" name="start-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
-            maxlength="2" value="<%= shift_start_time[:minute] || ~s() %>">
+            maxlength="2" value="<%= shift_start_time[:minute] || ~s({{ startTimeMin }}) %>">
 
           <div class="new-shift-form__error form__error hidden"></div>
         </div>
@@ -135,14 +168,14 @@
         <div>
           <%shift_end_time = assigns[:shift_end_time] || %{} %>
             <input name="endTimeHr" id="end-time-hour" name="end-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
-              maxlength="2" value="<%= shift_end_time[:hour] || ~s()  %>">
+              maxlength="2" value="<%= shift_end_time[:hour] || ~s({{ endTimeHr }})  %>">
 
             <div class="new-shift-form__error form__error hidden"></div>
         </div>
 
         <div>
           <input name="endTimeMin" id="end-time-min" name="end-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
-            maxlength="2" value="<%= shift_end_time[:minute] || ~s()  %>">
+            maxlength="2" value="<%= shift_end_time[:minute] || ~s({{ endTimeMin }})  %>">
 
           <div class="new-shift-form__error form__error hidden"></div>
         </div>

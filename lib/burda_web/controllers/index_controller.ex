@@ -1,16 +1,12 @@
 defmodule BurdaWeb.IndexController do
   use Phoenix.Controller
 
-  # alias BurdaWeb.Schema
-  # alias BurdaWeb.Query.Shift, as: Query
   alias Burda.Shift.Api
   alias BurdaWeb.LayoutView
   alias BurdaWeb.IndexView
 
   @main_css_handlebar "{{{ mainCss }}}"
   @main_js_handlebar "{{{ mainJs }}}"
-  @index_css_path LayoutView.index_css_path()
-  @index_js_path LayoutView.index_js_path()
 
   @page_js "routes/index.js"
   @page_css "routes/index.css"
@@ -34,6 +30,42 @@ defmodule BurdaWeb.IndexController do
     shift_detail_offline_template: "shiftDetailTemplate",
     shift_earnings_summary_offline_template: "shiftEarningSummaryTemplate"
   ]
+
+  @offline_template_assigns_query """
+    fragment ChildFragment on MainChildTemplateAssigns {
+      pageTitle
+        pageMainJs
+        pageMainCss
+        pageOtherCss
+      cacheStatic
+    }
+
+    query GetAllTemplates($shiftNew: GetMainChildTemplateAssigns!, $index: GetMainChildTemplateAssigns! ) {
+
+
+      shiftNew: mainChildTemplateAssigns(route: $shiftNew ) {
+        ...ChildFragment
+      }
+
+      index: mainChildTemplateAssigns(route: $index ) {
+        ...ChildFragment
+      }
+
+      app: mainAppTemplateAssigns {
+        mainJs
+        mainCss
+      }
+    }
+  """
+
+  @offline_template_assigns_query_variables %{
+    "shiftNew" => %{
+      "action" => "SHIFT_NEW"
+    },
+    "index" => %{
+      "action" => "INDEX_NEW"
+    }
+  }
 
   plug(:assign_defaults)
 
@@ -81,23 +113,16 @@ defmodule BurdaWeb.IndexController do
 
   def index_offline_template_assigns,
     do: %{
-      pageTitle: "Shift Times",
-      pageMainCss: LayoutView.page_css(@page_css, nil),
-      pageMainJs: LayoutView.page_js(@page_js, nil),
-      mainCss: LayoutView.page_css(@index_css_path, nil),
-      mainJs: LayoutView.page_js(@index_js_path, nil),
-      cacheStatic:
+      page_title: "Shift Times",
+      page_main_css: LayoutView.page_css(@page_css, nil),
+      page_main_js: LayoutView.page_js(@page_js, nil),
+      cache_static:
         [
           LayoutView.js_css_src(:css, @page_css),
           LayoutView.js_css_src(:js, @page_js)
         ]
         |> Enum.map(fn {_, path} -> path end)
     }
-
-  def get_index_offline_template_assigns(conn, _),
-    do:
-      conn
-      |> json(index_offline_template_assigns())
 
   def index_offline_templates, do: @index_offline_templates
 
@@ -117,4 +142,15 @@ defmodule BurdaWeb.IndexController do
         main_css_handlebar: @main_css_handlebar,
         main_js_handlebar: @main_js_handlebar
       )
+
+  def get_offline_template_assigns(conn, _) do
+    {_, data} =
+      Absinthe.run(
+        @offline_template_assigns_query,
+        BurdaWeb.Schema,
+        variables: @offline_template_assigns_query_variables
+      )
+
+    json(conn, data)
+  end
 end

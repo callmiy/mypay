@@ -12,9 +12,22 @@ const renderIndexPath = () =>
   caches
     .match("/offline-template-assigns")
     .then(resp => resp.json())
-    .then(data => {
+    .then(jsonResp => {
+      if (jsonResp.errors) {
+        return new Response("<h1>This page is not available!</h1>", {
+          headers: {
+            "Content-Type": "text/html"
+          }
+        });
+      }
+
+      const {
+        data: { app, index }
+      } = jsonResp;
+
       const html = appShellTemplate({
-        ...data,
+        ...app,
+        ...index,
         pageMainContent: Handlebars.templates.indexTemplate(),
         pageTopMenu: Handlebars.templates.indexMenuTemplate()
       });

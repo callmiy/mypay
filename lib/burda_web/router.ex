@@ -19,7 +19,7 @@ defmodule BurdaWeb.Router do
     get(
       "/offline-template-assigns",
       IndexController,
-      :get_index_offline_template_assigns
+      :get_offline_template_assigns
     )
 
     get("/skeleton", IndexController, :index_skeleton)

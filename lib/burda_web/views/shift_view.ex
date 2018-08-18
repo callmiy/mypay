@@ -6,5 +6,5 @@ defmodule BurdaWeb.ShiftView do
   """
 
   def top_menu(assigns),
-    do: render("menu.html", go_back_url: assigns[:go_back_url] || "")
+    do: render("menu.html", go_back_url: assigns[:go_back_url])
 end
