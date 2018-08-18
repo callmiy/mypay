@@ -97,12 +97,6 @@ defmodule BurdaWeb.Schema.Adhoc do
 
     @desc "Other CSS link tags - usually preloaded for child templates"
     field(:page_other_css, list_of(:string))
-
-    @desc ~S"""
-    A list of paths that should be cached by the client. This will mostly be
-    the href and src of the css and js above.
-    """
-    field(:cache_static, list_of(:string))
   end
 
   # --------------------------------ENUMS-----------------------------------

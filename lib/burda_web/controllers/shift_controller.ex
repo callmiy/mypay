@@ -142,13 +142,7 @@ defmodule BurdaWeb.ShiftController do
       page_title: "New Shift",
       page_main_css: LayoutView.page_css(@page_css, nil),
       page_main_js: LayoutView.page_css(@page_js, nil),
-      page_other_css: LayoutView.page_css(@new_form_css_path, nil),
-      cache_static:
-        [
-          LayoutView.js_css_src(:css, @page_css),
-          LayoutView.js_css_src(:js, @page_js)
-        ]
-        |> Enum.map(fn {_, path} -> path end)
+      page_other_css: LayoutView.page_css(@new_form_css_path, nil)
     }
 
   def new_offline_templates, do: @new_offline_templates

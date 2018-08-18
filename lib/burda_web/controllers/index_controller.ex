@@ -39,7 +39,6 @@ defmodule BurdaWeb.IndexController do
         pageMainJs
         pageMainCss
         pageOtherCss
-      cacheStatic
     }
 
     query GetAllTemplates($shiftNew: GetMainChildTemplateAssigns!, $index: GetMainChildTemplateAssigns! ) {
@@ -111,13 +110,7 @@ defmodule BurdaWeb.IndexController do
     do: %{
       page_title: "Shift Times",
       page_main_css: LayoutView.page_css(@page_css, nil),
-      page_main_js: LayoutView.page_js(@page_js, nil),
-      cache_static:
-        [
-          LayoutView.js_css_src(:css, @page_css),
-          LayoutView.js_css_src(:js, @page_js)
-        ]
-        |> Enum.map(fn {_, path} -> path end)
+      page_main_js: LayoutView.page_js(@page_js, nil)
     }
 
   def index_offline_templates, do: @index_offline_templates
