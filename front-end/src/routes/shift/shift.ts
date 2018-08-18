@@ -5,22 +5,24 @@ import { ValidationError } from "yup";
 import { showModal } from "../../components/modals";
 import { dismissModal } from "../../components/modals";
 import { NewMeta } from "../../components/new-meta-form/new-meta-form";
-import { sendChannelMsg as sendMetaChannelMsg } from "../../utils/meta-utils";
-import { Topic as MetaTopic } from "../../utils/meta-utils";
 import { CreateMeta } from "../../graphql/gen.types";
 import { CreateMeta_meta } from "../../graphql/gen.types";
+import { GetNewMetaForm } from "../../graphql/gen.types";
+import { GetNewMetaForm_newMetaForm } from "../../graphql/gen.types";
 import { setFieldError } from "../../utils/form-things";
 import { clearFieldErrors } from "../../utils/form-things";
 import { formHasErrors } from "../../utils/form-things";
 import { getFieldAndErrorEls } from "../../utils/form-things";
-import { sendChannelMsg as sendShiftChannelMsg } from "../../utils/shift-utils";
-import { Topic as ShiftTopic } from "../../utils/shift-utils";
 import { toRunableDocument } from "../../graphql/helpers";
 import CREATE_SHIFT_GQL from "../../graphql/create-shift.mutation";
 import { htmlfyGraphQlErrors } from "../../graphql/helpers";
 import { setMainErrorClass } from "../../utils/form-things";
 import { FormThingsError } from "../../utils/form-things";
 import { docReady } from "../../app";
+import { getSocket } from "../../app";
+import NEW_META_FORM_GQL from "../../graphql/new-meta-form.query";
+
+const socket = getSocket();
 
 export interface JsonResponseNewMetaForm {
   html: string;
@@ -29,11 +31,12 @@ export interface JsonResponseNewMetaForm {
  * Get the HTML string that will be used to create new meta and store.
  */
 const getNewMetaForm = async () => {
-  sendMetaChannelMsg({
-    topic: MetaTopic.NEW_FORM,
+  socket.queryGraphQl({
+    params: toRunableDocument(NEW_META_FORM_GQL),
     ok: msg => {
-      const response = msg as JsonResponseNewMetaForm;
-      window.appInterface.newMetaFormData = response;
+      const response = msg as GetNewMetaForm;
+      const newMetaForm = response.newMetaForm as GetNewMetaForm_newMetaForm;
+      window.appInterface.newMetaFormData = newMetaForm;
     }
   });
 };
@@ -348,11 +351,8 @@ class Shift {
           "endTimeMin"
         ].forEach(k => delete shift[k]);
 
-        sendShiftChannelMsg({
-          topic: ShiftTopic.CREATE,
-
+        socket.queryGraphQl({
           params: toRunableDocument(CREATE_SHIFT_GQL, { shift }),
-
           ok: () => {
             window.location.href = "/";
           },

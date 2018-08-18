@@ -1,6 +1,8 @@
 defmodule BurdaWeb.Schema do
   use Absinthe.Schema
 
+  @dialyzer {:no_return, run_query: 1, run_query: 2}
+
   import_types(Absinthe.Type.Custom)
   import_types(BurdaWeb.Schema.Types)
   import_types(BurdaWeb.Schema.Shift)
@@ -13,6 +15,7 @@ defmodule BurdaWeb.Schema do
   query do
     import_fields(:shift_query)
     import_fields(:adhoc_query)
+    import_fields(:meta_query)
   end
 
   mutation do
@@ -32,4 +35,10 @@ defmodule BurdaWeb.Schema do
   def plugins do
     [Absinthe.Middleware.Dataloader] ++ Absinthe.Plugin.defaults()
   end
+
+  def run_query(%{"query" => query} = params),
+    do: run_query(query, params["variables"] || %{})
+
+  def run_query(query, variables \\ %{}),
+    do: Absinthe.run(query, __MODULE__, variables: variables)
 end

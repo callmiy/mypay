@@ -3,16 +3,20 @@ defmodule BurdaWeb.DataChannel do
 
   @dialyzer {:no_return, handle_in: 3}
 
-  alias BurdaWeb.UserSocket
-
   @doc false
   def join("data:data", _message, socket), do: {:ok, socket}
 
   @doc false
-  def handle_in("all-shifts", params, socket),
-    do: {
-      :reply,
-      UserSocket.run_query(params),
-      socket
-    }
+  def handle_in("graphql", params, socket) do
+    response =
+      case BurdaWeb.Schema.run_query(params) do
+        {:ok, %{errors: errors}} ->
+          {:error, %{errors: errors}}
+
+        {:ok, %{data: data}} ->
+          {:ok, data}
+      end
+
+    {:reply, response, socket}
+  end
 end

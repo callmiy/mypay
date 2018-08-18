@@ -23,6 +23,17 @@ defmodule BurdaWeb.Schema.Meta do
     field(:updated_at, non_null(:iso_datetime))
   end
 
+  object :new_meta_form do
+    field :html, non_null(:string) do
+      resolve(fn _, _, _ ->
+        {
+          :ok,
+          Phoenix.View.render_to_string(BurdaWeb.MetaView, "new-meta.html", [])
+        }
+      end)
+    end
+  end
+
   @desc "Inputs for creating a meta"
   input_object :create_meta_input do
     field(:break_time_secs, :integer)
@@ -32,7 +43,7 @@ defmodule BurdaWeb.Schema.Meta do
   end
 
   # MUTATION
-  @desc "Queries allowed on Meta object"
+  @desc "Mutations allowed on Meta object"
   object :meta_mutation do
     @desc "Create a meta"
     field :meta, type: :meta do
@@ -41,4 +52,13 @@ defmodule BurdaWeb.Schema.Meta do
       resolve(&Resolver.create/3)
     end
   end
+
+  # QUERIES
+  @desc "Queries allowed on Meta object"
+  object :meta_query do
+    @desc "Get the form for creating a meta"
+    field(:new_meta_form, type: :new_meta_form, resolve: &empty/3)
+  end
+
+  defp empty(_, _, _), do: {:ok, %{}}
 end

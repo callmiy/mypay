@@ -1,13 +1,7 @@
 defmodule BurdaWeb.UserSocket do
   use Phoenix.Socket
 
-  @dialyzer {:no_return, run_query: 1}
-
-  alias BurdaWeb.Schema
-
   ## Channels
-  channel("meta:*", BurdaWeb.MetaChannel)
-  channel("shift:*", BurdaWeb.ShiftChannel)
   channel("data:*", BurdaWeb.DataChannel)
 
   ## Transports
@@ -45,14 +39,4 @@ defmodule BurdaWeb.UserSocket do
   #
   # Returning `nil` makes this socket anonymous.
   def id(_socket), do: nil
-
-  def run_query(%{"query" => query} = params) do
-    case Absinthe.run(query, Schema, variables: params["variables"] || %{}) do
-      {:ok, %{errors: errors}} ->
-        {:error, %{errors: errors}}
-
-      {:ok, %{data: data}} ->
-        {:ok, data}
-    end
-  end
 end

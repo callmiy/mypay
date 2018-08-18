@@ -2,7 +2,6 @@ defmodule BurdaWeb.ShiftController do
   use Phoenix.Controller
 
   alias Burda.Meta.Api, as: MetaApi
-  alias BurdaWeb.MetaWeb
   alias BurdaWeb.LayoutView
   alias BurdaWeb.ShiftView
 
@@ -11,6 +10,7 @@ defmodule BurdaWeb.ShiftController do
   @page_css "routes/shift.css"
   @page_js "routes/shift.js"
   @shift_duration_hrs_seconds 8 * 60 * 60
+  @new_form_css_path "components/new-meta-form.css"
 
   @new_offline_templates [
     new_offline_template: "newShiftTemplate",
@@ -131,12 +131,6 @@ defmodule BurdaWeb.ShiftController do
     )
   end
 
-  def new_skeleton(conn, _params) do
-    conn
-    |> put_resp_header("content-type", "text/html")
-    |> resp(200, new_offline_template())
-  end
-
   def new_offline_template,
     do: Phoenix.View.render_to_string(ShiftView, @new_shift_html, [])
 
@@ -148,7 +142,7 @@ defmodule BurdaWeb.ShiftController do
       page_title: "New Shift",
       page_main_css: LayoutView.page_css(@page_css, nil),
       page_main_js: LayoutView.page_css(@page_js, nil),
-      page_other_css: MetaWeb.new_form_css(),
+      page_other_css: LayoutView.page_css(@new_form_css_path, nil),
       cache_static:
         [
           LayoutView.js_css_src(:css, @page_css),
@@ -166,6 +160,8 @@ defmodule BurdaWeb.ShiftController do
         conn,
         page_css: @page_css,
         page_js: @page_js,
-        preload_resources: MetaWeb.preload_resources()
+        preload_resources: [
+          LayoutView.js_css_src(:css, @new_form_css_path)
+        ]
       )
 end

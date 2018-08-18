@@ -22,9 +22,7 @@ defmodule BurdaWeb.Router do
       :get_offline_template_assigns
     )
 
-    get("/skeleton", IndexController, :index_skeleton)
     get("/", IndexController, :index)
-    get("/shifts/new/skeleton", ShiftController, :new_skeleton)
     get("/shifts/new", ShiftController, :new)
   end
 

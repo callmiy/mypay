@@ -1,6 +1,8 @@
 defmodule BurdaWeb.IndexController do
   use Phoenix.Controller
 
+  @dialyzer {:no_return, get_offline_template_assigns: 2}
+
   alias Burda.Shift.Api
   alias BurdaWeb.LayoutView
   alias BurdaWeb.IndexView
@@ -81,12 +83,6 @@ defmodule BurdaWeb.IndexController do
     )
   end
 
-  def index_skeleton(conn, _params) do
-    conn
-    |> put_resp_header("content-type", "text/html")
-    |> resp(200, index_offline_template())
-  end
-
   def assign_defaults(conn, _) do
     today = Date.utc_today()
 
@@ -145,10 +141,9 @@ defmodule BurdaWeb.IndexController do
 
   def get_offline_template_assigns(conn, _) do
     {_, data} =
-      Absinthe.run(
+      BurdaWeb.Schema.run_query(
         @offline_template_assigns_query,
-        BurdaWeb.Schema,
-        variables: @offline_template_assigns_query_variables
+        @offline_template_assigns_query_variables
       )
 
     json(conn, data)

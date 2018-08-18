@@ -12,20 +12,23 @@ import { getDb } from "./database";
 import { NEW_SHIFT_URL_TYPENAME } from "./constants";
 import { SHIFT_TYPENAME } from "./constants";
 import { OFFLINE_TOKEN_TYPENAME } from "./constants";
+import { DATA_CHANNEL_TOPIC_GRAPHQL } from "./constants";
 
 const database = getDb();
 
 // tslint:disable-next-line:no-any
 type OnChannelMessage = (msg: any) => void;
 
-export interface ChannelMessage {
-  topic: string;
+interface ChannelMessageNoTopic {
   // tslint:disable-next-line:no-any
   params?: any;
-
   ok: OnChannelMessage;
   // tslint:disable-next-line:no-any
   error?: (reason: any) => void;
+}
+
+export interface ChannelMessage extends ChannelMessageNoTopic {
+  topic: string;
 }
 
 export class AppSocket {
@@ -70,9 +73,7 @@ export class AppSocket {
       variables
     );
 
-    this.sendChannelMsg(this.dataChannelName, this.dataChannel, {
-      topic: "all-shifts",
-
+    this.queryGraphQl({
       ok: this.writeInitialDataToDb,
       params: initialDataQuery
     });
@@ -241,5 +242,12 @@ export class AppSocket {
         });
       });
   };
+
+  queryGraphQl = (params: ChannelMessageNoTopic) =>
+    this.sendChannelMsg(this.dataChannelName, this.dataChannel, {
+      topic: DATA_CHANNEL_TOPIC_GRAPHQL,
+
+      ...params
+    });
 }
 export default AppSocket;

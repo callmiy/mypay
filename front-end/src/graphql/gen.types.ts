@@ -119,6 +119,22 @@ export interface GetInitialSocketDataVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GetNewMetaForm
+// ====================================================
+
+export interface GetNewMetaForm_newMetaForm {
+  html: string;
+}
+
+export interface GetNewMetaForm {
+  newMetaForm: GetNewMetaForm_newMetaForm | null;  // Get the form for creating a meta
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL fragment: NewShiftUrlFragment
 // ====================================================
 

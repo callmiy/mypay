@@ -1,8 +1,6 @@
 import * as Yup from "yup";
 import { ValidationError } from "yup";
 
-import { sendChannelMsg } from "../../utils/meta-utils";
-import { Topic } from "../../utils/meta-utils";
 import CREATE_META from "../../graphql/create-meta.mutation";
 import { toRunableDocument } from "../../graphql/helpers";
 import { stringifyGraphQlErrors } from "../../graphql/helpers";
@@ -13,6 +11,9 @@ import { clearFieldErrors } from "../../utils/form-things";
 import { setMainErrorClass } from "../../utils/form-things";
 import { formHasErrors } from "../../utils/form-things";
 import { getFieldAndErrorEls } from "../../utils/form-things";
+import { getSocket } from "../../app";
+
+const socket = getSocket();
 
 enum FormElementsName {
   BREAK_TIME_SECS = "break_time_secs",
@@ -151,9 +152,7 @@ export class NewMeta {
     this.schema
       .validate(data, { abortEarly: false })
       .then((meta: { [k: string]: number }) => {
-        sendChannelMsg({
-          topic: Topic.CREATE,
-
+        socket.queryGraphQl({
           params: toRunableDocument(CREATE_META, {
             // The user input is in minutes, so we convert break_time_secs to
             // seconds by multiplying minutes by 60
