@@ -1,35 +1,35 @@
 importScripts("handlebars.runtime.min.js", "templates.js");
 
 const CACHE_PREFIX = "THE-SHIFT-WORKER-THINGS";
-const CACHE_VERSION = 2;
+const CACHE_VERSION = 1;
 const CACHE_NAME = `${CACHE_PREFIX}-v${CACHE_VERSION}`;
 const appShellTemplate = Handlebars.templates.appShellTemplate;
 
 const addAllToCache = data =>
   caches.open(CACHE_NAME).then(cache => cache.addAll(data));
 
-const renderIndexPath = () =>
+const pageNotAvailable = () =>
+  new Response("<h1>This page is not available!</h1>", {
+    headers: {
+      "Content-Type": "text/html"
+    }
+  });
+
+const renderHtml = (staticName, templateAssigns) =>
   caches
     .match("/offline-template-assigns")
     .then(resp => resp.json())
     .then(jsonResp => {
       if (jsonResp.errors) {
-        return new Response("<h1>This page is not available!</h1>", {
-          headers: {
-            "Content-Type": "text/html"
-          }
-        });
+        return pageNotAvailable();
       }
 
-      const {
-        data: { app, index }
-      } = jsonResp;
+      const { data } = jsonResp;
 
       const html = appShellTemplate({
-        ...app,
-        ...index,
-        pageMainContent: Handlebars.templates.indexTemplate(),
-        pageTopMenu: Handlebars.templates.indexMenuTemplate()
+        ...data.app,
+        ...(data[staticName] || {}),
+        ...(templateAssigns || {})
       });
 
       return new Response(html, {
@@ -40,7 +40,17 @@ const renderIndexPath = () =>
     });
 
 const renderRoutes = {
-  "/": renderIndexPath
+  "/": () =>
+    renderHtml("index", {
+      pageMainContent: Handlebars.templates.indexTemplate(),
+      pageTopMenu: Handlebars.templates.indexMenuTemplate()
+    }),
+
+  "/shifts/new": () =>
+    renderHtml("shiftNew", {
+      pageMainContent: Handlebars.templates.newShiftTemplate(),
+      pageTopMenu: Handlebars.templates.newShiftMenuTemplate()
+    })
 };
 
 self.addEventListener("install", event => {
