@@ -41,4 +41,18 @@ defmodule BurdaWeb.Schema do
 
   def run_query(query, variables \\ %{}),
     do: Absinthe.run(query, __MODULE__, variables: variables)
+
+  def get_datetime_id(other \\ "")
+
+  def get_datetime_id(other) when is_binary(other),
+    do:
+      DateTime.utc_now()
+      |> DateTime.to_iso8601()
+      |> Kernel.<>(other)
+
+  def get_datetime_id(other),
+    do:
+      other
+      |> inspect()
+      |> get_datetime_id()
 end

@@ -8,6 +8,7 @@ defmodule BurdaWeb.Schema.Adhoc do
   alias BurdaWeb.LayoutView
   alias BurdaWeb.IndexController
   alias BurdaWeb.ShiftController
+  alias BurdaWeb.Schema
 
   @offline_token_id :burda
                     |> Application.get_env(:frontend)
@@ -20,7 +21,7 @@ defmodule BurdaWeb.Schema.Adhoc do
   @desc "New shift URL"
   object :new_shift_url do
     field :_id, non_null(:id) do
-      resolve(fn _, _, _ -> {:ok, DateTime.to_iso8601(DateTime.utc_now())} end)
+      resolve(fn _, _, _ -> {:ok, Schema.get_datetime_id("new-shift-url")} end)
     end
 
     field :schema_type, non_null(:string) do
@@ -44,7 +45,7 @@ defmodule BurdaWeb.Schema.Adhoc do
     end
 
     field :_id, non_null(:string) do
-      resolve(fn _, _, _ -> {:ok, DateTime.to_iso8601(DateTime.utc_now())} end)
+      resolve(fn _, _, _ -> {:ok, Schema.get_datetime_id("off-line-token")} end)
     end
 
     field(

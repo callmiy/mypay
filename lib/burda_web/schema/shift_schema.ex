@@ -7,13 +7,14 @@ defmodule BurdaWeb.Schema.Shift do
   import Absinthe.Resolution.Helpers, only: [dataloader: 1]
 
   alias BurdaWeb.Resolver.Shift, as: Resolver
+  alias BurdaWeb.Schema
 
   @desc "A shift"
   object :shift do
     field(:id, non_null(:id))
 
     field :_id, non_null(:id) do
-      resolve(fn _, _, _ -> {:ok, DateTime.to_iso8601(DateTime.utc_now())} end)
+      resolve(fn shift, _, _ -> {:ok, Schema.get_datetime_id(shift.id)} end)
     end
 
     field(:date, non_null(:date))
