@@ -30,6 +30,15 @@ defmodule BurdaWeb.Schema.ShiftTest do
       total_pay = Decimal.to_string(shift.total_pay)
 
       meta_id = Integer.to_string(meta.id)
+      queryMap = Query.query_all()
+
+      query = """
+        query GetAllShifts( #{queryMap.parameters} ) {
+          #{queryMap.query}
+        }
+
+        #{queryMap.fragments}
+      """
 
       assert {:ok,
               %{
@@ -55,7 +64,7 @@ defmodule BurdaWeb.Schema.ShiftTest do
                     }
                   ]
                 }
-              }} = Absinthe.run(Query.query_all(), Schema)
+              }} = Absinthe.run(query, Schema)
 
       assert Regex.match?(@date_time_pattern, id_)
     end
@@ -69,6 +78,16 @@ defmodule BurdaWeb.Schema.ShiftTest do
       shift1_id = Integer.to_string(shift1.id)
       shift2_id = Integer.to_string(shift2.id)
       shift3_id = Integer.to_string(shift3.id)
+
+      queryMap = Query.query_all()
+
+      query = """
+        query GetAllShifts( #{queryMap.parameters} ) {
+          #{queryMap.query}
+        }
+
+        #{queryMap.fragments}
+      """
 
       assert {:ok,
               %{
@@ -87,7 +106,7 @@ defmodule BurdaWeb.Schema.ShiftTest do
                 }
               }} =
                Absinthe.run(
-                 Query.query_all(),
+                 query,
                  Schema,
                  variables: %{
                    "shift" => %{

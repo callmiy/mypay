@@ -32,8 +32,7 @@ defmodule BurdaWeb.Query.Shift do
     {frag_name, frag} = all_fields_fragment()
     {meta_frag_name, meta_frag} = MetaQuery.all_fields_fragment()
 
-    """
-    query GetAllShifts($shift: GetShiftInput) {
+    query = """
       shifts(shift: $shift) {
         ...#{frag_name}
 
@@ -41,11 +40,16 @@ defmodule BurdaWeb.Query.Shift do
           ...#{meta_frag_name}
         }
       }
-    }
-
-    #{frag}
-    #{meta_frag}
     """
+
+    parameters = "$shift: GetShiftInput"
+    fragments = ~s( #{frag} #{meta_frag} )
+
+    %{
+      query: query,
+      fragments: fragments,
+      parameters: parameters
+    }
   end
 
   def create_shift do
