@@ -13,6 +13,11 @@
         <select name="metaId" id="select-meta" class="ui search dropdown fluid">
           <option value="">-----</option>
 
+                    {{#each metas}}
+                    <option value="{{id}}" {{selected}}>
+                      {{breakTimeSecs}} min | &euro; {{payPerHr}} night: {{nightSupplPayPct}} &percnt; sunday: {{sundaySupplPayPct}} &percnt;
+                    </option>
+                    {{/each}}
         </select>
 
         <div id="get-new-meta-form-button" class="ui label">
@@ -36,6 +41,11 @@
           <select name="dayOfMonth" id="day-of-month" class="ui search dropdown">
             <option value="">Day</option>
 
+                      {{#each daysOfMonth}}
+                      <option value="{{@key}}" {{selected}}>
+                        {{display}}
+                      </option>
+                      {{/each}}
           </select>
 
           <div class="new-shift-form__error form__error hidden"></div>
@@ -45,6 +55,12 @@
           <select name="monthOfYear" id="month-of-year" class="ui search dropdown">
             <option value="">Month</option>
 
+
+                      {{#each monthOfYear}}
+                      <option value="{{@key}}" {{selected}}>
+                        {{display}}
+                      </option>
+                      {{/each}}
           </select>
 
           <div class="new-shift-form__error form__error hidden"></div>
@@ -54,6 +70,12 @@
           <select name="year" id="year" class="ui search dropdown">
             <option value="">Year</option>
 
+
+                      {{#each years}}
+                      <option value="{{@key}}" {{selected}}>
+                        {{@key}}
+                      </option>
+                      {{/each}}
           </select>
 
           <div class="new-shift-form__error form__error hidden"></div>
@@ -78,14 +100,14 @@
       <div class="new-shift-form__fields two">
         <div>
             <input name="startTimeHr" id="start-time-hour" name="start-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
-              maxlength="2" value="">
+              maxlength="2" value="{{ startTimeHr }}">
 
             <div class="new-shift-form__error form__error hidden"></div>
         </div>
 
         <div>
           <input name="startTimeMin" id="start-time-min" name="start-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
-            maxlength="2" value="">
+            maxlength="2" value="{{ startTimeMin }}">
 
           <div class="new-shift-form__error form__error hidden"></div>
         </div>
@@ -106,14 +128,14 @@
       <div class="new-shift-form__fields two">
         <div>
             <input name="endTimeHr" id="end-time-hour" name="end-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
-              maxlength="2" value="">
+              maxlength="2" value="{{ endTimeHr }}">
 
             <div class="new-shift-form__error form__error hidden"></div>
         </div>
 
         <div>
           <input name="endTimeMin" id="end-time-min" name="end-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
-            maxlength="2" value="">
+            maxlength="2" value="{{ endTimeMin }}">
 
           <div class="new-shift-form__error form__error hidden"></div>
         </div>
