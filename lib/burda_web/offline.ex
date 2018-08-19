@@ -26,6 +26,7 @@ defmodule BurdaWeb.Offline do
   @version_text "const CACHE_VERSION = "
   @cache_static_files_text "const CACHE_STATICS = "
   @css_css_pattern ~r/(css.+?\.css$)|(\.map$)/
+  @offline_template_folder "front-end/src/templates"
 
   def get_service_worker_cache_assets, do: @service_worker_cache_assets
 
@@ -35,6 +36,29 @@ defmodule BurdaWeb.Offline do
     File.close(file)
     File.write!(@service_worker_file, text)
   end
+
+  def generate_templates,
+    do:
+      [
+        {BurdaWeb.IndexController, :index_offline_templates},
+        {BurdaWeb.ShiftController, :new_offline_templates}
+      ]
+      |> Enum.flat_map(fn {module, templates_fun} ->
+        module
+        |> apply(templates_fun, [])
+        |> Enum.map(fn {template_fun, filename} ->
+          template_string = apply(module, template_fun, [])
+
+          filename =
+            Path.expand(
+              "#{filename}.handlebars",
+              @offline_template_folder
+            )
+
+          [filename, template_string]
+        end)
+      end)
+      |> Enum.map(fn [file, string] -> File.write!(file, string) end)
 
   defp read_file(file, acc) do
     case IO.read(file, :line) do

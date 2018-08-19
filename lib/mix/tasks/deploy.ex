@@ -5,7 +5,6 @@ defmodule Mix.Tasks.Deploy do
   Tasks for managing deployment of burda app
   """
 
-  alias BurdaWeb.LayoutView
   alias BurdaWeb.Offline
 
   @moduledoc ~S"""
@@ -26,7 +25,7 @@ defmodule Mix.Tasks.Deploy do
   def run(args), do: deploy(args)
 
   defp deploy(["compile", "templates", "prod"]) do
-    LayoutView.generate_offline_templates()
+    Offline.generate_templates()
 
     :ok =
       run_cmd(
@@ -37,7 +36,7 @@ defmodule Mix.Tasks.Deploy do
   end
 
   defp deploy(["compile", "templates", "dev"]) do
-    LayoutView.generate_offline_templates()
+    Offline.generate_templates()
 
     :ok =
       run_cmd(
