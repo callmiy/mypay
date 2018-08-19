@@ -13,3 +13,5 @@ alias BurdaWeb.IndexController
 alias BurdaWeb.IndexView
 alias BurdaWeb.ShiftController
 alias BurdaWeb.ShiftView
+alias BurdaWeb.Offline
+alias Mix.Tasks.Deploy
