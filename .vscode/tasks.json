@@ -42,6 +42,22 @@
     },
 
     {
+      "label": "iex -S mix phx.server prod local no deploy",
+      "type": "shell",
+      "command": "pg_ctl start && iex -S mix phx.server",
+      "windows": {
+        "command": "iex --werl -S mix phx.server"
+      },
+      "problemMatcher": [],
+      "options": {
+        "env": {
+          "PORT": "8018",
+          "MIX_ENV": "prod_local"
+        }
+      }
+    },
+
+    {
       "label": "iex -S mix",
       "type": "shell",
       "command": "pg_ctl start && iex -S mix",
