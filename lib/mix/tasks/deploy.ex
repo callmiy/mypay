@@ -6,19 +6,21 @@ defmodule Mix.Tasks.Deploy do
   """
 
   alias BurdaWeb.LayoutView
+  alias BurdaWeb.Offline
 
   @moduledoc ~S"""
   Task for deploying to heroku
   """
 
   @static_folder Path.expand("priv/static")
-  @static_folder_permanent Path.expand("priv/static.permanent")
   @front_end_folder Path.expand("front-end")
   @win_cmd "cmd.exe"
   @yarn "yarn"
   @dummy_string1 "defmodule Dummy do\nend\n"
   @dummy_string2 "defmodule Dummy do\n  def dummy, do: nil\nend\n"
   @dummy_path Path.expand("lib/mix/dummy.ex")
+  @static_folder_to_delete ["css", "fonts", "img", "js"]
+                           |> Enum.map(&Path.expand(&1, "priv/static"))
 
   @spec run([<<_::32>>, ...]) :: :ok
   def run(args), do: deploy(args)
@@ -46,7 +48,6 @@ defmodule Mix.Tasks.Deploy do
   end
 
   defp deploy(["local"]) do
-    :ok = copy_static_folder()
     :ok = reset_static_folder()
     deploy(["compile", "templates", "dev"])
     :ok = process_static_files()
@@ -57,7 +58,6 @@ defmodule Mix.Tasks.Deploy do
   defp deploy(["prod"]) do
     System.put_env("MIX_ENV", "prod")
 
-    :ok = copy_static_folder()
     :ok = reset_static_folder()
     deploy(["compile", "templates", "prod"])
     :ok = process_static_files()
@@ -85,31 +85,12 @@ defmodule Mix.Tasks.Deploy do
     System.delete_env("MIX_ENV")
   end
 
-  defp copy_static_folder do
-    case File.exists?(@static_folder) do
-      true -> File.cp_r!(@static_folder, @static_folder_permanent)
-      _ -> :ok
-    end
-
-    :ok
-  end
-
-  defp reset_static_folder do
-    case File.exists?(@static_folder) do
-      true -> File.rm_rf!(@static_folder)
-      _ -> :ok
-    end
-
-    File.mkdir_p!(@static_folder)
-    File.cp_r!(@static_folder_permanent, @static_folder)
-    :ok
-  end
-
   defp process_static_files do
     :ok = run_cmd(@yarn, ["deploy"], cd: @front_end_folder)
     Mix.Task.run("phx.digest")
-
+    Offline.rewrite_service_worker_file()
     toggle_dummy()
+    :ok
   end
 
   @spec toggle_dummy() :: :ok
@@ -146,6 +127,48 @@ defmodule Mix.Tasks.Deploy do
 
       status ->
         raise "#{cmd} failed: #{status}"
+    end
+  end
+
+  def reset_static_folder() do
+    Enum.each(
+      @static_folder_to_delete,
+      &if(File.exists?(&1), do: File.rm_rf!(&1))
+    )
+
+    "cache_manifest.json"
+    |> Path.expand(@static_folder)
+    |> File.read!()
+    |> Poison.decode!()
+    |> Map.get("latest", %{})
+    |> Map.values()
+    |> Enum.map(&Path.expand(&1, @static_folder))
+    |> Enum.filter(&File.exists?/1)
+    |> Enum.concat(reset_static_folder(Path.expand(@static_folder, ""), []))
+    |> Enum.each(&File.rm_rf!/1)
+
+    :ok
+  end
+
+  def reset_static_folder(path, acc) when is_list(acc) do
+    case File.dir?(path) do
+      true ->
+        paths =
+          path
+          |> File.ls!()
+          |> Enum.map(&Path.expand(&1, path))
+
+        acc =
+          paths
+          |> Enum.reject(&(File.dir?(&1) || Path.extname(&1) !== ".gz"))
+          |> Enum.concat(acc)
+
+        paths
+        |> Enum.filter(&File.dir?/1)
+        |> Enum.reduce(acc, &reset_static_folder(&1, &2))
+
+      _ ->
+        if Path.extname(path) == ".gz", do: [path | acc], else: acc
     end
   end
 end
