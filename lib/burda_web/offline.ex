@@ -27,12 +27,13 @@ defmodule BurdaWeb.Offline do
   @cache_static_files_text "const CACHE_STATICS = "
   @css_css_pattern ~r/(css.+?\.css$)|(\.map$)/
 
+  def get_service_worker_cache_assets, do: @service_worker_cache_assets
+
   def rewrite_service_worker_file do
     file = File.open!(@service_worker_file)
     text = read_file(file, [])
     File.close(file)
     File.write!(@service_worker_file, text)
-    text
   end
 
   defp read_file(file, acc) do
@@ -63,18 +64,18 @@ defmodule BurdaWeb.Offline do
     end
   end
 
-  def service_worker_cache_assets(:prod),
+  defp service_worker_cache_assets(:prod),
     do: Map.values(@service_worker_cache_assets)
 
-  def service_worker_cache_assets(:dev),
+  defp service_worker_cache_assets(:dev),
     do:
       @service_worker_cache_assets
       |> Map.keys()
       |> Enum.reject(&Regex.match?(@css_css_pattern, &1))
 
-  def service_worker_cache_assets(_), do: service_worker_cache_assets(:dev)
+  defp service_worker_cache_assets(_), do: service_worker_cache_assets(:dev)
 
-  defp cache_asset(:prod, text), do: ~s("#{text}")
+  defp cache_asset(:prod, text), do: ~s("/#{text}")
   defp cache_asset(:dev, text), do: ~s("http://localhost:4019/#{text}")
   defp cache_asset(_, text), do: cache_asset(:dev, text)
 end
