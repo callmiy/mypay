@@ -22,19 +22,27 @@ defmodule BurdaWeb.Offline do
                                end)
                                |> Enum.into(%{})
 
-  @service_worker_file Path.expand("priv/static/offline/service-worker1.js")
-  @version_text "const CACHE_VERSION = "
-  @cache_static_files_text "const CACHE_STATICS = "
+  @cache_static_file Path.expand("priv/static/offline/cache-static.js")
   @css_css_pattern ~r/(css.+?\.css$)|(\.map$)/
   @offline_template_folder "front-end/src/templates"
 
   def get_service_worker_cache_assets, do: @service_worker_cache_assets
 
-  def rewrite_service_worker_file do
-    file = File.open!(@service_worker_file)
-    text = read_file(file, [])
-    File.close(file)
-    File.write!(@service_worker_file, text)
+  def write_cache_static_file do
+    env = LayoutView.get_frontend_env(:asset)
+
+    text =
+      env
+      |> service_worker_cache_assets()
+      |> Enum.map(&cache_asset(env, &1))
+      |> Enum.join(",")
+
+    text =
+      ~s(const CACHE_VERSION = #{System.system_time(:seconds)};const CACHE_STATICS = ["/offline-template-assigns",#{
+        text
+      }];)
+
+    File.write!(@cache_static_file, text)
   end
 
   def generate_templates,
@@ -59,34 +67,6 @@ defmodule BurdaWeb.Offline do
         end)
       end)
       |> Enum.map(fn [file, string] -> File.write!(file, string) end)
-
-  defp read_file(file, acc) do
-    case IO.read(file, :line) do
-      :eof -> Enum.reverse(acc)
-      text -> read_file(file, [get_rewrite_text(text) | acc])
-    end
-  end
-
-  defp get_rewrite_text(text) do
-    cond do
-      text =~ @version_text ->
-        "const CACHE_VERSION = #{System.monotonic_time(:seconds)};\n"
-
-      text =~ @cache_static_files_text ->
-        env = LayoutView.get_frontend_env(:asset)
-
-        text =
-          env
-          |> service_worker_cache_assets()
-          |> Enum.map(&cache_asset(env, &1))
-          |> Enum.join(",")
-
-        ~s(const CACHE_STATICS = ["/offline-template-assigns",#{text}];\n)
-
-      true ->
-        text
-    end
-  end
 
   defp service_worker_cache_assets(:prod),
     do: Map.values(@service_worker_cache_assets)
