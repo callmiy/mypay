@@ -32,17 +32,6 @@ defmodule BurdaWeb.Offline do
   def write_cache_static_file do
     env = LayoutView.get_frontend_env(:asset)
 
-    IO.puts("""
-
-
-
-    env:
-        #{inspect(env)}
-
-
-
-    """)
-
     text =
       env
       |> service_worker_cache_assets()
