@@ -4,20 +4,16 @@ import { getDb } from "../../database";
 import { docReady } from "../../app";
 import * as shiftDetailTemplate from "../../templates/shiftDetailTemplate.handlebars";
 import * as shiftEarningSummaryTemplate from "../../templates/shiftEarningSummaryTemplate.handlebars";
-import { GetInitialSocketData_shifts } from "../../graphql/gen.types";
 import { NEW_SHIFT_URL_TYPENAME } from "./../../constants";
 import { SHIFT_TYPENAME } from "./../../constants";
-import { OFFLINE_TOKEN_TYPENAME } from "../../constants";
 import { GetInitialSocketData_newShiftUrl } from "../../graphql/gen.types";
-import { GetInitialSocketData_offlineToken } from "../../graphql/gen.types";
-
-interface DocQuery {
-  shifts?: GetInitialSocketData_shifts[];
-  url?: GetInitialSocketData_newShiftUrl;
-  token?: GetInitialSocketData_offlineToken;
-}
-
-const database = getDb();
+import INITIAL_DATA_GQL from "../../graphql/initial-socket-data.query";
+import { GetInitialSocketDataVariables } from "../../graphql/gen.types";
+import { toRunableDocument } from "../../graphql/helpers";
+import { getSocket } from "../../app";
+import { GetInitialSocketData } from "../../graphql/gen.types";
+import { writeInitialDataToDb } from "./utils";
+import { getShiftsQueryVairable } from "./utils";
 
 class IndexController {
   shiftsDetailsEl = document.getElementById(
@@ -37,52 +33,33 @@ class IndexController {
   ) as HTMLLinkElement;
 
   constructor() {
-    if (
-      this.shiftsDetailsEl &&
-      this.shiftEarningsSummaryEl &&
-      this.newShiftLinkEl
-    ) {
-      this.renderShifts();
-    }
+    this.renderShifts();
   }
 
-  renderShifts = () => {
-    if (document.querySelector(".shift-detail-row")) {
+  renderShifts = async () => {
+    const data = await this.getInitialDataLocal();
+    this.renderShiftsHTML(this.parseQuery(data));
+    this.getInitialDataRemote();
+  };
+
+  renderShiftsHTML = (data: GetInitialSocketData) => {
+    if (
+      !(
+        this.shiftsDetailsEl &&
+        this.shiftEarningsSummaryEl &&
+        this.newShiftLinkEl
+      )
+    ) {
       return;
     }
 
-    database.db
-      .find({
-        selector: {
-          $or: [
-            {
-              schemaType: { $eq: NEW_SHIFT_URL_TYPENAME }
-            },
-
-            {
-              schemaType: { $eq: SHIFT_TYPENAME }
-            },
-
-            {
-              schemaType: { $eq: OFFLINE_TOKEN_TYPENAME }
-            }
-          ]
-        }
-      })
-      // tslint:disable-next-line:no-any
-      .then(({ docs }: { docs: any[] }) => {
-        this.renderShiftsHTML(this.parseQuery(docs));
-      });
-  };
-
-  renderShiftsHTML = (data: DocQuery) => {
     // Means we are have server rendered, so we bail
-    if (data.token && !this.shouldRender(data.token)) {
+    if (document.querySelector('[name="3snsaaPmwVPzy6mFtib"]')) {
       return;
     }
 
     const shifts = data.shifts || [];
-    const url = (data.url || {}) as GetInitialSocketData_newShiftUrl;
+    const url = (data.newShiftUrl || {}) as GetInitialSocketData_newShiftUrl;
     this.shiftsDetailsEl.innerHTML = shiftDetailTemplate({ shifts });
 
     const currentMonthYear = moment(new Date()).format("MMM/YYYY");
@@ -92,7 +69,9 @@ class IndexController {
     }
 
     this.shiftEarningsSummaryEl.innerHTML = shiftEarningSummaryTemplate({
-      totalEarnings: shifts.reduce((a, b) => a + +b.totalPay, 0).toFixed(2),
+      totalEarnings: shifts
+        .reduce((a, b) => a + +((b && b.totalPay) || 0), 0)
+        .toFixed(2),
       currentMonthYear
     });
 
@@ -101,7 +80,7 @@ class IndexController {
 
   // tslint:disable-next-line:no-any
   parseQuery = (docs: any[]) => {
-    const accumulator = {} as DocQuery;
+    const accumulator = {} as GetInitialSocketData;
 
     return docs.reduce((acc, el) => {
       switch (el.schemaType) {
@@ -112,10 +91,7 @@ class IndexController {
           };
 
         case NEW_SHIFT_URL_TYPENAME:
-          return { ...acc, url: el };
-
-        case OFFLINE_TOKEN_TYPENAME:
-          return { ...acc, token: el };
+          return { ...acc, newShiftUrl: el };
 
         default:
           return acc;
@@ -123,14 +99,49 @@ class IndexController {
     }, accumulator);
   };
 
-  shouldRender = (token: GetInitialSocketData_offlineToken) => {
-    const tokenEl = document.getElementById(token.id) as HTMLInputElement;
+  getInitialDataLocal = async () => {
+    const database = getDb();
 
-    if (tokenEl && tokenEl.value === token.value) {
-      return false;
-    }
+    const { docs } = (await database.db.find({
+      selector: {
+        $or: [
+          {
+            schemaType: { $eq: NEW_SHIFT_URL_TYPENAME }
+          },
 
-    return true;
+          {
+            schemaType: { $eq: SHIFT_TYPENAME }
+          }
+        ]
+      }
+      // tslint:disable-next-line:no-any
+    })) as { docs: any[] };
+
+    return docs;
+  };
+
+  getInitialDataRemote = () => {
+    const variables = getShiftsQueryVairable();
+
+    const initialDataQuery = toRunableDocument<GetInitialSocketDataVariables>(
+      INITIAL_DATA_GQL,
+      variables
+    );
+    const socket = getSocket();
+
+    socket.queryGraphQl({
+      params: initialDataQuery,
+
+      ok: (data: GetInitialSocketData) => {
+        this.renderShiftsHTML(data);
+        writeInitialDataToDb(data);
+      },
+
+      error: async () => {
+        const data = await this.getInitialDataLocal();
+        this.renderShiftsHTML(this.parseQuery(data));
+      }
+    });
   };
 }
 
