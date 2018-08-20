@@ -41,7 +41,7 @@ defmodule BurdaWeb.Offline do
     text =
       ~s(const CACHE_VERSION = #{System.system_time(:seconds)};const CACHE_STATICS = ["/offline-template-assigns",#{
         text
-      }];)
+      },"https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic&subset=latin"];)
 
     File.write!(@cache_static_file, text)
   end
