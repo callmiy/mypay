@@ -55,10 +55,12 @@ defmodule Mix.Tasks.Deploy do
     System.put_env("MIX_ENV", "prod")
     Application.put_env(:burda, :frontend, asset: :prod)
 
+    :ok = run_cmd("git", ["checkout", "dev"])
+
     :ok = reset_static_folder()
     deploy(["compile", "templates", "prod"])
     :ok = process_static_files()
-    :ok = run_cmd("git", ["checkout", "dev"])
+
     :ok = run_cmd("git", ["add", "."])
     :ok = run_cmd("git", ["commit", "-m", "Production build"])
 
