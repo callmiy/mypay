@@ -88,35 +88,40 @@ self.addEventListener("fetch", event => {
     !/sockjs-node/.test(url.pathname) &&
     !/phoenix\/live_reload/.test(url.pathname)
   ) {
-    if (url.search && url.search.includes("vsn=")) {
-      request = new Request(request.url.replace(/\?vsn=.+$/, ""), {
-        cache: request.cache,
-        credentials: request.credentials,
-        destination: request.destination,
-        headers: request.headers,
-        method: request.method,
-        mode: request.mode,
-        redirect: request.redirect,
-        referrer: request.referrer,
-        referrerPolicy: request.referrerPolicy
-      });
-    }
-
     return event.respondWith(
-      caches.match(request).then(
-        resp =>
-          resp ||
-          fetch(request).then(response => {
-            const response1 = response.clone();
-            event.waitUntil(
-              caches
-                .open(CACHE_NAME)
-                .then(cache => cache.put(request, response1))
-            );
+      caches
+        .match(request, {
+          ignoreSearch: true
+        })
+        .then(
+          resp =>
+            resp ||
+            fetch(request)
+              .then(response => {
+                const response1 = response.clone();
+                event.waitUntil(
+                  caches
+                    .open(CACHE_NAME)
+                    .then(cache => cache.put(request, response1))
+                );
 
-            return response;
-          })
-      )
+                return response;
+              })
+              .catch(error => {
+                // tslint:disable-next-line:no-console
+                console.log(
+                  "\n\n\nerror fetching request after not found in cache:",
+                  error,
+                  request.clone()
+                );
+
+                return error;
+              })
+        )
+        .catch(error => {
+          // tslint:disable-next-line:no-console
+          console.log("\n\n\nerror matching request:", error, request.clone());
+        })
     );
   }
 });

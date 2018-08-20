@@ -1,2 +1,0 @@
-defmodule Dummy do
-end

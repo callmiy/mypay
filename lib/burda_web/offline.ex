@@ -1,32 +1,33 @@
 defmodule BurdaWeb.Offline do
   alias BurdaWeb.LayoutView
 
-  @service_worker_cache_assets "priv/static/cache_manifest.json"
-                               |> Path.expand()
-                               |> File.read!()
-                               |> Poison.decode!()
-                               |> Map.get("digests")
-                               |> Enum.reduce([], fn {latest, value}, acc ->
-                                 path = value["logical_path"]
+  @service_worker_cache_assets_path Path.expand("priv/static/cache_manifest.json")
 
-                                 l =
-                                   path
-                                   |> String.split("/")
-                                   |> hd()
-
-                                 if l in ["favicon", "offline", "robots.txt"] do
-                                   acc
-                                 else
-                                   [{path, latest} | acc]
-                                 end
-                               end)
-                               |> Enum.into(%{})
-
-  @cache_static_file Path.expand("priv/static/offline/cache-static.js")
+  @cache_static_file Path.expand("priv/cache-static.js")
   @css_css_pattern ~r/(css.+?\.css$)|(\.map$)/
   @offline_template_folder "front-end/src/templates"
 
-  def get_service_worker_cache_assets, do: @service_worker_cache_assets
+  def get_service_worker_cache_assets,
+    do:
+      @service_worker_cache_assets_path
+      |> File.read!()
+      |> Poison.decode!()
+      |> Map.get("digests")
+      |> Enum.reduce([], fn {latest, value}, acc ->
+        path = value["logical_path"]
+
+        l =
+          path
+          |> String.split("/")
+          |> hd()
+
+        if l in ["favicon", "offline", "robots.txt"] do
+          acc
+        else
+          [{path, latest} | acc]
+        end
+      end)
+      |> Enum.into(%{})
 
   def write_cache_static_file do
     env = LayoutView.get_frontend_env(:asset)
@@ -69,11 +70,13 @@ defmodule BurdaWeb.Offline do
       |> Enum.map(fn [file, string] -> File.write!(file, string) end)
 
   defp service_worker_cache_assets(:prod),
-    do: Map.values(@service_worker_cache_assets)
+    do:
+      get_service_worker_cache_assets()
+      |> Map.values()
 
   defp service_worker_cache_assets(:dev),
     do:
-      @service_worker_cache_assets
+      get_service_worker_cache_assets()
       |> Map.keys()
       |> Enum.reject(&Regex.match?(@css_css_pattern, &1))
 

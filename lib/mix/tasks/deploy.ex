@@ -15,9 +15,6 @@ defmodule Mix.Tasks.Deploy do
   @front_end_folder Path.expand("front-end")
   @win_cmd "cmd.exe"
   @yarn "yarn"
-  @dummy_string1 "defmodule Dummy do\nend\n"
-  @dummy_string2 "defmodule Dummy do\n  def dummy, do: nil\nend\n"
-  @dummy_path Path.expand("lib/mix/dummy.ex")
   @static_folder_to_delete ["css", "fonts", "img", "js"]
                            |> Enum.map(&Path.expand(&1, "priv/static"))
 
@@ -88,16 +85,7 @@ defmodule Mix.Tasks.Deploy do
     :ok = run_cmd(@yarn, ["deploy"], cd: @front_end_folder)
     Mix.Task.run("phx.digest")
     Offline.write_cache_static_file()
-    toggle_dummy()
     :ok
-  end
-
-  @spec toggle_dummy() :: :ok
-  defp toggle_dummy do
-    case File.read!(@dummy_path) == @dummy_string1 do
-      true -> File.write!(@dummy_path, @dummy_string2, [:write])
-      _ -> File.write!(@dummy_path, @dummy_string1, [:write])
-    end
   end
 
   defp run_cmd(command, args), do: run_cmd(command, args, [])
