@@ -11,9 +11,10 @@ import { clearFieldErrors } from "../../utils/form-things";
 import { setMainErrorClass } from "../../utils/form-things";
 import { formHasErrors } from "../../utils/form-things";
 import { getFieldAndErrorEls } from "../../utils/form-things";
-import { getSocket } from "../../app";
-
-const socket = getSocket();
+import NEW_META_FORM_GQL from "../../graphql/new-meta-form.query";
+import { GetNewMetaForm } from "../../graphql/gen.types";
+import { GetNewMetaForm_newMetaForm } from "../../graphql/gen.types";
+import { AppSocket } from "../../socket";
 
 enum FormElementsName {
   BREAK_TIME_SECS = "break_time_secs",
@@ -30,8 +31,6 @@ interface NewMetaFormData {
 const genericError = "Invalid Number";
 
 export class NewMeta {
-  onMetaCreated: (meta: CreateMeta) => void;
-
   schema = Yup.object().shape({
     [FormElementsName.BREAK_TIME_SECS]: Yup.number()
       .typeError(genericError)
@@ -55,33 +54,47 @@ export class NewMeta {
       .positive()
   });
 
-  formSubmit = document.getElementById(
-    "new-meta-form-submit"
-  ) as HTMLButtonElement;
+  formSubmit: HTMLButtonElement;
 
-  formReset = document.getElementById(
-    "new-meta-form-reset"
-  ) as HTMLButtonElement;
+  formReset: HTMLButtonElement;
 
-  mainErrorContainer = document.getElementById(
-    "new-meta-form__error-main"
-  ) as HTMLDivElement;
+  mainErrorContainer: HTMLDivElement;
 
   formThings = makeFormThings();
 
-  inputs: NodeListOf<HTMLInputElement> = document.querySelectorAll(
-    ".new-meta-form__control"
-  );
+  inputs: NodeListOf<HTMLInputElement>;
 
-  constructor(onMetaCreated: (meta: CreateMeta) => void) {
-    this.onMetaCreated = onMetaCreated;
+  constructor(
+    private socket: AppSocket,
+    private onMetaCreated: (data: CreateMeta) => void
+  ) {
+    this.getNewMetaForm();
+  }
+
+  setUpDOM = () => {
+    this.formSubmit = document.getElementById(
+      "new-meta-form-submit"
+    ) as HTMLButtonElement;
+
+    this.formReset = document.getElementById(
+      "new-meta-form-reset"
+    ) as HTMLButtonElement;
+
+    this.mainErrorContainer = document.getElementById(
+      "new-meta-form__error-main"
+    ) as HTMLDivElement;
+
+    this.formThings = makeFormThings();
+
+    this.inputs = document.querySelectorAll(".new-meta-form__control");
+
     Array.prototype.forEach.call(this.inputs, this.setUpInput);
 
     if (this.formSubmit && this.formReset && this.mainErrorContainer) {
       this.formSubmit.addEventListener("click", this.formSubmitElHandler);
       this.formReset.addEventListener("click", this.formResetElHandler);
     }
-  }
+  };
 
   setUpInput = (el: HTMLInputElement) => {
     const name = el.name;
@@ -152,7 +165,7 @@ export class NewMeta {
     this.schema
       .validate(data, { abortEarly: false })
       .then((meta: { [k: string]: number }) => {
-        socket.queryGraphQl({
+        this.socket.queryGraphQl({
           params: toRunableDocument(CREATE_META, {
             // The user input is in minutes, so we convert break_time_secs to
             // seconds by multiplying minutes by 60
@@ -219,6 +232,17 @@ export class NewMeta {
       el.removeEventListener("focus", focusListener);
       el.removeEventListener("input", inputListener);
       el.removeEventListener("blur", inputListener);
+    });
+  };
+
+  getNewMetaForm = async () => {
+    this.socket.queryGraphQl({
+      params: toRunableDocument(NEW_META_FORM_GQL),
+      ok: msg => {
+        const response = msg as GetNewMetaForm;
+        const newMetaForm = response.newMetaForm as GetNewMetaForm_newMetaForm;
+        window.appInterface.newMetaFormData = newMetaForm;
+      }
     });
   };
 }

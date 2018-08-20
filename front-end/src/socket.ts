@@ -1,17 +1,16 @@
 import { Socket } from "phoenix";
 import { Channel } from "phoenix";
+
 import { toRunableDocument } from "./graphql/helpers";
 import INITIAL_DATA_GQL from "./graphql/initial-socket-data.query";
 import { GetInitialSocketDataVariables } from "./graphql/gen.types";
 import { GetInitialSocketData } from "./graphql/gen.types";
 import { GetInitialSocketData_offlineToken } from "./graphql/gen.types";
-import { getDb } from "./database";
 import { OFFLINE_TOKEN_TYPENAME } from "./constants";
 import { DATA_CHANNEL_TOPIC_GRAPHQL } from "./constants";
 import { getShiftsQueryVairable } from "./routes/index/utils";
 import { writeInitialDataToDb as writeInitialIndexDataToDb } from "./routes/index/utils";
-
-const database = getDb();
+import { Database } from "./database";
 
 // tslint:disable-next-line:no-any
 type OnChannelMessage = (msg: any) => void;
@@ -34,7 +33,7 @@ export class AppSocket {
   dataChannel: Channel;
   dataChannelJoined = false;
 
-  constructor() {
+  constructor(private database: Database) {
     this.socket = new Socket("/socket", {});
     this.socket.connect();
     this.socket.onOpen(() => {
@@ -50,7 +49,7 @@ export class AppSocket {
     this.getInitialData();
   };
 
-  getInitialData = () => {
+  getInitialData = async () => {
     const variables = getShiftsQueryVairable();
 
     const initialDataQuery = toRunableDocument<GetInitialSocketDataVariables>(
@@ -114,9 +113,10 @@ export class AppSocket {
   };
 
   writeInitialDataToDb = (data: GetInitialSocketData) => {
-    writeInitialIndexDataToDb(data);
+    window.appInterface.initialData = data;
+    writeInitialIndexDataToDb(this.database, data);
 
-    database.db
+    this.database.db
       .find({
         selector: {
           schemaType: { $eq: OFFLINE_TOKEN_TYPENAME }
@@ -133,7 +133,7 @@ export class AppSocket {
 
         // this is our first insert = happy
         if (!offlineTokens.length) {
-          database.db.put(offlineToken);
+          this.database.db.put(offlineToken);
           return;
         }
 
@@ -150,8 +150,8 @@ export class AppSocket {
 
         // ok we have a new token - update existing doc so we
         // only have 1 copy
-        database.db.get(offlineTokenFromDoc._id).then(doc => {
-          return database.db.put({
+        this.database.db.get(offlineTokenFromDoc._id).then(doc => {
+          return this.database.db.put({
             ...offlineToken,
             _id: doc._id,
             _rev: doc._rev

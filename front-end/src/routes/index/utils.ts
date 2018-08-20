@@ -5,7 +5,7 @@ import { GetInitialSocketData } from "../../graphql/gen.types";
 import { GetInitialSocketData_newShiftUrl } from "../../graphql/gen.types";
 import { SHIFT_TYPENAME } from "./../../constants";
 import { NEW_SHIFT_URL_TYPENAME } from "./../../constants";
-import { getDb } from "../../database";
+import { Database } from "../../database";
 
 export const getShiftsQueryVairable = (): GetInitialSocketDataVariables => {
   const today = new Date();
@@ -23,11 +23,12 @@ export const getShiftsQueryVairable = (): GetInitialSocketDataVariables => {
   };
 };
 
-export const writeInitialDataToDb = (data: GetInitialSocketData) => {
+export const writeInitialDataToDb = (
+  database: Database,
+  data: GetInitialSocketData
+) => {
   const allShifts = (data.shifts || []) as GetInitialSocketData_shifts[];
   const newShiftUrl = data.newShiftUrl as GetInitialSocketData_newShiftUrl;
-
-  const database = getDb();
 
   if (allShifts.length) {
     database.db

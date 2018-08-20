@@ -7,8 +7,6 @@ import { dismissModal } from "../../components/modals";
 import { NewMeta } from "../../components/new-meta-form/new-meta-form";
 import { CreateMeta } from "../../graphql/gen.types";
 import { CreateMeta_meta } from "../../graphql/gen.types";
-import { GetNewMetaForm } from "../../graphql/gen.types";
-import { GetNewMetaForm_newMetaForm } from "../../graphql/gen.types";
 import { setFieldError } from "../../utils/form-things";
 import { clearFieldErrors } from "../../utils/form-things";
 import { formHasErrors } from "../../utils/form-things";
@@ -18,31 +16,10 @@ import CREATE_SHIFT_GQL from "../../graphql/create-shift.mutation";
 import { htmlfyGraphQlErrors } from "../../graphql/helpers";
 import { setMainErrorClass } from "../../utils/form-things";
 import { FormThingsError } from "../../utils/form-things";
-import { docReady } from "../../app";
-import { getSocket } from "../../app";
-import NEW_META_FORM_GQL from "../../graphql/new-meta-form.query";
+import { AppSocket } from "../../socket";
+import { docReady } from "../../utils/utils";
 
-const socket = getSocket();
-
-export interface JsonResponseNewMetaForm {
-  html: string;
-}
-/**
- * Get the HTML string that will be used to create new meta and store.
- */
-const getNewMetaForm = async () => {
-  socket.queryGraphQl({
-    params: toRunableDocument(NEW_META_FORM_GQL),
-    ok: msg => {
-      const response = msg as GetNewMetaForm;
-      const newMetaForm = response.newMetaForm as GetNewMetaForm_newMetaForm;
-      window.appInterface.newMetaFormData = newMetaForm;
-    }
-  });
-};
-getNewMetaForm();
-
-class Shift {
+export class ShiftController {
   submitEl = document.getElementById(
     "new-shift-form-submit"
   ) as HTMLButtonElement;
@@ -77,8 +54,11 @@ class Shift {
   formErrors = {} as FormThingsError;
   // tslint:disable-next-line:no-any
   schema: Schema<any>;
+  newMetaForm: NewMeta;
 
-  constructor() {
+  constructor(private socket: AppSocket) {
+    this.newMetaForm = new NewMeta(this.socket, this.onMetaCreated);
+
     if (
       this.fetchNewMetaEl &&
       this.mainErrorContainer &&
@@ -221,7 +201,7 @@ class Shift {
 
   fetchNewMetaElClickHandler = async () => {
     if (!window.appInterface.newMetaFormData) {
-      await getNewMetaForm();
+      await this.newMetaForm.getNewMetaForm();
     }
 
     if (!window.appInterface.newMetaFormData) {
@@ -232,8 +212,8 @@ class Shift {
       content: window.appInterface.newMetaFormData.html,
 
       onShow: () => {
-        const newMeta = new NewMeta(this.onMetaCreated);
-        return newMeta.cleanUp;
+        this.newMetaForm.setUpDOM();
+        return this.newMetaForm.cleanUp;
       }
     });
   };
@@ -351,7 +331,7 @@ class Shift {
           "endTimeMin"
         ].forEach(k => delete shift[k]);
 
-        socket.queryGraphQl({
+        this.socket.queryGraphQl({
           params: toRunableDocument(CREATE_SHIFT_GQL, { shift }),
           ok: () => {
             window.location.href = "/";
@@ -417,4 +397,6 @@ class Shift {
   pad = (val: number) => (val + "").padStart(2, "0");
 }
 
-docReady(() => new Shift());
+export default ShiftController;
+
+docReady(() => new ShiftController(window.appInterface.socket));

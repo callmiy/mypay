@@ -1,21 +1,16 @@
 import * as moment from "moment";
 
-import { getDb } from "../../database";
-import { docReady } from "../../app";
 import * as shiftDetailTemplate from "../../templates/shiftDetailTemplate.handlebars";
 import * as shiftEarningSummaryTemplate from "../../templates/shiftEarningSummaryTemplate.handlebars";
 import { NEW_SHIFT_URL_TYPENAME } from "./../../constants";
 import { SHIFT_TYPENAME } from "./../../constants";
 import { GetInitialSocketData_newShiftUrl } from "../../graphql/gen.types";
-import INITIAL_DATA_GQL from "../../graphql/initial-socket-data.query";
-import { GetInitialSocketDataVariables } from "../../graphql/gen.types";
-import { toRunableDocument } from "../../graphql/helpers";
-import { getSocket } from "../../app";
 import { GetInitialSocketData } from "../../graphql/gen.types";
-import { writeInitialDataToDb } from "./utils";
-import { getShiftsQueryVairable } from "./utils";
+import { Database } from "../../database";
+import { docReady } from "../../utils/utils";
+import { isServerRendered as serverRendered } from "../../utils/utils";
 
-class IndexController {
+export class IndexController {
   shiftsDetailsEl = document.getElementById(
     "index-route-shifts-details"
   ) as HTMLDivElement;
@@ -32,19 +27,27 @@ class IndexController {
     "new-shift-trigger"
   ) as HTMLLinkElement;
 
-  constructor() {
+  constructor(
+    private database: Database,
+    private isServerRendered: () => boolean
+  ) {
     this.renderShifts();
   }
 
   renderShifts = async () => {
-    const data = await this.getInitialDataLocal();
-    this.renderShiftsHTML(this.parseQuery(data));
-    this.getInitialDataRemote();
+    let data = window.appInterface.initialData;
+
+    if (!data) {
+      data = this.parseQuery(await this.getInitialDataLocal());
+    }
+
+    this.renderShiftsHTML(data);
   };
 
-  renderShiftsHTML = (data: GetInitialSocketData) => {
+  renderShiftsHTML = (data: GetInitialSocketData | null) => {
     if (
       !(
+        data &&
         this.shiftsDetailsEl &&
         this.shiftEarningsSummaryEl &&
         this.newShiftLinkEl
@@ -53,8 +56,7 @@ class IndexController {
       return;
     }
 
-    // Means we are have server rendered, so we bail
-    if (document.querySelector('[name="3snsaaPmwVPzy6mFtib"]')) {
+    if (this.isServerRendered()) {
       return;
     }
 
@@ -100,9 +102,7 @@ class IndexController {
   };
 
   getInitialDataLocal = async () => {
-    const database = getDb();
-
-    const { docs } = (await database.db.find({
+    const { docs } = (await this.database.db.find({
       selector: {
         $or: [
           {
@@ -119,30 +119,8 @@ class IndexController {
 
     return docs;
   };
-
-  getInitialDataRemote = () => {
-    const variables = getShiftsQueryVairable();
-
-    const initialDataQuery = toRunableDocument<GetInitialSocketDataVariables>(
-      INITIAL_DATA_GQL,
-      variables
-    );
-    const socket = getSocket();
-
-    socket.queryGraphQl({
-      params: initialDataQuery,
-
-      ok: (data: GetInitialSocketData) => {
-        this.renderShiftsHTML(data);
-        writeInitialDataToDb(data);
-      },
-
-      error: async () => {
-        const data = await this.getInitialDataLocal();
-        this.renderShiftsHTML(this.parseQuery(data));
-      }
-    });
-  };
 }
 
-docReady(() => new IndexController());
+export default IndexController;
+
+docReady(() => new IndexController(window.appInterface.db, serverRendered));

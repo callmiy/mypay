@@ -1,19 +1,25 @@
 import { AppSocket } from "./socket";
-import AppInterface from "./app_interface";
 import registerServiceWorker1 from "./service-worker/register-service-worker1";
+import { Database } from "./database";
+import { docReady } from "./utils/utils";
+import { GetInitialSocketData } from "./graphql/gen.types";
 
 declare global {
   interface Window {
-    appInterface: AppInterface;
+    appInterface: {
+      newMetaFormData?: {
+        html: string;
+      };
+      serverOnlineStatus: boolean;
+
+      db: Database;
+
+      socket: AppSocket;
+
+      initialData: GetInitialSocketData | null;
+    };
   }
 }
-
-const socket = new AppSocket();
-
-export const getSocket = () => socket;
-
-export const docReady = (fn: () => void) =>
-  document.addEventListener("DOMContentLoaded", fn);
 
 const processSidebar = () => {
   const sidebarAction = (sidebar: HTMLElement) => {
@@ -43,5 +49,13 @@ const processSidebar = () => {
   }
 };
 
-docReady(processSidebar);
+(function App() {
+  const db = new Database();
+  const socket = new AppSocket(db);
+
+  window.appInterface.db = db;
+  window.appInterface.socket = socket;
+  docReady(processSidebar);
+})();
+
 registerServiceWorker1();

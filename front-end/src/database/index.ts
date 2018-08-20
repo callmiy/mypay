@@ -4,15 +4,14 @@ import PouchdbDebug from "pouchdb-debug";
 
 const POUCH_DB_OLD_VERSION = 0;
 const POUCH_DB_CURRENT_VERSION = 1;
-const getDbName = (version: number) => "WORKER-WAGES-maneptha-" + version;
 
-class Database {
+export class Database {
   db: PouchDB.Database;
   private name: string;
 
   constructor() {
     this.destroyOldDb();
-    this.name = getDbName(POUCH_DB_CURRENT_VERSION);
+    this.name = this.getDbName(POUCH_DB_CURRENT_VERSION);
     this.db = new PouchDB(this.name);
     PouchDB.plugin(PouchDBFind);
     PouchDB.plugin(PouchdbDebug);
@@ -27,7 +26,7 @@ class Database {
   genId = () => new Date().toJSON().slice(0, -1) + "000Z";
 
   destroyOldDb = async () => {
-    const dbName = getDbName(POUCH_DB_OLD_VERSION);
+    const dbName = this.getDbName(POUCH_DB_OLD_VERSION);
 
     try {
       await new PouchDB(dbName).destroy();
@@ -45,8 +44,8 @@ class Database {
       JSON.stringify(info, null, 2)
     );
   }
+
+  getDbName = (version: number) => "WORKER-WAGES-maneptha-" + version;
 }
 
-const db = new Database();
-
-export const getDb = () => db;
+export default Database;
