@@ -9,7 +9,7 @@ defmodule BurdaWeb.Endpoint do
                        |> Application.get_env(:frontend)
                        |> Keyword.fetch!(:token_value)
 
-  @input_hidden ~s(<input type="hidden" id="#{@offline_token_id}" value="#{@offline_token_value}" style="display: none" />)
+  @input_hidden ~s(<input type="hidden" id="#{@offline_token_id}" value="#{@offline_token_value}" style="display: none" name="3snsaaPmwVPzy6mFtib" />)
                 |> Phoenix.HTML.raw()
 
   socket("/socket", BurdaWeb.UserSocket)
