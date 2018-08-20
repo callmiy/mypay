@@ -53,6 +53,7 @@ defmodule Mix.Tasks.Deploy do
 
   defp deploy(["prod"]) do
     System.put_env("MIX_ENV", "prod")
+    Application.put_env(:burda, :frontend, asset: :prod)
 
     :ok = reset_static_folder()
     deploy(["compile", "templates", "prod"])
