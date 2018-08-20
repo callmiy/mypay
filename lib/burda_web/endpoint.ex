@@ -12,7 +12,7 @@ defmodule BurdaWeb.Endpoint do
   @input_hidden ~s(<input type="hidden" id="#{@offline_token_id}" value="#{@offline_token_value}" style="display: none" name="3snsaaPmwVPzy6mFtib" />)
                 |> Phoenix.HTML.raw()
 
-  @cache_static_file Path.expand("priv/cache-static.js")
+  @cache_static_file "priv/cache-static.js"
   @cache_static_js_request_path "/offline/cache-static.js"
 
   socket("/socket", BurdaWeb.UserSocket)
