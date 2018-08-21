@@ -115,6 +115,24 @@
         "$mixCompileWarning",
         "$mixTestFailure"
       ]
+    },
+
+    {
+      "label": "Launch browser dev",
+      "type": "shell",
+      "windows": {
+        "command": "start chrome --new-window --incognito --system-developer-mode \"http://localhost:4018\""
+      },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "Launch browser prod local",
+      "type": "shell",
+      "windows": {
+        "command": "start chrome --new-window --incognito --system-developer-mode \"http://localhost:8018\""
+      },
+      "problemMatcher": []
     }
   ]
 }
