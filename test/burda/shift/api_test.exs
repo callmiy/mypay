@@ -32,8 +32,12 @@ defmodule Burda.Shift.ApiTest do
     assert Api.get(shift.id) == nil
   end
 
-  test "shifts_for_current_month/2" do
+  test "shifts/1 with where filter for current month and year" do
     today = Date.utc_today()
+
+    _shifts_before_today = Factory.insert(date: Timex.shift(today, days: -40))
+    _shifts_after_today = Factory.insert(date: Timex.shift(today, days: 40))
+
     this_year = today.year
     this_month = today.month
     days_for_month = 1..Timex.days_in_month(this_year, this_month)
@@ -52,9 +56,13 @@ defmodule Burda.Shift.ApiTest do
       end)
       |> hd()
 
-    query_shifts = Api.shifts_for_current_month(this_year, this_month)
+    query_shifts =
+      Api.list(%{
+        where: %{year: this_year, month: this_month}
+      })
 
-    assert length(created_shifts) == 3
+    assert length(Api.list()) == 5
+    assert length(query_shifts) == 3
     assert Enum.all?(query_shifts, &Enum.member?(created_shifts, &1))
   end
 end

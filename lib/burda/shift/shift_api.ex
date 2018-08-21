@@ -13,9 +13,6 @@ defmodule Burda.Shift.Api do
   alias Burda.Meta
   alias Burda.Meta.Api, as: MetaApi
 
-  @extract_month_from_date "extract(month from date) = ?"
-  @extract_year_from_date "extract(year from date) = ?"
-
   @doc """
   Returns the list of ShiftApi.
 
@@ -30,14 +27,6 @@ defmodule Burda.Shift.Api do
     |> QueryHelper.filter(filter)
     |> Repo.all()
   end
-
-  def shifts_for_current_month(year, month),
-    do:
-      Shift
-      |> where([s], fragment(@extract_month_from_date, ^month))
-      |> where([s], fragment(@extract_year_from_date, ^year))
-      |> order_by([s], desc: s.date)
-      |> Repo.all()
 
   @doc """
   Gets a single shift.
