@@ -83,7 +83,7 @@ defmodule BurdaWeb.ShiftController do
       |> Enum.concat([{year, "selected"}])
 
     {latest_meta, all_metas} =
-      case MetaApi.list() do
+      case MetaApi.list(%{order_by: %{id: :desc}}) do
         [] ->
           {%{id: 0}, []}
 

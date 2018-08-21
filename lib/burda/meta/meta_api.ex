@@ -7,6 +7,7 @@ defmodule Burda.Meta.Api do
 
   alias Burda.Repo
   alias Burda.Meta
+  alias Burda.QueryHelper
 
   @default_break_time_secs 30 * 60
 
@@ -19,9 +20,9 @@ defmodule Burda.Meta.Api do
       [%Meta{}, ...]
 
   """
-  def list do
+  def list(filter \\ nil) do
     Meta
-    |> order_by([m], desc: m.id)
+    |> QueryHelper.filter(filter)
     |> Repo.all()
   end
 

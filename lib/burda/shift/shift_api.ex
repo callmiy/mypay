@@ -4,9 +4,9 @@ defmodule Burda.Shift.Api do
   """
 
   import Ecto.Query, warn: false
+
   alias Burda.Repo
   alias Burda.QueryHelper
-
   alias Burda.Shift
   alias Burda.Shift.Wages
   alias Burda.Shift.Times

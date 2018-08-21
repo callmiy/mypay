@@ -3,14 +3,6 @@ defmodule BurdaWeb.Resolver.Meta do
   alias Burda.Meta.Api
   alias BurdaWeb.Resolver
 
-  @spec create(
-          any(),
-          %{
-            meta:
-              :invalid | %{optional(:__struct__) => none(), optional(atom() | binary()) => any()}
-          },
-          any()
-        ) :: {:error, binary()} | {:ok, Burda.Meta.t()}
   def create(_root, %{meta: input}, _info) do
     case Api.create_(input) do
       {:ok, %Meta{} = meta} ->
@@ -20,4 +12,10 @@ defmodule BurdaWeb.Resolver.Meta do
         {:error, Resolver.changeset_errors_to_string(changeset)}
     end
   end
+
+  def metas(_root, %{meta: filter} = _args, _info),
+    do: {:ok, Api.list(filter)}
+
+  def metas(_root, _args, _info),
+    do: {:ok, Api.list()}
 end

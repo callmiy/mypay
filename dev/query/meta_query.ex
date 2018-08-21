@@ -34,4 +34,17 @@ defmodule BurdaWeb.Query.Meta do
     #{frag}
     """
   end
+
+  def all_metas do
+    {frag_name, frag} = all_fields_fragment()
+
+    """
+    query GetAllMetas($metaInput: GetMetaInput ) {
+      metas(meta: $metaInput) {
+        ...#{frag_name}
+      }
+    }
+    #{frag}
+    """
+  end
 end

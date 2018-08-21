@@ -3,25 +3,12 @@ defmodule BurdaWeb.Resolver.Shift do
   alias BurdaWeb.Resolver
   alias Burda.Shift
 
-  @spec shifts(any(), any(), any()) :: {:ok, [Shift.t()]}
   def shifts(_root, %{shift: filter} = _args, _info),
     do: {:ok, Api.list(filter)}
 
   def shifts(_root, _args, _info),
     do: {:ok, Api.list()}
 
-  @spec create(
-          any(),
-          %{
-            shift: %{
-              date: Date.t(),
-              end_time: Time.t(),
-              meta_id: any(),
-              start_time: Time.t()
-            }
-          },
-          any()
-        ) :: {:error, binary()} | {:ok, Shift.t()}
   def create(_root, %{shift: input}, _info) do
     case Api.create_(input) do
       {:ok, %Shift{} = shift} ->

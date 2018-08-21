@@ -13,7 +13,7 @@ defmodule BurdaWeb.Schema.Shift do
   object :shift do
     field(:id, non_null(:id))
 
-    field :_id, non_null(:id) do
+    field :_id, non_null(:string) do
       resolve(fn shift, _, _ -> {:ok, Schema.get_datetime_id(shift.id)} end)
     end
 
