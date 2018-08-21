@@ -47,12 +47,6 @@ defmodule BurdaWeb.Schema.Shift do
     field(:end_time, non_null(:time))
   end
 
-  @desc "Sorting directive"
-  enum :sorting_directive do
-    value(:asc, description: "Sort from smallest to largest")
-    value(:desc, description: "Sort from largest to smallest")
-  end
-
   @desc "input for sorting"
   input_object :sorting do
     field(:id, :sorting_directive)

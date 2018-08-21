@@ -12,6 +12,12 @@ defmodule BurdaWeb.Schema.Types do
     serialize(&Timex.format!(&1, @iso_datetime_format))
   end
 
+  @desc "Sorting directive"
+  enum :sorting_directive do
+    value(:asc, description: "Sort from smallest to largest")
+    value(:desc, description: "Sort from largest to smallest")
+  end
+
   @spec parse_iso_datetime(Absinthe.Blueprint.Input.String.t(), String.t()) ::
           {:ok, DateTime.t() | NaiveDateTime.t()} | :error
   defp parse_iso_datetime(
