@@ -44,6 +44,7 @@ defmodule Mix.Tasks.Deploy do
   end
 
   defp deploy(["local"]) do
+    Application.put_env(:burda, :frontend, asset: :prod)
     :ok = reset_static_folder()
     deploy(["compile", "templates", "dev"])
     :ok = process_static_files()
