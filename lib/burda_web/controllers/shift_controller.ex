@@ -141,7 +141,7 @@ defmodule BurdaWeb.ShiftController do
     do: %{
       page_title: "New Shift",
       page_main_css: LayoutView.page_css(@page_css, nil),
-      page_main_js: LayoutView.page_css(@page_js, nil),
+      page_main_js: LayoutView.page_js(@page_js, nil),
       page_other_css: LayoutView.page_css(@new_form_css_path, nil)
     }
 
