@@ -18,6 +18,72 @@ import { setMainErrorClass } from "../../utils/form-things";
 import { FormThingsError } from "../../utils/form-things";
 import { AppSocket } from "../../socket";
 import { docReady } from "../../utils/utils";
+import { isServerRendered } from "../../utils/utils";
+import * as newShiftDateTemplate from "../../templates/newShiftDateTemplate.handlebars";
+
+interface DaysOfMonth {
+  [key: number]: {
+    display: number;
+    selected: string;
+  };
+}
+
+interface MonthDaysYearMonth {
+  days: DaysOfMonth;
+  months: DaysOfMonth;
+  years: DaysOfMonth;
+}
+
+interface Props {
+  getMonthDaysYearMonth: () => MonthDaysYearMonth;
+  socket: AppSocket;
+  isServerRendered: () => boolean;
+}
+
+const getMonthDaysYearMonth = (): MonthDaysYearMonth => {
+  const date = new Date();
+
+  const days = Array.from(Array(31), (_value, index) => ({
+    display: index + 1,
+    selected: index + 1 === date.getDate() ? "selected" : ""
+  })).reduce((acc, val, index) => ({ ...acc, [index + 1]: val }), {});
+
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ].reduce(
+    (acc, val, index) => ({
+      ...acc,
+      [index + 1]: {
+        display: val,
+        selected: index === date.getMonth() ? "selected" : ""
+      }
+    }),
+    {}
+  );
+
+  const year = date.getFullYear();
+
+  const years = [-4, -3, -2, -1, 0].reduce(
+    (acc, val) => ({
+      ...acc,
+      [year + val]: { selected: year + val === year ? "selected" : "" }
+    }),
+    {}
+  );
+
+  return { days, months, years };
+};
 
 export class ShiftController {
   submitEl = document.getElementById(
@@ -42,13 +108,18 @@ export class ShiftController {
     "new-shift-form__error-main"
   ) as HTMLDivElement;
 
-  dayOfMonthEl = document.getElementById("day-of-month") as HTMLSelectElement;
-  monthOfYearEl = document.getElementById("month-of-year") as HTMLSelectElement;
-  yearEl = document.getElementById("year") as HTMLSelectElement;
+  dayOfMonthEl: HTMLSelectElement;
+  monthOfYearEl: HTMLSelectElement;
+  yearEl: HTMLSelectElement;
+
   endTimeHrEl = document.getElementById("end-time-hour") as HTMLInputElement;
   endTimeMinEl = document.getElementById("end-time-min") as HTMLInputElement;
   fetchNewMetaEl = document.getElementById("get-new-meta-form-button");
   metaSelectEl = document.getElementById("select-meta") as HTMLSelectElement;
+
+  dateSegmentTemplate = document.getElementById(
+    "new-shift-form-date-segment-template"
+  ) as HTMLDivElement;
 
   formElements: { [k: string]: HTMLSelectElement | HTMLInputElement };
   formErrors = {} as FormThingsError;
@@ -56,9 +127,12 @@ export class ShiftController {
   schema: Schema<any>;
   newMetaForm: NewMeta;
 
-  constructor(private socket: AppSocket) {
-    this.newMetaForm = new NewMeta(this.socket, this.onMetaCreated);
+  constructor(private props: Props) {
+    this.newMetaForm = new NewMeta(this.props.socket, this.onMetaCreated);
+    this.render();
+  }
 
+  setUpDom = () => {
     if (
       this.fetchNewMetaEl &&
       this.mainErrorContainer &&
@@ -71,8 +145,27 @@ export class ShiftController {
       this.startTimeHrEl &&
       this.startTimeMinEl &&
       this.endTimeHrEl &&
-      this.endTimeMinEl
+      this.endTimeMinEl &&
+      this.dateSegmentTemplate
     ) {
+      // tslint:disable-next-line:no-console
+      console.log(
+        `
+
+
+      logging starts
+
+
+      label`,
+        "setting up DOM",
+        `
+
+      logging ends
+
+
+      `
+      );
+
       this.metaSelectDefaultEl = document.getElementById(
         `${this.metaSelectEl.name}-default`
       ) as HTMLInputElement;
@@ -180,7 +273,33 @@ export class ShiftController {
         this.keyboardListener("min")
       );
     }
-  }
+  };
+
+  render = () => {
+    if (!this.props.isServerRendered()) {
+      const {
+        days: daysOfMonth,
+        months: monthOfYear,
+        years
+      } = this.props.getMonthDaysYearMonth();
+
+      this.dateSegmentTemplate.innerHTML = newShiftDateTemplate({
+        daysOfMonth,
+        monthOfYear,
+        years
+      });
+    }
+
+    this.dayOfMonthEl = document.getElementById(
+      "day-of-month"
+    ) as HTMLSelectElement;
+    this.monthOfYearEl = document.getElementById(
+      "month-of-year"
+    ) as HTMLSelectElement;
+    this.yearEl = document.getElementById("year") as HTMLSelectElement;
+
+    this.setUpDom();
+  };
 
   /**
    *
@@ -297,7 +416,9 @@ export class ShiftController {
     }
   };
 
-  submitElHandler = () => {
+  submitElHandler = (evt: Event) => {
+    evt.preventDefault();
+
     this.submitEl.classList.add("loading");
     this.submitEl.disabled = true;
     this.resetEl.disabled = true;
@@ -331,7 +452,7 @@ export class ShiftController {
           "endTimeMin"
         ].forEach(k => delete shift[k]);
 
-        this.socket.queryGraphQl({
+        this.props.socket.queryGraphQl({
           params: toRunableDocument(CREATE_SHIFT_GQL, { shift }),
           ok: () => {
             window.location.href = "/";
@@ -399,4 +520,11 @@ export class ShiftController {
 
 export default ShiftController;
 
-docReady(() => new ShiftController(window.appInterface.socket));
+docReady(
+  () =>
+    new ShiftController({
+      socket: window.appInterface.socket,
+      getMonthDaysYearMonth,
+      isServerRendered
+    })
+);

@@ -36,50 +36,8 @@
         Date
       </div>
 
-      <div class="new-shift-form__fields three">
-        <div>
-          <select name="dayOfMonth" id="day-of-month" class="ui search dropdown">
-            <option value="">Day</option>
-
-                      {{#each daysOfMonth}}
-                      <option value="{{@key}}" {{selected}}>
-                        {{display}}
-                      </option>
-                      {{/each}}
-          </select>
-
-          <div class="new-shift-form__error form__error hidden"></div>
-        </div>
-
-        <div>
-          <select name="monthOfYear" id="month-of-year" class="ui search dropdown">
-            <option value="">Month</option>
-
-
-                      {{#each monthOfYear}}
-                      <option value="{{@key}}" {{selected}}>
-                        {{display}}
-                      </option>
-                      {{/each}}
-          </select>
-
-          <div class="new-shift-form__error form__error hidden"></div>
-        </div>
-
-        <div>
-          <select name="year" id="year" class="ui search dropdown">
-            <option value="">Year</option>
-
-
-                      {{#each years}}
-                      <option value="{{@key}}" {{selected}}>
-                        {{@key}}
-                      </option>
-                      {{/each}}
-          </select>
-
-          <div class="new-shift-form__error form__error hidden"></div>
-        </div>
+      <div id="new-shift-form-date-segment-template" class="new-shift-form__fields three">
+              {{{ dateHtml }}}
       </div>
 
 
@@ -162,5 +120,4 @@
       </div>
     </div>
   </form>
-
 </div>

@@ -37,6 +37,37 @@ templates['indexTemplate'] = template({"compiler":[7,">= 4.0.0"],"main":function
     + container.escapeExpression(((helper = (helper = helpers.newShiftPath || (depth0 != null ? depth0.newShiftPath : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"newShiftPath","hash":{},"data":data}) : helper)))
     + "\">\n      <span class=\"\">&plus;</span>\n    </a>\n\n    <!-- /LINK TO NEW SHIFT -->\n\n  </div>\n";
 },"useData":true});
+templates['newShiftDateTemplate'] = template({"1":function(container,depth0,helpers,partials,data) {
+    var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+
+  return "              <option value=\""
+    + alias4(((helper = (helper = helpers.key || (data && data.key)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"key","hash":{},"data":data}) : helper)))
+    + "\" "
+    + alias4(((helper = (helper = helpers.selected || (depth0 != null ? depth0.selected : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"selected","hash":{},"data":data}) : helper)))
+    + ">\n                "
+    + alias4(((helper = (helper = helpers.display || (depth0 != null ? depth0.display : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"display","hash":{},"data":data}) : helper)))
+    + "\n              </option>\n";
+},"3":function(container,depth0,helpers,partials,data) {
+    var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+
+  return "              <option value=\""
+    + alias4(((helper = (helper = helpers.key || (data && data.key)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"key","hash":{},"data":data}) : helper)))
+    + "\" "
+    + alias4(((helper = (helper = helpers.selected || (depth0 != null ? depth0.selected : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"selected","hash":{},"data":data}) : helper)))
+    + ">\n                "
+    + alias4(((helper = (helper = helpers.key || (data && data.key)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"key","hash":{},"data":data}) : helper)))
+    + "\n              </option>\n";
+},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1, alias1=depth0 != null ? depth0 : (container.nullContext || {});
+
+  return "<div>\n  <select name=\"dayOfMonth\" id=\"day-of-month\" class=\"ui search dropdown\">\n    <option value=\"\">Day</option>\n\n"
+    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.daysOfMonth : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "  </select>\n\n  <div class=\"new-shift-form__error form__error hidden\"></div>\n</div>\n\n<div>\n  <select name=\"monthOfYear\" id=\"month-of-year\" class=\"ui search dropdown\">\n    <option value=\"\">Month</option>\n\n\n"
+    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.monthOfYear : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "  </select>\n\n  <div class=\"new-shift-form__error form__error hidden\"></div>\n</div>\n\n<div>\n  <select name=\"year\" id=\"year\" class=\"ui search dropdown\">\n    <option value=\"\">Year</option>\n\n\n"
+    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.years : depth0),{"name":"each","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "  </select>\n\n  <div class=\"new-shift-form__error form__error hidden\"></div>\n</div>\n";
+},"useData":true});
 templates['newShiftMenuTemplate'] = template({"1":function(container,depth0,helpers,partials,data) {
     var helper;
 
@@ -66,38 +97,14 @@ templates['newShiftTemplate'] = template({"1":function(container,depth0,helpers,
     + " &percnt; sunday: "
     + alias4(((helper = (helper = helpers.sundaySupplPayPct || (depth0 != null ? depth0.sundaySupplPayPct : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"sundaySupplPayPct","hash":{},"data":data}) : helper)))
     + " &percnt;\n                    </option>\n";
-},"3":function(container,depth0,helpers,partials,data) {
-    var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
-
-  return "                      <option value=\""
-    + alias4(((helper = (helper = helpers.key || (data && data.key)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"key","hash":{},"data":data}) : helper)))
-    + "\" "
-    + alias4(((helper = (helper = helpers.selected || (depth0 != null ? depth0.selected : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"selected","hash":{},"data":data}) : helper)))
-    + ">\n                        "
-    + alias4(((helper = (helper = helpers.display || (depth0 != null ? depth0.display : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"display","hash":{},"data":data}) : helper)))
-    + "\n                      </option>\n";
-},"5":function(container,depth0,helpers,partials,data) {
-    var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
-
-  return "                      <option value=\""
-    + alias4(((helper = (helper = helpers.key || (data && data.key)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"key","hash":{},"data":data}) : helper)))
-    + "\" "
-    + alias4(((helper = (helper = helpers.selected || (depth0 != null ? depth0.selected : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"selected","hash":{},"data":data}) : helper)))
-    + ">\n                        "
-    + alias4(((helper = (helper = helpers.key || (data && data.key)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"key","hash":{},"data":data}) : helper)))
-    + "\n                      </option>\n";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 
   return "<div class=\"new-shift-main\">\n  <form id=\"new-shift-form\" class=\"ui form new-shift-form\">\n    <div id=\"new-shift-form__error-main\" class=\"ui negative message hidden new-shift-form__error-main\">\n    </div>\n\n    <!-- SELECT OR CREATE META -->\n    <div class=\"ui top attached segment form__field select-meta\">\n      <div class=\"ui top attached label\">\n        Select Meta or create new.\n      </div>\n\n      <div class=\"meta-id ui right labeled input\">\n        <select name=\"metaId\" id=\"select-meta\" class=\"ui search dropdown fluid\">\n          <option value=\"\">-----</option>\n\n"
     + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.metas : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "        </select>\n\n        <div id=\"get-new-meta-form-button\" class=\"ui label\">\n          <i class=\"plus icon\"></i>\n        </div>\n      </div>\n\n      <div class=\"new-shift-form__error form__error hidden\"></div>\n      <input type=\"hidden\" id=\"metaId-default\" value=\"\">\n    </div>\n    <!-- /SELECT OR CREATE META -->\n\n    <!-- SHIFT DATE -->\n    <div class=\"ui top attached segment date-segment form__field\">\n      <div class=\"ui top attached label\">\n        Date\n      </div>\n\n      <div class=\"new-shift-form__fields three\">\n        <div>\n          <select name=\"dayOfMonth\" id=\"day-of-month\" class=\"ui search dropdown\">\n            <option value=\"\">Day</option>\n\n"
-    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.daysOfMonth : depth0),{"name":"each","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "          </select>\n\n          <div class=\"new-shift-form__error form__error hidden\"></div>\n        </div>\n\n        <div>\n          <select name=\"monthOfYear\" id=\"month-of-year\" class=\"ui search dropdown\">\n            <option value=\"\">Month</option>\n\n\n"
-    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.monthOfYear : depth0),{"name":"each","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "          </select>\n\n          <div class=\"new-shift-form__error form__error hidden\"></div>\n        </div>\n\n        <div>\n          <select name=\"year\" id=\"year\" class=\"ui search dropdown\">\n            <option value=\"\">Year</option>\n\n\n"
-    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.years : depth0),{"name":"each","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "          </select>\n\n          <div class=\"new-shift-form__error form__error hidden\"></div>\n        </div>\n      </div>\n\n\n      <input type=\"hidden\" id=\"dayOfMonth-default\" value=\"\">\n\n      <input type=\"hidden\" id=\"monthOfYear-default\" value=\"\">\n\n      <input type=\"hidden\" id=\"year-default\" value=\"\">\n    </div>\n    <!-- /SHIFT DATE -->\n\n    <!-- START TIME -->\n    <div class=\"ui top attached segment start-time-segment form__field\">\n      <div class=\"ui top attached label\">\n        Start time\n      </div>\n\n      <div class=\"new-shift-form__fields two\">\n        <div>\n            <input name=\"startTimeHr\" id=\"start-time-hour\" name=\"start-time-hour\" type=\"number\" min=\"0\" max=\"23\" placeholder=\"HH\" autocomplete=\"off\"\n              maxlength=\"2\" value=\""
+    + "        </select>\n\n        <div id=\"get-new-meta-form-button\" class=\"ui label\">\n          <i class=\"plus icon\"></i>\n        </div>\n      </div>\n\n      <div class=\"new-shift-form__error form__error hidden\"></div>\n      <input type=\"hidden\" id=\"metaId-default\" value=\"\">\n    </div>\n    <!-- /SELECT OR CREATE META -->\n\n    <!-- SHIFT DATE -->\n    <div class=\"ui top attached segment date-segment form__field\">\n      <div class=\"ui top attached label\">\n        Date\n      </div>\n\n      <div id=\"new-shift-form-date-segment-template\" class=\"new-shift-form__fields three\">\n              "
+    + ((stack1 = ((helper = (helper = helpers.dateHtml || (depth0 != null ? depth0.dateHtml : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"dateHtml","hash":{},"data":data}) : helper))) != null ? stack1 : "")
+    + "\n      </div>\n\n\n      <input type=\"hidden\" id=\"dayOfMonth-default\" value=\"\">\n\n      <input type=\"hidden\" id=\"monthOfYear-default\" value=\"\">\n\n      <input type=\"hidden\" id=\"year-default\" value=\"\">\n    </div>\n    <!-- /SHIFT DATE -->\n\n    <!-- START TIME -->\n    <div class=\"ui top attached segment start-time-segment form__field\">\n      <div class=\"ui top attached label\">\n        Start time\n      </div>\n\n      <div class=\"new-shift-form__fields two\">\n        <div>\n            <input name=\"startTimeHr\" id=\"start-time-hour\" name=\"start-time-hour\" type=\"number\" min=\"0\" max=\"23\" placeholder=\"HH\" autocomplete=\"off\"\n              maxlength=\"2\" value=\""
     + alias4(((helper = (helper = helpers.startTimeHr || (depth0 != null ? depth0.startTimeHr : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"startTimeHr","hash":{},"data":data}) : helper)))
     + "\">\n\n            <div class=\"new-shift-form__error form__error hidden\"></div>\n        </div>\n\n        <div>\n          <input name=\"startTimeMin\" id=\"start-time-min\" name=\"start-time-min\" type=\"number\" min=\"0\" max=\"59\" placeholder=\"MM\" autocomplete=\"off\"\n            maxlength=\"2\" value=\""
     + alias4(((helper = (helper = helpers.startTimeMin || (depth0 != null ? depth0.startTimeMin : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"startTimeMin","hash":{},"data":data}) : helper)))
@@ -105,7 +112,7 @@ templates['newShiftTemplate'] = template({"1":function(container,depth0,helpers,
     + alias4(((helper = (helper = helpers.endTimeHr || (depth0 != null ? depth0.endTimeHr : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"endTimeHr","hash":{},"data":data}) : helper)))
     + "\">\n\n            <div class=\"new-shift-form__error form__error hidden\"></div>\n        </div>\n\n        <div>\n          <input name=\"endTimeMin\" id=\"end-time-min\" name=\"end-time-min\" type=\"number\" min=\"0\" max=\"59\" placeholder=\"MM\" autocomplete=\"off\"\n            maxlength=\"2\" value=\""
     + alias4(((helper = (helper = helpers.endTimeMin || (depth0 != null ? depth0.endTimeMin : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"endTimeMin","hash":{},"data":data}) : helper)))
-    + "\">\n\n          <div class=\"new-shift-form__error form__error hidden\"></div>\n        </div>\n      </div>\n\n\n      <input type=\"hidden\" id=\"endTimeHr-default\" value=\"\">\n\n      <input type=\"hidden\" id=\"endTimeMin-default\" value=\"\">\n    </div>\n    <!-- /END TIME -->\n\n    <div class=\"new-shift-form__buttons\">\n      <div class=\"ui buttons\">\n        <button id=\"new-shift-form-submit\" type=\"submit\" class=\"ui positive button\">\n          Save\n        </button>\n\n        <div class=\"or\"></div>\n\n        <button id=\"new-shift-form-reset\" type=\"button\" class=\"ui button\">\n          Reset\n        </button>\n      </div>\n    </div>\n  </form>\n\n</div>\n";
+    + "\">\n\n          <div class=\"new-shift-form__error form__error hidden\"></div>\n        </div>\n      </div>\n\n\n      <input type=\"hidden\" id=\"endTimeHr-default\" value=\"\">\n\n      <input type=\"hidden\" id=\"endTimeMin-default\" value=\"\">\n    </div>\n    <!-- /END TIME -->\n\n    <div class=\"new-shift-form__buttons\">\n      <div class=\"ui buttons\">\n        <button id=\"new-shift-form-submit\" type=\"submit\" class=\"ui positive button\">\n          Save\n        </button>\n\n        <div class=\"or\"></div>\n\n        <button id=\"new-shift-form-reset\" type=\"button\" class=\"ui button\">\n          Reset\n        </button>\n      </div>\n    </div>\n  </form>\n</div>\n";
 },"useData":true});
 templates['shiftDetailTemplate'] = template({"1":function(container,depth0,helpers,partials,data) {
     var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3=container.escapeExpression, alias4="function";
