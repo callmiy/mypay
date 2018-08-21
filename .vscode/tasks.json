@@ -104,6 +104,17 @@
       "type": "shell",
       "command": "mix deploy prod",
       "problemMatcher": []
+    },
+
+    {
+      "label": "Rewrite service worker",
+      "type": "shell",
+      "command": "mix deploy service.worker.rewrite",
+      "problemMatcher": [
+        "$mixCompileError",
+        "$mixCompileWarning",
+        "$mixTestFailure"
+      ]
     }
   ]
 }

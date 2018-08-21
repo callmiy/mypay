@@ -2,13 +2,15 @@ defmodule BurdaWeb.Offline do
   alias BurdaWeb.LayoutView
 
   @phoenix_digest_manifest_file_path "priv/static/cache_manifest.json"
-
+  @webpack_manifest_file_path "priv/static/webpack-manifest.json"
   @static_folder Path.expand("priv/static")
-  @css_css_pattern ~r/(css.+?\.css$)|(\.map$)/
   @offline_template_folder "front-end/src/templates"
   @version_text "const CACHE_VERSION = "
   @cache_static_files_text "const CACHE_STATICS = "
+
   @service_worker_file "priv/static/offline/service-worker1.js"
+  @build_service_worker_file "_build/#{System.get_env("MIX_ENV") || "dev"}/lib/burda/priv/static/offline/service-worker1.js"
+
   @manifest_json_file Path.expand("cache_manifest.json", @static_folder)
 
   def get_service_worker_cache_assets,
@@ -56,12 +58,22 @@ defmodule BurdaWeb.Offline do
       end)
       |> Enum.map(fn [file, string] -> File.write!(file, string) end)
 
-  def write_cache_static_file do
+  def write_cache_static_file,
+    do:
+      :asset
+      |> LayoutView.get_frontend_env()
+      |> write_cache_static_file_for_asset_env()
+
+  defp write_cache_static_file_for_asset_env(:dev) do
+    text = service_worker_text()
+    File.write!(@service_worker_file, text)
+    File.write!(@build_service_worker_file, text)
+  end
+
+  defp write_cache_static_file_for_asset_env(:prod) do
     Mix.Task.run("phx.digest")
 
-    file = File.open!(@service_worker_file)
-    text = read_file(file, [])
-    File.close(file)
+    text = service_worker_text()
 
     digested_files_from_manifest()
     |> Enum.concat(gzipped_files_from_manifest([]))
@@ -69,11 +81,6 @@ defmodule BurdaWeb.Offline do
 
     File.rm!(@manifest_json_file)
     File.write!(@service_worker_file, text)
-
-    # File.write!(
-    #   "#{@env_priv_static_folder}/offline/service-worker1.js",
-    #   text
-    # )
 
     Mix.Task.reenable("phx.digest")
     Mix.Task.run("phx.digest")
@@ -147,13 +154,22 @@ defmodule BurdaWeb.Offline do
 
   defp service_worker_cache_assets(:dev),
     do:
-      get_service_worker_cache_assets()
-      |> Map.keys()
-      |> Enum.reject(&Regex.match?(@css_css_pattern, &1))
+      @webpack_manifest_file_path
+      |> File.read!()
+      |> Poison.decode!()
+      |> Map.values()
+      |> Enum.reject(&Kernel.=~(&1, "webpack-manifest.json"))
 
   defp service_worker_cache_assets(_), do: service_worker_cache_assets(:dev)
 
+  defp service_worker_text do
+    file = File.open!(@service_worker_file)
+    text = read_file(file, [])
+    File.close(file)
+    text
+  end
+
   defp cache_asset(:prod, text), do: ~s("/#{text}")
-  defp cache_asset(:dev, text), do: ~s("http://localhost:4019/#{text}")
+  defp cache_asset(:dev, text), do: ~s("#{text}")
   defp cache_asset(_, text), do: cache_asset(:dev, text)
 end

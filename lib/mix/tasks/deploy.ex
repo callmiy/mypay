@@ -21,6 +21,8 @@ defmodule Mix.Tasks.Deploy do
   @spec run([<<_::32>>, ...]) :: :ok
   def run(args), do: deploy(args)
 
+  defp deploy(["service.worker.rewrite"]), do: Offline.write_cache_static_file()
+
   defp deploy(["compile", "templates", "prod"]) do
     Offline.generate_templates()
 

@@ -1,8 +1,10 @@
+// tslint:disable:object-literal-sort-keys
 const path = require("path");
 const merge = require("webpack-merge");
 const webpack = require("webpack");
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
 const WatchMissingNodeModulesPlugin = require("react-dev-utils/WatchMissingNodeModulesPlugin");
+const WebpackAssetsManifest = require("webpack-assets-manifest");
 
 const baseConfig = require("./base");
 const paths = require("./../paths");
@@ -67,7 +69,14 @@ module.exports = merge(baseConfig, {
     // to restart the development server for Webpack to discover it. This plugin
     // makes the discovery automatic so you don't have to restart.
     // See https://github.com/facebookincubator/create-react-app/issues/186
-    new WatchMissingNodeModulesPlugin(paths.appNodeModules)
+    new WatchMissingNodeModulesPlugin(paths.appNodeModules),
+
+    new WebpackAssetsManifest({
+      output: path.resolve(paths.appBuild, "webpack-manifest.json"),
+      writeToDisk: true,
+      sortManifest: false,
+      publicPath: WEBPACK_DEV_SERVER_URL
+    })
   ],
 
   performance: {
