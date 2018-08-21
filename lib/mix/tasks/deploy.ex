@@ -87,7 +87,6 @@ defmodule Mix.Tasks.Deploy do
 
   defp process_static_files do
     :ok = run_cmd(@yarn, ["deploy"], cd: @front_end_folder)
-    Mix.Task.run("phx.digest")
     Offline.write_cache_static_file()
     :ok
   end

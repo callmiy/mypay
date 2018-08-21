@@ -12,13 +12,9 @@ defmodule BurdaWeb.Endpoint do
   @input_hidden ~s(<input type="hidden" id="#{@offline_token_id}" value="#{@offline_token_value}" style="display: none" name="3snsaaPmwVPzy6mFtib" />)
                 |> Phoenix.HTML.raw()
 
-  @cache_static_file "priv/cache-static.js"
-  @cache_static_js_request_path "/offline/cache-static.js"
-
   socket("/socket", BurdaWeb.UserSocket)
 
   plug(:put_service_worker_allowed_header)
-  plug(:serve_cache_static_js)
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -105,17 +101,4 @@ defmodule BurdaWeb.Endpoint do
 
   def put_offline_token(conn, _),
     do: assign(conn, :offline_token, @input_hidden)
-
-  def serve_cache_static_js(conn, _) do
-    case conn.request_path == @cache_static_js_request_path do
-      false ->
-        conn
-
-      _ ->
-        conn
-        |> put_resp_content_type("text/javascript")
-        |> send_resp(200, File.read!(@cache_static_file))
-        |> halt()
-    end
-  end
 end

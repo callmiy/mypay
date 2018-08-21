@@ -1,15 +1,19 @@
 defmodule BurdaWeb.Offline do
   alias BurdaWeb.LayoutView
 
-  @service_worker_cache_assets_path Path.expand("priv/static/cache_manifest.json")
+  @phoenix_digest_manifest_file_path "priv/static/cache_manifest.json"
 
-  @cache_static_file Path.expand("priv/cache-static.js")
+  @static_folder Path.expand("priv/static")
   @css_css_pattern ~r/(css.+?\.css$)|(\.map$)/
   @offline_template_folder "front-end/src/templates"
+  @version_text "const CACHE_VERSION = "
+  @cache_static_files_text "const CACHE_STATICS = "
+  @service_worker_file "priv/static/offline/service-worker1.js"
+  @manifest_json_file Path.expand("cache_manifest.json", @static_folder)
 
   def get_service_worker_cache_assets,
     do:
-      @service_worker_cache_assets_path
+      @phoenix_digest_manifest_file_path
       |> File.read!()
       |> Poison.decode!()
       |> Map.get("digests")
@@ -28,23 +32,6 @@ defmodule BurdaWeb.Offline do
         end
       end)
       |> Enum.into(%{})
-
-  def write_cache_static_file do
-    env = LayoutView.get_frontend_env(:asset)
-
-    text =
-      env
-      |> service_worker_cache_assets()
-      |> Enum.map(&cache_asset(env, &1))
-      |> Enum.join(",")
-
-    text =
-      ~s(const CACHE_VERSION = #{System.system_time(:seconds)};const CACHE_STATICS = ["/offline-template-assigns",#{
-        text
-      },"https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic&subset=latin"];)
-
-    File.write!(@cache_static_file, text)
-  end
 
   def generate_templates,
     do:
@@ -68,6 +55,90 @@ defmodule BurdaWeb.Offline do
         end)
       end)
       |> Enum.map(fn [file, string] -> File.write!(file, string) end)
+
+  def write_cache_static_file do
+    Mix.Task.run("phx.digest")
+
+    file = File.open!(@service_worker_file)
+    text = read_file(file, [])
+    File.close(file)
+
+    digested_files_from_manifest()
+    |> Enum.concat(gzipped_files_from_manifest([]))
+    |> Enum.each(&File.rm_rf!/1)
+
+    File.rm!(@manifest_json_file)
+    File.write!(@service_worker_file, text)
+
+    # File.write!(
+    #   "#{@env_priv_static_folder}/offline/service-worker1.js",
+    #   text
+    # )
+
+    Mix.Task.reenable("phx.digest")
+    Mix.Task.run("phx.digest")
+  end
+
+  def digested_files_from_manifest,
+    do:
+      @manifest_json_file
+      |> File.read!()
+      |> Poison.decode!()
+      |> Map.get("latest", %{})
+      |> Map.values()
+      |> Enum.map(&Path.expand(&1, @static_folder))
+      |> Enum.filter(&File.exists?/1)
+
+  def gzipped_files_from_manifest(acc, path \\ @static_folder)
+      when is_list(acc) do
+    case File.dir?(path) do
+      true ->
+        paths =
+          path
+          |> File.ls!()
+          |> Enum.map(&Path.expand(&1, path))
+
+        acc =
+          paths
+          |> Enum.reject(&(File.dir?(&1) || Path.extname(&1) !== ".gz"))
+          |> Enum.concat(acc)
+
+        paths
+        |> Enum.filter(&File.dir?/1)
+        |> Enum.reduce(acc, &gzipped_files_from_manifest(&2, &1))
+
+      _ ->
+        if Path.extname(path) == ".gz", do: [path | acc], else: acc
+    end
+  end
+
+  defp read_file(file, acc) do
+    case IO.read(file, :line) do
+      :eof -> Enum.reverse(acc)
+      text -> read_file(file, [get_rewrite_text(text) | acc])
+    end
+  end
+
+  defp get_rewrite_text(text) do
+    cond do
+      text =~ @version_text ->
+        "const CACHE_VERSION = #{System.system_time(:seconds)};\n"
+
+      text =~ @cache_static_files_text ->
+        env = LayoutView.get_frontend_env(:asset)
+
+        text =
+          env
+          |> service_worker_cache_assets()
+          |> Enum.map(&cache_asset(env, &1))
+          |> Enum.join(",")
+
+        ~s(const CACHE_STATICS = ["/offline-template-assigns",#{text},"https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic&subset=latin"];\n)
+
+      true ->
+        text
+    end
+  end
 
   defp service_worker_cache_assets(:prod),
     do:
