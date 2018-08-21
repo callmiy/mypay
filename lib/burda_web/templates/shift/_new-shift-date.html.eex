@@ -1,0 +1,67 @@
+<div>
+  <select name="dayOfMonth" id="day-of-month" class="ui search dropdown">
+    <option value="">Day</option>
+    <%= if assigns[:days_of_month] do %>
+      <%= for days_of_month <- assigns[:days_of_month]  do %>
+        <%{day, val} = days_of_month%>
+          <option value="<%= day %>" <%=val.selected%>>
+            <%= val.display %>
+          </option>
+          <%end%>
+            <% else %>
+              {{#each daysOfMonth}}
+              <option value="{{@key}}" {{selected}}>
+                {{display}}
+              </option>
+              {{/each}}
+              <%end%>
+  </select>
+
+  <div class="new-shift-form__error form__error hidden"></div>
+</div>
+
+<div>
+  <select name="monthOfYear" id="month-of-year" class="ui search dropdown">
+    <option value="">Month</option>
+
+    <%= if assigns[:months_of_year] do %>
+      <%= for month_of_year <- assigns[:months_of_year] do %>
+        <%{month, val} = month_of_year%>
+          <option value="<%= month %>" <%=val.selected%>>
+            <%= val.display %>
+          </option>
+          <%end%>
+            <% else %>
+              {{#each monthOfYear}}
+              <option value="{{@key}}" {{selected}}>
+                {{display}}
+              </option>
+              {{/each}}
+              <%end%>
+  </select>
+
+  <div class="new-shift-form__error form__error hidden"></div>
+</div>
+
+<div>
+  <select name="year" id="year" class="ui search dropdown">
+    <option value="">Year</option>
+
+    <%= if assigns[:years] do  %>
+      <%= for year_ <- assigns[:years] do %>
+        <%{year, selection} = year_%>
+          <option value="<%= year %>" <%=selection%>>
+            <%= year %>
+          </option>
+          <%end%>
+            <% else %>
+              {{#each years}}
+              <option value="{{@key}}" {{selected}}>
+                {{@key}}
+              </option>
+              {{/each}}
+              <%end%>
+  </select>
+
+  <div class="new-shift-form__error form__error hidden"></div>
+</div>

@@ -14,7 +14,8 @@ defmodule BurdaWeb.ShiftController do
 
   @new_offline_templates [
     new_offline_template: "newShiftTemplate",
-    new_offline_menu_template: "newShiftMenuTemplate"
+    new_offline_menu_template: "newShiftMenuTemplate",
+    new_date_offline_template: "newShiftDateTemplate"
   ]
 
   @months_of_year [
@@ -136,6 +137,9 @@ defmodule BurdaWeb.ShiftController do
 
   def new_offline_menu_template,
     do: Phoenix.View.render_to_string(ShiftView, @menu_html, [])
+
+  def new_date_offline_template,
+    do: Phoenix.View.render_to_string(ShiftView, "_new-shift-date.html", [])
 
   def new_offline_template_assigns,
     do: %{
