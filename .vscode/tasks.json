@@ -121,7 +121,7 @@
       "label": "Launch browser dev",
       "type": "shell",
       "windows": {
-        "command": "start chrome --new-window --incognito --system-developer-mode \"http://localhost:4018\""
+        "command": "mix deploy compile templates dev && start chrome --new-window --incognito --system-developer-mode \"http://localhost:4018\""
       },
       "problemMatcher": []
     },
