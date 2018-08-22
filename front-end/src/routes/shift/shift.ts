@@ -391,10 +391,18 @@ export class ShiftController {
     const opt = document.createElement("option") as HTMLOptionElement;
     opt.value = meta.id;
     opt.selected = true;
-    const breaks = (+meta.breakTimeSecs / 60).toFixed(1);
-    opt.textContent = ` ${breaks} min | € ${meta.payPerHr} night: ${
-      meta.nightSupplPayPct
-    } % sunday: ${meta.sundaySupplPayPct} % `;
+
+    const meta_ = {
+      ...meta,
+      selected: "selected",
+      breakTimeSecs: (+meta.breakTimeSecs / 60).toFixed(1)
+    };
+
+    opt.setAttribute("data-value", JSON.stringify(meta_));
+
+    opt.textContent = ` ${meta_.breakTimeSecs} min | € ${
+      meta.payPerHr
+    } night: ${meta.nightSupplPayPct} % sunday: ${meta.sundaySupplPayPct} % `;
 
     return opt;
   };
@@ -546,6 +554,7 @@ export class ShiftController {
           content: html,
           onShow: () => {
             this.renderSubmitConfirmedEl();
+            this.renderEditConfirmedEl();
 
             return this.tearDownConfirmedEls;
           }
