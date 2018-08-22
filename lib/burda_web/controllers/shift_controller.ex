@@ -9,7 +9,6 @@ defmodule BurdaWeb.ShiftController do
   @menu_html "menu.html"
   @page_css "routes/shift.css"
   @page_js "routes/shift.js"
-  @shift_duration_hrs_seconds 8 * 60 * 60
   @new_form_css_path "components/new-meta-form.css"
 
   @new_offline_templates [
@@ -59,42 +58,39 @@ defmodule BurdaWeb.ShiftController do
 
   @spec new(Plug.Conn.t(), any()) :: Plug.Conn.t()
   def new(conn, _params) do
-    end_time = Timex.now(Timex.Timezone.Local.lookup())
-    start_time = Timex.shift(end_time, seconds: @shift_duration_hrs_seconds)
+    now = Timex.now(Timex.Timezone.Local.lookup())
 
     months_of_year =
       Map.update!(
         @months_of_year,
-        end_time.month,
+        now.month,
         &Map.put(&1, :selected, "selected")
       )
 
     days_of_month =
       Map.update!(
         @days_of_month,
-        end_time.day,
+        now.day,
         &Map.put(&1, :selected, "selected")
       )
 
-    year = end_time.year
+    year = now.year
 
     years =
       -4..-1
       |> Enum.map(&{&1 + year, ""})
       |> Enum.concat([{year, "selected"}])
 
-    {latest_meta, all_metas} =
+    metas =
       case MetaApi.list(%{order_by: %{id: :desc}}) do
         [] ->
           {%{id: 0}, []}
 
         [latest_meta | rest_metas] ->
-          all_metas = [
+          [
             {latest_meta, "selected"}
             | Enum.map(rest_metas, &{&1, ""})
           ]
-
-          {latest_meta, all_metas}
       end
 
     index_path = BurdaWeb.Router.Helpers.index_path(conn, :index)
@@ -112,23 +108,12 @@ defmodule BurdaWeb.ShiftController do
     render(
       conn,
       @new_shift_html,
-      metas: all_metas,
-      meta_id_default: latest_meta.id,
+      metas: metas,
       year_default: year,
       months_of_year: months_of_year,
-      month_default: end_time.month,
       days_of_month: days_of_month,
-      day_default: end_time.day,
       years: years,
       page_title: "New Shift",
-      shift_start_time: %{
-        hour: start_time.hour,
-        minute: start_time.minute
-      },
-      shift_end_time: %{
-        hour: end_time.hour,
-        minute: end_time.minute
-      },
       go_back_url: go_back_url
     )
   end

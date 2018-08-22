@@ -39,13 +39,6 @@
       <div id="new-shift-form-date-segment-template" class="new-shift-form__fields three">
               {{{ dateHtml }}}
       </div>
-
-
-      <input type="hidden" id="dayOfMonth-default" value="">
-
-      <input type="hidden" id="monthOfYear-default" value="">
-
-      <input type="hidden" id="year-default" value="">
     </div>
     <!-- /SHIFT DATE -->
 
@@ -57,23 +50,19 @@
 
       <div class="new-shift-form__fields two">
         <div>
-            <input name="startTimeHr" id="start-time-hour" name="start-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
-              maxlength="2" value="{{ startTimeHr }}">
+          <input name="startTimeHr" id="start-time-hour" name="start-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
+            maxlength="2">
 
-            <div class="new-shift-form__error form__error hidden"></div>
+          <div class="new-shift-form__error form__error hidden"></div>
         </div>
 
         <div>
           <input name="startTimeMin" id="start-time-min" name="start-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
-            maxlength="2" value="{{ startTimeMin }}">
+            maxlength="2">
 
           <div class="new-shift-form__error form__error hidden"></div>
         </div>
       </div>
-
-      <input type="hidden" id="startTimeHr-default" value="">
-
-      <input type="hidden" id="startTimeMin-default" value="">
     </div>
     <!-- /START TIME -->
 
@@ -85,24 +74,20 @@
 
       <div class="new-shift-form__fields two">
         <div>
-            <input name="endTimeHr" id="end-time-hour" name="end-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
-              maxlength="2" value="{{ endTimeHr }}">
 
-            <div class="new-shift-form__error form__error hidden"></div>
+          <input name="endTimeHr" id="end-time-hour" name="end-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
+            maxlength="2">
+
+          <div class="new-shift-form__error form__error hidden"></div>
         </div>
 
         <div>
           <input name="endTimeMin" id="end-time-min" name="end-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
-            maxlength="2" value="{{ endTimeMin }}">
+            maxlength="2">
 
           <div class="new-shift-form__error form__error hidden"></div>
         </div>
       </div>
-
-
-      <input type="hidden" id="endTimeHr-default" value="">
-
-      <input type="hidden" id="endTimeMin-default" value="">
     </div>
     <!-- /END TIME -->
 

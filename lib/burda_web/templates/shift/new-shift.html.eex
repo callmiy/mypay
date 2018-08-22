@@ -37,13 +37,6 @@
               {{{ dateHtml }}}
               <% end %>
       </div>
-
-
-      <input type="hidden" id="dayOfMonth-default" value="<%= assigns[:day_default] || ~s() %>">
-
-      <input type="hidden" id="monthOfYear-default" value="<%= assigns[:month_default] || ~s() %>">
-
-      <input type="hidden" id="year-default" value="<%= assigns[:year_default] || ~s() %>">
     </div>
     <!-- /SHIFT DATE -->
 
@@ -55,24 +48,19 @@
 
       <div class="new-shift-form__fields two">
         <div>
-          <%shift_start_time = assigns[:shift_start_time] || %{} %>
-            <input name="startTimeHr" id="start-time-hour" name="start-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
-              maxlength="2" value="<%= shift_start_time[:hour] || ~s({{ startTimeHr }}) %>">
+          <input name="startTimeHr" id="start-time-hour" name="start-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
+            maxlength="2">
 
-            <div class="new-shift-form__error form__error hidden"></div>
+          <div class="new-shift-form__error form__error hidden"></div>
         </div>
 
         <div>
           <input name="startTimeMin" id="start-time-min" name="start-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
-            maxlength="2" value="<%= shift_start_time[:minute] || ~s({{ startTimeMin }}) %>">
+            maxlength="2">
 
           <div class="new-shift-form__error form__error hidden"></div>
         </div>
       </div>
-
-      <input type="hidden" id="startTimeHr-default" value="<%=shift_start_time[:hour] || ~s() %>">
-
-      <input type="hidden" id="startTimeMin-default" value="<%=shift_start_time[:minute] || ~s()%>">
     </div>
     <!-- /START TIME -->
 
@@ -84,25 +72,20 @@
 
       <div class="new-shift-form__fields two">
         <div>
-          <%shift_end_time = assigns[:shift_end_time] || %{} %>
-            <input name="endTimeHr" id="end-time-hour" name="end-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
-              maxlength="2" value="<%= shift_end_time[:hour] || ~s({{ endTimeHr }})  %>">
 
-            <div class="new-shift-form__error form__error hidden"></div>
+          <input name="endTimeHr" id="end-time-hour" name="end-time-hour" type="number" min="0" max="23" placeholder="HH" autocomplete="off"
+            maxlength="2">
+
+          <div class="new-shift-form__error form__error hidden"></div>
         </div>
 
         <div>
           <input name="endTimeMin" id="end-time-min" name="end-time-min" type="number" min="0" max="59" placeholder="MM" autocomplete="off"
-            maxlength="2" value="<%= shift_end_time[:minute] || ~s({{ endTimeMin }})  %>">
+            maxlength="2">
 
           <div class="new-shift-form__error form__error hidden"></div>
         </div>
       </div>
-
-
-      <input type="hidden" id="endTimeHr-default" value="<%=shift_end_time[:hour] || ~s() %>">
-
-      <input type="hidden" id="endTimeMin-default" value="<%=shift_end_time[:minute] || ~s() %>">
     </div>
     <!-- /END TIME -->
 
