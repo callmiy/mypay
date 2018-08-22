@@ -104,14 +104,26 @@ export interface GetInitialSocketData_offlineToken {
   schemaType: string;
 }
 
+export interface GetInitialSocketData_metas {
+  id: string;
+  _id: string;
+  breakTimeSecs: number;
+  payPerHr: any;
+  nightSupplPayPct: any;
+  sundaySupplPayPct: any;
+  schemaType: string;
+}
+
 export interface GetInitialSocketData {
   shifts: (GetInitialSocketData_shifts | null)[] | null;   // Get all shifts
   newShiftUrl: GetInitialSocketData_newShiftUrl | null;    // Get New shift URL
   offlineToken: GetInitialSocketData_offlineToken | null;  // Get Offline Token
+  metas: (GetInitialSocketData_metas | null)[] | null;     // Get all metas optionally filtered
 }
 
 export interface GetInitialSocketDataVariables {
   shift?: GetShiftInput | null;
+  getMetasInput?: GetMetaInput | null;
 }
 
 
@@ -128,6 +140,24 @@ export interface GetNewMetaForm_newMetaForm {
 
 export interface GetNewMetaForm {
   newMetaForm: GetNewMetaForm_newMetaForm | null;  // Get the form for creating a meta
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL fragment: MetaFragment
+// ====================================================
+
+export interface MetaFragment {
+  id: string;
+  _id: string;
+  breakTimeSecs: number;
+  payPerHr: any;
+  nightSupplPayPct: any;
+  sundaySupplPayPct: any;
+  schemaType: string;
 }
 
 
@@ -234,6 +264,16 @@ export interface Sorting {
 export interface WhereCondition {
   month?: number | null;
   year?: number | null;
+}
+
+// Inputs for getting meta
+export interface GetMetaInput {
+  orderBy?: SortMeta | null;
+}
+
+// input for sorting
+export interface SortMeta {
+  id?: SortingDirective | null;
 }
 
 //==============================================================

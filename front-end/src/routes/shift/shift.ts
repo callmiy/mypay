@@ -7,6 +7,7 @@ import { dismissModal } from "../../components/modals";
 import { NewMeta } from "../../components/new-meta-form/new-meta-form";
 import { CreateMeta } from "../../graphql/gen.types";
 import { CreateMeta_meta } from "../../graphql/gen.types";
+import { GetInitialSocketData_metas } from "../../graphql/gen.types";
 import { setFieldError } from "../../utils/form-things";
 import { clearFieldErrors } from "../../utils/form-things";
 import { formHasErrors } from "../../utils/form-things";
@@ -20,12 +21,19 @@ import { AppSocket } from "../../socket";
 import { docReady } from "../../utils/utils";
 import { isServerRendered } from "../../utils/utils";
 import * as newShiftDateTemplate from "../../templates/newShiftDateTemplate.handlebars";
+import * as newShiftMetasSelectTemplate from "../../templates/newShiftMetasSelectTemplate.handlebars";
+import { Database } from "../../database";
+import { META_TYPENAME } from "../../constants";
 
 interface DaysOfMonth {
   [key: number]: {
     display: number;
     selected: string;
   };
+}
+
+interface MetaForTemplate extends GetInitialSocketData_metas {
+  selected: string;
 }
 
 interface MonthDaysYearMonth {
@@ -38,6 +46,7 @@ interface Props {
   getMonthDaysYearMonth: () => MonthDaysYearMonth;
   socket: AppSocket;
   isServerRendered: () => boolean;
+  database: Database;
 }
 
 const getMonthDaysYearMonth = (): MonthDaysYearMonth => {
@@ -102,12 +111,13 @@ export class ShiftController {
     "start-time-min"
   ) as HTMLInputElement;
 
-  metaSelectDefaultEl: HTMLInputElement;
-
   mainErrorContainer = document.getElementById(
     "new-shift-form__error-main"
   ) as HTMLDivElement;
 
+  selectMetaEl = document.getElementById("select-meta") as HTMLSelectElement;
+
+  metaSelectDefaultEl: HTMLInputElement;
   dayOfMonthEl: HTMLSelectElement;
   monthOfYearEl: HTMLSelectElement;
   yearEl: HTMLSelectElement;
@@ -148,24 +158,6 @@ export class ShiftController {
       this.endTimeMinEl &&
       this.dateSegmentTemplate
     ) {
-      // tslint:disable-next-line:no-console
-      console.log(
-        `
-
-
-      logging starts
-
-
-      label`,
-        "setting up DOM",
-        `
-
-      logging ends
-
-
-      `
-      );
-
       this.metaSelectDefaultEl = document.getElementById(
         `${this.metaSelectEl.name}-default`
       ) as HTMLInputElement;
@@ -275,7 +267,7 @@ export class ShiftController {
     }
   };
 
-  render = () => {
+  render = async () => {
     if (!this.props.isServerRendered()) {
       const {
         days: daysOfMonth,
@@ -287,6 +279,10 @@ export class ShiftController {
         daysOfMonth,
         monthOfYear,
         years
+      });
+
+      this.selectMetaEl.innerHTML = newShiftMetasSelectTemplate({
+        metas: await this.getMetasFromDb()
       });
     }
 
@@ -300,6 +296,28 @@ export class ShiftController {
 
     this.setUpDom();
   };
+
+  getMetasFromDb = () =>
+    this.props.database.db
+      .find({
+        selector: {
+          schemaType: META_TYPENAME
+        }
+      })
+      .then(
+        ({
+          docs
+        }: {
+          docs: Array<PouchDB.Core.ExistingDocument<MetaForTemplate>>;
+        }) =>
+          docs.sort((a, b) => +b.id - +a.id).map((m, index) => {
+            return {
+              ...m,
+              breakTimeSecs: +(+m.breakTimeSecs / 60).toFixed(1),
+              selected: index === 0 ? "selected" : ""
+            };
+          })
+      );
 
   /**
    *
@@ -524,6 +542,7 @@ docReady(
   () =>
     new ShiftController({
       socket: window.appInterface.socket,
+      database: window.appInterface.db,
       getMonthDaysYearMonth,
       isServerRendered
     })

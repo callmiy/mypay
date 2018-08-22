@@ -11,13 +11,13 @@
 
       <div class="meta-id ui right labeled input">
         <select name="metaId" id="select-meta" class="ui search dropdown fluid">
-          <option value="">-----</option>
+<option value="">-----</option>
 
-                    {{#each metas}}
-                    <option value="{{id}}" {{selected}}>
-                      {{breakTimeSecs}} min | &euro; {{payPerHr}} night: {{nightSupplPayPct}} &percnt; sunday: {{sundaySupplPayPct}} &percnt;
-                    </option>
-                    {{/each}}
+          {{#each metas}}
+          <option value="{{id}}" {{selected}}>
+            {{breakTimeSecs}} min | &euro; {{payPerHr}} night: {{nightSupplPayPct}} &percnt; sunday: {{sundaySupplPayPct}} &percnt;
+          </option>
+          {{/each}}
         </select>
 
         <div id="get-new-meta-form-button" class="ui label">

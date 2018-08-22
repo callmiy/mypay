@@ -2,11 +2,22 @@ import PouchDB from "pouchdb-browser";
 import PouchDBFind from "pouchdb-find";
 import PouchdbDebug from "pouchdb-debug";
 
+import { GetInitialSocketData_shifts } from "../graphql/gen.types";
+import { GetInitialSocketData_newShiftUrl } from "../graphql/gen.types";
+import { GetInitialSocketData_offlineToken } from "../graphql/gen.types";
+import { GetInitialSocketData_metas } from "../graphql/gen.types";
+
+type DatabaseContent =
+  | GetInitialSocketData_shifts
+  | GetInitialSocketData_newShiftUrl
+  | GetInitialSocketData_offlineToken
+  | GetInitialSocketData_metas;
+
 const POUCH_DB_OLD_VERSION = 1;
 const POUCH_DB_CURRENT_VERSION = 2;
 
 export class Database {
-  db: PouchDB.Database;
+  db: PouchDB.Database<DatabaseContent>;
   private name: string;
 
   constructor() {

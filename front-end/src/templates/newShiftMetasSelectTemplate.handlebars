@@ -1,0 +1,7 @@
+<option value="">-----</option>
+
+          {{#each metas}}
+          <option value="{{id}}" {{selected}}>
+            {{breakTimeSecs}} min | &euro; {{payPerHr}} night: {{nightSupplPayPct}} &percnt; sunday: {{sundaySupplPayPct}} &percnt;
+          </option>
+          {{/each}}

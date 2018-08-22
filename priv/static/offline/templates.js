@@ -81,14 +81,14 @@ templates['newShiftMenuTemplate'] = template({"1":function(container,depth0,help
     + ((stack1 = helpers["if"].call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? depth0.goBackUrl : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(3, data, 0),"data":data})) != null ? stack1 : "")
     + "\">\n      <i class=\"arrow left icon\"></i>\n    </a>\n\n    <div class=\"item shift-route-menu__title\">\n      Create New Shift\n    </div>\n\n    <div class=\"right menu\">\n      <div class=\"ui right aligned category search item\">\n        <div class=\"ui transparent icon input \">\n          <input class=\"prompt\" type=\"text\" placeholder=\"Search dates...\">\n          <i class=\"search link icon inverted\"></i>\n        </div>\n        <div class=\"results\"></div>\n      </div>\n    </div>\n  </div>\n</div>\n";
 },"useData":true});
-templates['newShiftTemplate'] = template({"1":function(container,depth0,helpers,partials,data) {
+templates['newShiftMetasSelectTemplate'] = template({"1":function(container,depth0,helpers,partials,data) {
     var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 
-  return "                    <option value=\""
+  return "          <option value=\""
     + alias4(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data}) : helper)))
     + "\" "
     + alias4(((helper = (helper = helpers.selected || (depth0 != null ? depth0.selected : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"selected","hash":{},"data":data}) : helper)))
-    + ">\n                      "
+    + ">\n            "
     + alias4(((helper = (helper = helpers.breakTimeSecs || (depth0 != null ? depth0.breakTimeSecs : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"breakTimeSecs","hash":{},"data":data}) : helper)))
     + " min | &euro; "
     + alias4(((helper = (helper = helpers.payPerHr || (depth0 != null ? depth0.payPerHr : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"payPerHr","hash":{},"data":data}) : helper)))
@@ -96,11 +96,33 @@ templates['newShiftTemplate'] = template({"1":function(container,depth0,helpers,
     + alias4(((helper = (helper = helpers.nightSupplPayPct || (depth0 != null ? depth0.nightSupplPayPct : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"nightSupplPayPct","hash":{},"data":data}) : helper)))
     + " &percnt; sunday: "
     + alias4(((helper = (helper = helpers.sundaySupplPayPct || (depth0 != null ? depth0.sundaySupplPayPct : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"sundaySupplPayPct","hash":{},"data":data}) : helper)))
-    + " &percnt;\n                    </option>\n";
+    + " &percnt;\n          </option>\n";
+},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1;
+
+  return "<option value=\"\">-----</option>\n\n"
+    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? depth0.metas : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
+},"useData":true});
+templates['newShiftTemplate'] = template({"1":function(container,depth0,helpers,partials,data) {
+    var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+
+  return "          <option value=\""
+    + alias4(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data}) : helper)))
+    + "\" "
+    + alias4(((helper = (helper = helpers.selected || (depth0 != null ? depth0.selected : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"selected","hash":{},"data":data}) : helper)))
+    + ">\n            "
+    + alias4(((helper = (helper = helpers.breakTimeSecs || (depth0 != null ? depth0.breakTimeSecs : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"breakTimeSecs","hash":{},"data":data}) : helper)))
+    + " min | &euro; "
+    + alias4(((helper = (helper = helpers.payPerHr || (depth0 != null ? depth0.payPerHr : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"payPerHr","hash":{},"data":data}) : helper)))
+    + " night: "
+    + alias4(((helper = (helper = helpers.nightSupplPayPct || (depth0 != null ? depth0.nightSupplPayPct : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"nightSupplPayPct","hash":{},"data":data}) : helper)))
+    + " &percnt; sunday: "
+    + alias4(((helper = (helper = helpers.sundaySupplPayPct || (depth0 != null ? depth0.sundaySupplPayPct : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"sundaySupplPayPct","hash":{},"data":data}) : helper)))
+    + " &percnt;\n          </option>\n";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 
-  return "<div class=\"new-shift-main\">\n  <form id=\"new-shift-form\" class=\"ui form new-shift-form\">\n    <div id=\"new-shift-form__error-main\" class=\"ui negative message hidden new-shift-form__error-main\">\n    </div>\n\n    <!-- SELECT OR CREATE META -->\n    <div class=\"ui top attached segment form__field select-meta\">\n      <div class=\"ui top attached label\">\n        Select Meta or create new.\n      </div>\n\n      <div class=\"meta-id ui right labeled input\">\n        <select name=\"metaId\" id=\"select-meta\" class=\"ui search dropdown fluid\">\n          <option value=\"\">-----</option>\n\n"
+  return "<div class=\"new-shift-main\">\n  <form id=\"new-shift-form\" class=\"ui form new-shift-form\">\n    <div id=\"new-shift-form__error-main\" class=\"ui negative message hidden new-shift-form__error-main\">\n    </div>\n\n    <!-- SELECT OR CREATE META -->\n    <div class=\"ui top attached segment form__field select-meta\">\n      <div class=\"ui top attached label\">\n        Select Meta or create new.\n      </div>\n\n      <div class=\"meta-id ui right labeled input\">\n        <select name=\"metaId\" id=\"select-meta\" class=\"ui search dropdown fluid\">\n<option value=\"\">-----</option>\n\n"
     + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.metas : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "        </select>\n\n        <div id=\"get-new-meta-form-button\" class=\"ui label\">\n          <i class=\"plus icon\"></i>\n        </div>\n      </div>\n\n      <div class=\"new-shift-form__error form__error hidden\"></div>\n      <input type=\"hidden\" id=\"metaId-default\" value=\"\">\n    </div>\n    <!-- /SELECT OR CREATE META -->\n\n    <!-- SHIFT DATE -->\n    <div class=\"ui top attached segment date-segment form__field\">\n      <div class=\"ui top attached label\">\n        Date\n      </div>\n\n      <div id=\"new-shift-form-date-segment-template\" class=\"new-shift-form__fields three\">\n              "
     + ((stack1 = ((helper = (helper = helpers.dateHtml || (depth0 != null ? depth0.dateHtml : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"dateHtml","hash":{},"data":data}) : helper))) != null ? stack1 : "")
