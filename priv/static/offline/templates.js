@@ -43,7 +43,7 @@ templates['newShiftConfirmSubmitButtonsTemplate'] = template({"compiler":[7,">= 
 templates['newShiftConfirmTemplate'] = template({"1":function(container,depth0,helpers,partials,data) {
     return " Please Confirm Before Saving! ";
 },"3":function(container,depth0,helpers,partials,data) {
-    return " Congrats! Successfully Saved 😃😃! ";
+    return " Congrats! Successfully Saved 😃😃 ";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.lambda, alias3=container.escapeExpression, alias4=helpers.helperMissing;
 

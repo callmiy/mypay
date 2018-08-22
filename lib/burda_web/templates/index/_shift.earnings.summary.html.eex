@@ -3,7 +3,14 @@
   <%= assigns[:current_month] || "{{ currentMonthYear }}" %>
 </span>
 
-<span class="earnings-summary__amount">
-  &euro;
-  <%= total_earnings(assigns[:all_shifts]) || "{{ totalEarnings }}" %>
-</span>
+<% all_shifts = assigns[:all_shifts] %>
+
+  <span class="earnings-summary__amount">
+    &euro;
+
+    <%= if all_shifts == [] do %>
+      0.00
+      <% else %>
+        <%= total_earnings(all_shifts) || "{{ totalEarnings }}" %>
+          <% end %>
+  </span>

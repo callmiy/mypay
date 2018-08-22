@@ -1,74 +1,55 @@
 import * as moment from "moment";
 
-import * as shiftDetailTemplate from "../../templates/shiftDetailTemplate.handlebars";
-import * as shiftEarningSummaryTemplate from "../../templates/shiftEarningSummaryTemplate.handlebars";
 import { NEW_SHIFT_URL_TYPENAME } from "./../../constants";
 import { SHIFT_TYPENAME } from "./../../constants";
-import { GetInitialSocketData_newShiftUrl } from "../../graphql/gen.types";
-import { GetInitialSocketData } from "../../graphql/gen.types";
+import { InitialShiftFromDb } from "../../constants";
+import { InitialUrlFromDb } from "../../constants";
 import { Database } from "../../database";
 import { docReady } from "../../utils/utils";
-import { isServerRendered as serverRendered } from "../../utils/utils";
+import { isServerRendered } from "../../utils/utils";
+
+import * as shiftDetailTemplate from "../../templates/shiftDetailTemplate.handlebars";
+
+import * as shiftEarningSummaryTemplate from "../../templates/shiftEarningSummaryTemplate.handlebars";
+
+interface Props {
+  database: Database;
+  isServerRendered: () => boolean;
+}
 
 export class IndexController {
-  shiftsDetailsEl = document.getElementById(
-    "index-route-shifts-details"
-  ) as HTMLDivElement;
+  shiftsDetailsEl: HTMLDivElement;
+  shiftEarningsSummaryEl: HTMLDivElement;
+  menuTitleEl: HTMLDivElement;
+  newShiftLinkEl: HTMLLinkElement;
+  shiftsFromDb: InitialShiftFromDb[];
 
-  shiftEarningsSummaryEl = document.getElementById(
-    "shift__earnings-summary"
-  ) as HTMLDivElement;
-
-  menuTitleEl = document.getElementById(
-    "index-route-menu__title"
-  ) as HTMLDivElement;
-
-  newShiftLinkEl = document.getElementById(
-    "new-shift-trigger"
-  ) as HTMLLinkElement;
-
-  constructor(
-    private database: Database,
-    private isServerRendered: () => boolean
-  ) {
-    this.renderShifts();
+  constructor(private props: Props) {
+    this.render();
   }
 
-  renderShifts = async () => {
-    let data = window.appInterface.initialData;
-
-    if (!data) {
-      data = this.parseQuery(await this.getInitialDataLocal());
-    }
-
-    this.renderShiftsHTML(data);
+  render = async () => {
+    this.renderShiftsDetailsEl();
+    this.renderShiftEarningsSummaryEl();
+    this.renderNewShiftLinkEl();
+    this.renderMenuTitleEl();
   };
 
-  renderShiftsHTML = (data: GetInitialSocketData | null) => {
-    if (
-      !(
-        data &&
-        this.shiftsDetailsEl &&
-        this.shiftEarningsSummaryEl &&
-        this.newShiftLinkEl
-      )
-    ) {
+  renderShiftEarningsSummaryEl = async () => {
+    this.shiftEarningsSummaryEl = document.getElementById(
+      "shift__earnings-summary"
+    ) as HTMLDivElement;
+
+    if (!this.shiftEarningsSummaryEl) {
       return;
     }
 
-    if (this.isServerRendered()) {
+    if (this.props.isServerRendered()) {
       return;
     }
-
-    const shifts = data.shifts || [];
-    const url = (data.newShiftUrl || {}) as GetInitialSocketData_newShiftUrl;
-    this.shiftsDetailsEl.innerHTML = shiftDetailTemplate({ shifts });
 
     const currentMonthYear = moment(new Date()).format("MMM/YYYY");
-
-    if (this.menuTitleEl) {
-      this.menuTitleEl.textContent = currentMonthYear;
-    }
+    const shifts = await this.getAndSetShiftsFromDb();
 
     this.shiftEarningsSummaryEl.innerHTML = shiftEarningSummaryTemplate({
       totalEarnings: shifts
@@ -76,51 +57,94 @@ export class IndexController {
         .toFixed(2),
       currentMonthYear
     });
-
-    this.newShiftLinkEl.href = url.url || "";
   };
 
-  // tslint:disable-next-line:no-any
-  parseQuery = (docs: any[]) => {
-    const accumulator = {} as GetInitialSocketData;
+  renderShiftsDetailsEl = async () => {
+    this.shiftsDetailsEl = document.getElementById(
+      "index-route-shifts-details"
+    ) as HTMLDivElement;
 
-    return docs.reduce((acc, el) => {
-      switch (el.schemaType) {
-        case SHIFT_TYPENAME:
-          return {
-            ...acc,
-            shifts: [...(acc.shifts || []), el]
-          };
+    if (!this.shiftsDetailsEl) {
+      return;
+    }
 
-        case NEW_SHIFT_URL_TYPENAME:
-          return { ...acc, newShiftUrl: el };
+    if (this.props.isServerRendered()) {
+      return;
+    }
 
-        default:
-          return acc;
-      }
-    }, accumulator);
+    const shifts = await this.getAndSetShiftsFromDb();
+    this.shiftsDetailsEl.innerHTML = shiftDetailTemplate({ shifts });
   };
 
-  getInitialDataLocal = async () => {
-    const { docs } = (await this.database.db.find({
-      selector: {
-        $or: [
-          {
-            schemaType: { $eq: NEW_SHIFT_URL_TYPENAME }
-          },
+  renderMenuTitleEl = () => {
+    this.menuTitleEl = document.getElementById(
+      "index-route-menu__title"
+    ) as HTMLDivElement;
 
-          {
-            schemaType: { $eq: SHIFT_TYPENAME }
-          }
-        ]
-      }
-      // tslint:disable-next-line:no-any
-    })) as { docs: any[] };
+    if (!this.menuTitleEl) {
+      return;
+    }
 
-    return docs;
+    if (this.props.isServerRendered()) {
+      return;
+    }
+
+    this.menuTitleEl.textContent = moment(new Date()).format("MMM/YYYY");
+  };
+
+  renderNewShiftLinkEl = async () => {
+    this.newShiftLinkEl = document.getElementById(
+      "new-shift-trigger"
+    ) as HTMLLinkElement;
+
+    if (!this.newShiftLinkEl) {
+      return;
+    }
+
+    if (this.props.isServerRendered()) {
+      return;
+    }
+
+    const newShiftUrl = await this.props.database.db
+      .find({
+        selector: {
+          $or: [
+            {
+              schemaType: { $eq: NEW_SHIFT_URL_TYPENAME }
+            },
+
+            {
+              schemaType: { $eq: SHIFT_TYPENAME }
+            }
+          ]
+        }
+      })
+      .then(({ docs }: { docs: InitialUrlFromDb[] }) => docs[0]);
+
+    this.newShiftLinkEl.href = newShiftUrl ? newShiftUrl.url : "";
+  };
+
+  getAndSetShiftsFromDb = async () => {
+    return this.shiftsFromDb
+      ? this.shiftsFromDb
+      : (this.shiftsFromDb = await this.props.database.db
+          .find({
+            selector: {
+              schemaType: { $eq: SHIFT_TYPENAME }
+            }
+          })
+          .then(({ docs }: { docs: InitialShiftFromDb[] }) =>
+            docs.sort((a, b) => +b.id - +a.id)
+          ));
   };
 }
 
 export default IndexController;
 
-docReady(() => new IndexController(window.appInterface.db, serverRendered));
+docReady(
+  () =>
+    new IndexController({
+      database: window.appInterface.db,
+      isServerRendered
+    })
+);
