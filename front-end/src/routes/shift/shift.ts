@@ -95,41 +95,20 @@ const getMonthDaysYearMonth = (): MonthDaysYearMonth => {
 };
 
 export class ShiftController {
-  submitEl = document.getElementById(
-    "new-shift-form-submit"
-  ) as HTMLButtonElement;
-
-  resetEl = document.getElementById(
-    "new-shift-form-reset"
-  ) as HTMLButtonElement;
-
-  startTimeHrEl = document.getElementById(
-    "start-time-hour"
-  ) as HTMLInputElement;
-
-  startTimeMinEl = document.getElementById(
-    "start-time-min"
-  ) as HTMLInputElement;
-
-  mainErrorContainer = document.getElementById(
-    "new-shift-form__error-main"
-  ) as HTMLDivElement;
-
-  selectMetaEl = document.getElementById("select-meta") as HTMLSelectElement;
-
+  submitEl: HTMLButtonElement;
+  resetEl: HTMLButtonElement;
+  selectMetaEl: HTMLSelectElement;
   metaSelectDefaultEl: HTMLInputElement;
   dayOfMonthEl: HTMLSelectElement;
   monthOfYearEl: HTMLSelectElement;
   yearEl: HTMLSelectElement;
-
-  endTimeHrEl = document.getElementById("end-time-hour") as HTMLInputElement;
-  endTimeMinEl = document.getElementById("end-time-min") as HTMLInputElement;
-  fetchNewMetaEl = document.getElementById("get-new-meta-form-button");
-  metaSelectEl = document.getElementById("select-meta") as HTMLSelectElement;
-
-  dateSegmentTemplate = document.getElementById(
-    "new-shift-form-date-segment-template"
-  ) as HTMLDivElement;
+  showNewMetaFormEl: HTMLDivElement;
+  dateSegmentEl: HTMLDivElement;
+  startTimeHrEl: HTMLInputElement;
+  startTimeMinEl: HTMLInputElement;
+  endTimeHrEl: HTMLInputElement;
+  endTimeMinEl: HTMLInputElement;
+  mainErrorContainer: HTMLDivElement;
 
   formElements: { [k: string]: HTMLSelectElement | HTMLInputElement };
   formErrors = {} as FormThingsError;
@@ -142,159 +121,221 @@ export class ShiftController {
     this.render();
   }
 
-  setUpDom = () => {
-    if (
-      this.fetchNewMetaEl &&
-      this.mainErrorContainer &&
-      this.submitEl &&
-      this.resetEl &&
-      this.metaSelectEl &&
-      this.dayOfMonthEl &&
-      this.monthOfYearEl &&
-      this.yearEl &&
-      this.startTimeHrEl &&
-      this.startTimeMinEl &&
-      this.endTimeHrEl &&
-      this.endTimeMinEl &&
-      this.dateSegmentTemplate
-    ) {
-      this.metaSelectDefaultEl = document.getElementById(
-        `${this.metaSelectEl.name}-default`
-      ) as HTMLInputElement;
-
-      this.fetchNewMetaEl.addEventListener(
-        "click",
-        this.fetchNewMetaElClickHandler
-      );
-
-      this.submitEl.addEventListener("click", this.submitElHandler);
-      this.resetEl.addEventListener("click", this.resetElHandler);
-
-      this.schema = Yup.object().shape({
-        [this.metaSelectEl.name]: Yup.number()
-          .typeError("Invalid meta ID")
-          .required()
-          .positive()
-          .integer()
-          .min(1),
-
-        [this.dayOfMonthEl.name]: Yup.number()
-          .typeError("Invalid day")
-          .required()
-          .positive()
-          .integer()
-          .min(1)
-          .max(31),
-        [this.monthOfYearEl.name]: Yup.number()
-          .typeError("Invalid month")
-          .required()
-          .positive()
-          .integer()
-          .min(1)
-          .max(12),
-        [this.yearEl.name]: Yup.number()
-          .typeError("Invalid year")
-          .required()
-          .positive()
-          .integer()
-          .min(2000)
-          .max(9999),
-
-        [this.startTimeHrEl.name]: Yup.number()
-          .typeError("Invalid hour")
-          .required()
-          .positive()
-          .integer()
-          .min(0)
-          .max(23),
-
-        [this.startTimeMinEl.name]: Yup.number()
-          .typeError("Invalid minute")
-          .required()
-          .positive()
-          .integer()
-          .min(0)
-          .max(59),
-
-        [this.endTimeHrEl.name]: Yup.number()
-          .typeError("Invalid hour")
-          .required()
-          .positive()
-          .integer()
-          .min(0)
-          .max(23),
-
-        [this.endTimeMinEl.name]: Yup.number()
-          .typeError("Invalid minute")
-          .required()
-          .positive()
-          .integer()
-          .min(0)
-          .max(59)
-      });
-
-      this.formElements = {
-        [this.metaSelectEl.name]: this.metaSelectEl,
-        [this.dayOfMonthEl.name]: this.dayOfMonthEl,
-        [this.monthOfYearEl.name]: this.monthOfYearEl,
-        [this.yearEl.name]: this.yearEl,
-        [this.startTimeHrEl.name]: this.startTimeHrEl,
-        [this.startTimeMinEl.name]: this.startTimeMinEl,
-        [this.endTimeHrEl.name]: this.endTimeHrEl,
-        [this.endTimeMinEl.name]: this.endTimeMinEl
-      };
-
-      Object.values(this.formElements).forEach(element =>
-        element.addEventListener("input", this.validateEl)
-      );
-
-      this.startTimeHrEl.addEventListener(
-        "keypress",
-        this.keyboardListener("hr")
-      );
-      this.startTimeMinEl.addEventListener(
-        "keypress",
-        this.keyboardListener("min")
-      );
-      this.endTimeHrEl.addEventListener(
-        "keypress",
-        this.keyboardListener("hr")
-      );
-      this.endTimeMinEl.addEventListener(
-        "keypress",
-        this.keyboardListener("min")
-      );
-    }
+  render = () => {
+    this.renderDateSegmentEl();
+    this.renderSelectMetaEl();
+    this.renderMainErrorContainer();
+    this.renderShowNewMetaFormEl();
+    this.renderSubmitEl();
+    this.renderResetEl();
+    this.renderFormElements();
+    this.setUpSchema();
   };
 
-  render = async () => {
-    if (!this.props.isServerRendered()) {
-      const {
-        days: daysOfMonth,
-        months: monthOfYear,
-        years
-      } = this.props.getMonthDaysYearMonth();
+  renderMainErrorContainer = () => {
+    this.mainErrorContainer = document.getElementById(
+      "new-shift-form__error-main"
+    ) as HTMLDivElement;
+  };
 
-      this.dateSegmentTemplate.innerHTML = newShiftDateTemplate({
-        daysOfMonth,
-        monthOfYear,
-        years
-      });
+  renderFormElements = () => {
+    this.startTimeHrEl = document.getElementById(
+      "start-time-hour"
+    ) as HTMLInputElement;
 
-      this.selectMetaEl.innerHTML = newShiftMetasSelectTemplate({
-        metas: await this.getMetasFromDb()
-      });
-    }
+    this.startTimeMinEl = document.getElementById(
+      "start-time-min"
+    ) as HTMLInputElement;
+
+    this.endTimeHrEl = document.getElementById(
+      "end-time-hour"
+    ) as HTMLInputElement;
+
+    this.endTimeMinEl = document.getElementById(
+      "end-time-min"
+    ) as HTMLInputElement;
 
     this.dayOfMonthEl = document.getElementById(
       "day-of-month"
     ) as HTMLSelectElement;
+
     this.monthOfYearEl = document.getElementById(
       "month-of-year"
     ) as HTMLSelectElement;
+
     this.yearEl = document.getElementById("year") as HTMLSelectElement;
 
-    this.setUpDom();
+    this.formElements = {
+      [this.selectMetaEl.name]: this.selectMetaEl,
+      [this.dayOfMonthEl.name]: this.dayOfMonthEl,
+      [this.monthOfYearEl.name]: this.monthOfYearEl,
+      [this.yearEl.name]: this.yearEl,
+      [this.startTimeHrEl.name]: this.startTimeHrEl,
+      [this.startTimeMinEl.name]: this.startTimeMinEl,
+      [this.endTimeHrEl.name]: this.endTimeHrEl,
+      [this.endTimeMinEl.name]: this.endTimeMinEl
+    };
+
+    Object.values(this.formElements).forEach(element =>
+      element.addEventListener("input", this.validateEl)
+    );
+
+    this.startTimeHrEl.addEventListener(
+      "keypress",
+      this.keyboardListener("hr")
+    );
+
+    this.startTimeMinEl.addEventListener(
+      "keypress",
+      this.keyboardListener("min")
+    );
+
+    this.endTimeHrEl.addEventListener("keypress", this.keyboardListener("hr"));
+
+    this.endTimeMinEl.addEventListener(
+      "keypress",
+      this.keyboardListener("min")
+    );
+  };
+
+  setUpSchema = () => {
+    this.schema = Yup.object().shape({
+      [this.selectMetaEl.name]: Yup.number()
+        .typeError("Invalid meta ID")
+        .required()
+        .positive()
+        .integer()
+        .min(1),
+
+      [this.dayOfMonthEl.name]: Yup.number()
+        .typeError("Invalid day")
+        .required()
+        .positive()
+        .integer()
+        .min(1)
+        .max(31),
+      [this.monthOfYearEl.name]: Yup.number()
+        .typeError("Invalid month")
+        .required()
+        .positive()
+        .integer()
+        .min(1)
+        .max(12),
+      [this.yearEl.name]: Yup.number()
+        .typeError("Invalid year")
+        .required()
+        .positive()
+        .integer()
+        .min(2000)
+        .max(9999),
+
+      [this.startTimeHrEl.name]: Yup.number()
+        .typeError("Invalid hour")
+        .required()
+        .positive()
+        .integer()
+        .min(0)
+        .max(23),
+
+      [this.startTimeMinEl.name]: Yup.number()
+        .typeError("Invalid minute")
+        .required()
+        .positive()
+        .integer()
+        .min(0)
+        .max(59),
+
+      [this.endTimeHrEl.name]: Yup.number()
+        .typeError("Invalid hour")
+        .required()
+        .positive()
+        .integer()
+        .min(0)
+        .max(23),
+
+      [this.endTimeMinEl.name]: Yup.number()
+        .typeError("Invalid minute")
+        .required()
+        .positive()
+        .integer()
+        .min(0)
+        .max(59)
+    });
+  };
+
+  renderResetEl = () => {
+    this.resetEl = document.getElementById(
+      "new-shift-form-reset"
+    ) as HTMLButtonElement;
+
+    if (!this.resetEl) {
+      return;
+    }
+
+    this.resetEl.addEventListener("click", this.resetElHandler);
+  };
+
+  renderSubmitEl = () => {
+    this.submitEl = document.getElementById(
+      "new-shift-form-submit"
+    ) as HTMLButtonElement;
+
+    if (!this.submitEl) {
+      return;
+    }
+
+    this.submitEl.addEventListener("click", this.submitElHandler);
+  };
+
+  renderShowNewMetaFormEl = () => {
+    this.showNewMetaFormEl = document.getElementById(
+      "show-new-meta-form-button"
+    ) as HTMLDivElement;
+
+    if (!this.showNewMetaFormEl) {
+      return;
+    }
+
+    this.showNewMetaFormEl.addEventListener(
+      "click",
+      this.fetchNewMetaElClickHandler
+    );
+  };
+
+  renderSelectMetaEl = async () => {
+    this.selectMetaEl = document.getElementById(
+      "select-meta"
+    ) as HTMLSelectElement;
+
+    if (!this.selectMetaEl || this.props.isServerRendered()) {
+      return;
+    }
+
+    this.selectMetaEl.innerHTML = newShiftMetasSelectTemplate({
+      metas: await this.getMetasFromDb()
+    });
+  };
+
+  renderDateSegmentEl = () => {
+    this.dateSegmentEl = document.getElementById(
+      "new-shift-form-date-segment-template"
+    ) as HTMLDivElement;
+
+    if (!this.dateSegmentEl || this.props.isServerRendered()) {
+      return;
+    }
+
+    const {
+      days: daysOfMonth,
+      months: monthOfYear,
+      years
+    } = this.props.getMonthDaysYearMonth();
+
+    this.dateSegmentEl.innerHTML = newShiftDateTemplate({
+      daysOfMonth,
+      monthOfYear,
+      years
+    });
   };
 
   getMetasFromDb = () =>
@@ -359,14 +400,14 @@ export class ShiftController {
     const meta = data.meta as CreateMeta_meta;
 
     const opt = this.makeMetaSelectOption(meta);
-    this.metaSelectEl.selectedIndex = -1;
-    this.metaSelectEl.appendChild(opt);
+    this.selectMetaEl.selectedIndex = -1;
+    this.selectMetaEl.appendChild(opt);
 
     // triggering input event let's us clear errors from the
-    //  metaSelectEl UI and run validation on user form inputs. See
-    // below where we added the input event listener to metaSelectEl
+    //  selectMetaEl UI and run validation on user form inputs. See
+    // below where we added the input event listener to selectMetaEl
 
-    this.metaSelectEl.dispatchEvent(new Event("input"));
+    this.selectMetaEl.dispatchEvent(new Event("input"));
 
     dismissModal();
 
