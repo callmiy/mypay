@@ -111,10 +111,6 @@ export class IndexController {
           $or: [
             {
               schemaType: { $eq: NEW_SHIFT_URL_TYPENAME }
-            },
-
-            {
-              schemaType: { $eq: SHIFT_TYPENAME }
             }
           ]
         }
