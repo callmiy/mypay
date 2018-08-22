@@ -1,7 +1,8 @@
 defmodule BurdaWeb.ShiftController do
   use Phoenix.Controller
 
-  alias Burda.Meta.Api, as: MetaApi
+  @dialyzer {:no_return, metas: 0, new: 2}
+
   alias BurdaWeb.LayoutView
   alias BurdaWeb.ShiftView
 
@@ -54,6 +55,28 @@ defmodule BurdaWeb.ShiftController do
                  )
                  |> Enum.into(%{})
 
+  @metas_query """
+  query GetAllMetasForShiftController($metaInput: GetMetaInput) {
+    metas(meta: $metaInput) {
+      id
+      _id
+      breakTimeSecs
+      payPerHr
+      nightSupplPayPct
+      sundaySupplPayPct
+      schemaType
+    }
+  }
+  """
+
+  @metas_query_variables %{
+    "metaInput" => %{
+      "orderBy" => %{
+        "id" => "DESC"
+      }
+    }
+  }
+
   plug(:assign_defaults)
 
   @spec new(Plug.Conn.t(), any()) :: Plug.Conn.t()
@@ -81,40 +104,16 @@ defmodule BurdaWeb.ShiftController do
       |> Enum.map(&{&1 + year, ""})
       |> Enum.concat([{year, "selected"}])
 
-    metas =
-      case MetaApi.list(%{order_by: %{id: :desc}}) do
-        [] ->
-          {%{id: 0}, []}
-
-        [latest_meta | rest_metas] ->
-          [
-            {latest_meta, "selected"}
-            | Enum.map(rest_metas, &{&1, ""})
-          ]
-      end
-
-    index_path = BurdaWeb.Router.Helpers.index_path(conn, :index)
-    this_path = BurdaWeb.Router.Helpers.shift_path(conn, :new)
-
-    go_back_url =
-      case get_req_header(conn, "referer") do
-        [url | _] ->
-          if(url == this_path, do: index_path, else: url)
-
-        _ ->
-          index_path
-      end
-
     render(
       conn,
       @new_shift_html,
-      metas: metas,
+      metas: metas(),
       year_default: year,
       months_of_year: months_of_year,
       days_of_month: days_of_month,
       years: years,
       page_title: "New Shift",
-      go_back_url: go_back_url
+      go_back_url: go_back_url(conn)
     )
   end
 
@@ -156,4 +155,40 @@ defmodule BurdaWeb.ShiftController do
           LayoutView.js_css_src(:css, @new_form_css_path)
         ]
       )
+
+  defp metas do
+    case BurdaWeb.Schema.run_query(@metas_query, @metas_query_variables) do
+      {:ok, %{errors: _}} ->
+        []
+
+      {:ok, %{data: %{"metas" => [latest_meta | rest_metas]}}} ->
+        [
+          Map.put(latest_meta, "selected", "selected")
+          | Enum.map(rest_metas, &Map.put(&1, "selected", ""))
+        ]
+        |> Enum.map(
+          &Map.update!(
+            &1,
+            "breakTimeSecs",
+            fn v -> Float.round(v / 60, 1) end
+          )
+        )
+
+      _ ->
+        []
+    end
+  end
+
+  defp go_back_url(conn) do
+    index_path = BurdaWeb.Router.Helpers.index_path(conn, :index)
+    this_path = BurdaWeb.Router.Helpers.shift_path(conn, :new)
+
+    case get_req_header(conn, "referer") do
+      [url | _] ->
+        if(url == this_path, do: index_path, else: url)
+
+      _ ->
+        index_path
+    end
+  end
 end
