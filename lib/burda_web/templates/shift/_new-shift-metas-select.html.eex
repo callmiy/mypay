@@ -1,21 +1,20 @@
 <option value="">-----</option>
 
 <%= if assigns[:metas] do  %>
+  <%= for meta <- assigns[:metas] do %>
+    <option data-value="<%=Poison.encode!(meta)%>" value="<%= meta[~s(id)] %>" <%=meta[~s(selected)]%> >
+      <%= meta["breakTimeSecs"] %> min | &euro;
+        <%= meta["payPerHr"] %> night:
+          <%= meta["nightSupplPayPct"] %> &percnt; sunday:
+            <%= meta["sundaySupplPayPct"] %> &percnt;
+    </option>
+    <%end%>
 
-  <%= for meta_ <- assigns[:metas] do %>
-    <%{meta, selected} = meta_%>
-      <option value="<%= meta.id %>" <%=selected%> >
-        <%= Float.round(meta.break_time_secs/60, 1) %> min | &euro;
-          <%= meta.pay_per_hr %> night:
-            <%= meta.night_suppl_pay_pct %> &percnt; sunday:
-              <%= meta.sunday_suppl_pay_pct %> &percnt;
-      </option>
-      <%end%>
-
-        <% else %>
-          {{#each metas}}
-          <option value="{{id}}" {{selected}}>
-            {{breakTimeSecs}} min | &euro; {{payPerHr}} night: {{nightSupplPayPct}} &percnt; sunday: {{sundaySupplPayPct}} &percnt;
-          </option>
-          {{/each}}
-          <% end %>
+      <% else %>
+        {{#each metas as |meta|}}
+        <option value="{{meta.id}}" {{selected}} data-value="{{jsonStringify meta}}">
+          {{meta.breakTimeSecs}} min | &euro; {{meta.payPerHr}} night: {{meta.nightSupplPayPct}} &percnt; sunday: {{meta.sundaySupplPayPct}}
+          &percnt;
+        </option>
+        {{/each}}
+        <% end %>

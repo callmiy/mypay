@@ -8,8 +8,8 @@ import { GetInitialSocketData } from "./graphql/gen.types";
 import { GetInitialSocketData_offlineToken } from "./graphql/gen.types";
 import { OFFLINE_TOKEN_TYPENAME } from "./constants";
 import { DATA_CHANNEL_TOPIC_GRAPHQL } from "./constants";
-import { getShiftsQueryVairable } from "./routes/index/utils";
-import { writeInitialDataToDb as writeInitialIndexDataToDb } from "./routes/index/utils";
+import { getShiftsQueryVairable } from "./routes/utils";
+import { writeInitialDataToDb as writeInitialIndexDataToDb } from "./routes/utils";
 import { Database } from "./database";
 
 // tslint:disable-next-line:no-any

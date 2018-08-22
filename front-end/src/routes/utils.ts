@@ -1,15 +1,15 @@
 import isEqual from "lodash/isEqual";
 
-import { SortingDirective } from "../../graphql/gen.types";
-import { GetInitialSocketData_shifts } from "../../graphql/gen.types";
-import { GetInitialSocketDataVariables } from "../../graphql/gen.types";
-import { GetInitialSocketData } from "../../graphql/gen.types";
-import { GetInitialSocketData_newShiftUrl } from "../../graphql/gen.types";
-import { GetInitialSocketData_metas } from "../../graphql/gen.types";
-import { SHIFT_TYPENAME } from "./../../constants";
-import { NEW_SHIFT_URL_TYPENAME } from "./../../constants";
-import { META_TYPENAME } from "../../constants";
-import { Database } from "../../database";
+import { SortingDirective } from "../graphql/gen.types";
+import { GetInitialSocketData_shifts } from "../graphql/gen.types";
+import { GetInitialSocketDataVariables } from "../graphql/gen.types";
+import { GetInitialSocketData } from "../graphql/gen.types";
+import { GetInitialSocketData_newShiftUrl } from "../graphql/gen.types";
+import { GetInitialSocketData_metas } from "../graphql/gen.types";
+import { SHIFT_TYPENAME } from "../constants";
+import { NEW_SHIFT_URL_TYPENAME } from "../constants";
+import { META_TYPENAME } from "../constants";
+import { Database } from "../database";
 
 export const getShiftsQueryVairable = (): GetInitialSocketDataVariables => {
   const today = new Date();
@@ -33,13 +33,20 @@ export const getShiftsQueryVairable = (): GetInitialSocketDataVariables => {
   };
 };
 
-const writeInitialShiftsDataToDb = (
+export const writeInitialShiftsDataToDb = (
   database: Database,
   allShifts: GetInitialSocketData_shifts[]
 ) => {
   if (!(allShifts && allShifts.length)) {
     return;
   }
+
+  const allNetworkShiftsMap = allShifts.reduce(
+    (acc, s) => ({ ...acc, [s.id]: s }),
+    {}
+  ) as { [k: string]: GetInitialSocketData_shifts };
+
+  const allShiftsIdsInDb = [] as string[];
 
   database.db
     .find({
@@ -53,20 +60,29 @@ const writeInitialShiftsDataToDb = (
       }: {
         docs: Array<PouchDB.Core.ExistingDocument<GetInitialSocketData_shifts>>;
       }) => {
-        if (docs.length) {
-          const idsFromDocs = docs.map(s => s.id);
-          const shiftsNotInDb = allShifts.filter(
-            s => !idsFromDocs.includes(s.id)
-          );
+        const shiftsFromDbToUpdate = docs
+          .map(d => {
+            allShiftsIdsInDb.push(d.id);
+            const shiftFromNetworkAlreadyInDb = allNetworkShiftsMap[d.id];
 
-          if (shiftsNotInDb.length) {
-            database.db.bulkDocs(shiftsNotInDb);
-          }
-        } else {
-          database.db.bulkDocs(allShifts);
+            return shiftFromNetworkAlreadyInDb &&
+              !isEqual(
+                { ...shiftFromNetworkAlreadyInDb, _id: null, _rev: null },
+                { ...d, _id: null, _rev: null }
+              )
+              ? { ...shiftFromNetworkAlreadyInDb, _id: d._id, _rev: d._rev }
+              : null;
+          })
+          .filter(db => !!db);
+
+        const shiftsToInsertAndUpdate = [
+          ...allShifts.filter(s => !allShiftsIdsInDb.includes(s.id)),
+          ...shiftsFromDbToUpdate
+        ] as GetInitialSocketData_shifts[];
+
+        if (shiftsToInsertAndUpdate.length) {
+          database.db.bulkDocs(shiftsToInsertAndUpdate);
         }
-
-        return true;
       }
     );
 };
@@ -120,7 +136,7 @@ const writeInitialUrlDataToDb = (
     );
 };
 
-const writeInitialMetasDataToDb = (
+export const writeInitialMetasDataToDb = (
   database: Database,
   metas: GetInitialSocketData_metas[]
 ) => {

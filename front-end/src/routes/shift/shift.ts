@@ -8,6 +8,7 @@ import { NewMeta } from "../../components/new-meta-form/new-meta-form";
 import { CreateMeta } from "../../graphql/gen.types";
 import { CreateMeta_meta } from "../../graphql/gen.types";
 import { GetInitialSocketData_metas } from "../../graphql/gen.types";
+import { CreateShift } from "../../graphql/gen.types";
 import { setFieldError } from "../../utils/form-things";
 import { clearFieldErrors } from "../../utils/form-things";
 import { formHasErrors } from "../../utils/form-things";
@@ -20,10 +21,17 @@ import { FormThingsError } from "../../utils/form-things";
 import { AppSocket } from "../../socket";
 import { docReady } from "../../utils/utils";
 import { isServerRendered } from "../../utils/utils";
-import * as newShiftDateTemplate from "../../templates/newShiftDateTemplate.handlebars";
-import * as newShiftMetasSelectTemplate from "../../templates/newShiftMetasSelectTemplate.handlebars";
 import { Database } from "../../database";
 import { META_TYPENAME } from "../../constants";
+import { writeInitialShiftsDataToDb } from "../utils";
+
+import * as newShiftDateTemplate from "../../templates/newShiftDateTemplate.handlebars";
+
+import * as newShiftMetasSelectTemplate from "../../templates/newShiftMetasSelectTemplate.handlebars";
+
+import * as newShiftConfirmTemplate from "../../templates/newShiftConfirmTemplate.handlebars";
+
+import * as newShiftConfirmSubmitButtonsTemplate from "../../templates/newShiftConfirmSubmitButtonsTemplate.handlebars";
 
 interface DaysOfMonth {
   [key: number]: {
@@ -109,6 +117,12 @@ export class ShiftController {
   endTimeHrEl: HTMLInputElement;
   endTimeMinEl: HTMLInputElement;
   mainErrorContainer: HTMLDivElement;
+  submitConfirmedEl: HTMLButtonElement;
+  editConfirmedEl: HTMLButtonElement;
+  selectedMeta: GetInitialSocketData_metas | undefined;
+
+  // tslint:disable-next-line:no-any
+  newShiftToSave: any;
 
   formElements: { [k: string]: HTMLSelectElement | HTMLInputElement };
   formErrors = {} as FormThingsError;
@@ -486,10 +500,6 @@ export class ShiftController {
   submitElHandler = (evt: Event) => {
     evt.preventDefault();
 
-    this.submitEl.classList.add("loading");
-    this.submitEl.disabled = true;
-    this.resetEl.disabled = true;
-
     const data = {} as { [k: string]: string };
 
     Object.values(this.formElements).forEach(el => (data[el.name] = el.value));
@@ -519,26 +529,27 @@ export class ShiftController {
           "endTimeMin"
         ].forEach(k => delete shift[k]);
 
-        this.props.socket.queryGraphQl({
-          params: toRunableDocument(CREATE_SHIFT_GQL, { shift }),
-          ok: () => {
-            window.location.href = "/";
-          },
+        this.newShiftToSave = shift;
 
-          error: reason => {
-            this.submitEl.classList.remove("loading");
+        const selectedMeta = this.setAndGetSelectedMeta(
+          shift[this.selectMetaEl.name]
+        );
 
-            this.mainErrorContainer.innerHTML = htmlfyGraphQlErrors(
-              "shift",
-              reason
-            );
-
-            setMainErrorClass(this.mainErrorContainer, "show");
-          }
+        const html = newShiftConfirmTemplate({
+          meta: selectedMeta,
+          shift,
+          buttons: newShiftConfirmSubmitButtonsTemplate(),
+          saving: true
         });
 
-        this.submitEl.classList.remove("loading");
-        this.resetEl.disabled = false;
+        showModal({
+          content: html,
+          onShow: () => {
+            this.renderSubmitConfirmedEl();
+
+            return this.tearDownConfirmedEls;
+          }
+        });
       })
       .catch(errors => {
         this.submitEl.classList.remove("loading");
@@ -555,6 +566,20 @@ export class ShiftController {
       });
   };
 
+  setAndGetSelectedMeta = (id: number) => {
+    const selectedOptionEl = this.selectMetaEl.querySelector(
+      `option[value="${id}"]`
+    ) as HTMLOptionElement;
+
+    if (!selectedOptionEl) {
+      return {};
+    }
+
+    return (this.selectedMeta = JSON.parse(
+      selectedOptionEl.getAttribute("data-value") || "{}"
+    ));
+  };
+
   resetElHandler = () => {
     Object.values(this.formElements).forEach(el => {
       clearFieldErrors(getFieldAndErrorEls(el));
@@ -567,6 +592,117 @@ export class ShiftController {
     this.submitEl.classList.remove("loading");
     this.formErrors = {};
     this.mainErrorContainer.innerHTML = "";
+  };
+
+  renderEditConfirmedEl = () => {
+    this.editConfirmedEl = document.getElementById(
+      "new-shift-confirm__edit"
+    ) as HTMLButtonElement;
+
+    if (!this.editConfirmedEl) {
+      return;
+    }
+
+    this.editConfirmedEl.addEventListener(
+      "click",
+      this.editConfirmedElHandler,
+      {
+        once: true
+      }
+    );
+  };
+
+  editConfirmedElHandler = () => {
+    dismissModal();
+    this.tearDownConfirmedEls();
+  };
+
+  renderSubmitConfirmedEl = () => {
+    this.submitConfirmedEl = document.getElementById(
+      "new-shift-confirm__submit"
+    ) as HTMLButtonElement;
+
+    if (!this.submitConfirmedEl) {
+      return;
+    }
+
+    this.submitConfirmedEl.addEventListener(
+      "click",
+      this.submitConfirmedElHandler,
+      {
+        once: true
+      }
+    );
+  };
+
+  tearDownConfirmedEls = () => {
+    this.resetEl.disabled = false;
+
+    if (this.submitConfirmedEl) {
+      this.submitConfirmedEl.removeEventListener(
+        "click",
+        this.submitConfirmedElHandler
+      );
+    }
+
+    if (this.editConfirmedEl) {
+      this.editConfirmedEl.removeEventListener(
+        "click",
+        this.editConfirmedElHandler
+      );
+    }
+  };
+
+  submitConfirmedElHandler = (evt: Event) => {
+    evt.preventDefault();
+
+    this.submitEl.classList.add("loading");
+    this.submitEl.disabled = true;
+    this.resetEl.disabled = true;
+
+    this.props.socket.queryGraphQl({
+      params: toRunableDocument(CREATE_SHIFT_GQL, {
+        shift: this.newShiftToSave
+      }),
+
+      ok: ({ shift: createdShift }: CreateShift) => {
+        if (createdShift) {
+          writeInitialShiftsDataToDb(this.props.database, [createdShift]);
+
+          const html = newShiftConfirmTemplate({
+            meta: this.selectedMeta,
+            shift: createdShift
+          });
+
+          showModal({
+            content: html,
+            onShow: () => {
+              this.selectedMeta = undefined;
+              this.newShiftToSave = undefined;
+              this.submitEl.classList.remove("loading");
+              this.submitEl.disabled = false;
+              this.resetEl.disabled = false;
+
+              return () => (window.location.href = "/");
+            }
+          });
+        }
+      },
+
+      error: reason => {
+        this.submitEl.classList.remove("loading");
+
+        this.mainErrorContainer.innerHTML = htmlfyGraphQlErrors(
+          "shift",
+          reason
+        );
+
+        setMainErrorClass(this.mainErrorContainer, "show");
+      }
+    });
+
+    dismissModal();
+    this.tearDownConfirmedEls();
   };
 
   /**

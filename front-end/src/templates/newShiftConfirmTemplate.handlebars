@@ -1,0 +1,64 @@
+<div class="new-shift-confirm">
+
+  <div class="ui top label new-shift-confirm__header">
+    {{#if saving}} Please Confirm Before Saving! {{else}} Congrats! Successfully Saved 😃😃 {{/if}}
+  </div>
+  <!-- META INFO -->
+  <div class="ui top attached segment new-shift-confirm__segment new-shift-confirm__segment--meta">
+    <div class="ui top attached label">
+      Meta
+    </div>
+
+    <div class="new-shift-confirm__detail--meta new-shift-confirm__detail">
+      <div class="new-shift-confirm__detail__item new-shift-confirm__detail__item--wage">
+        <div class="new-shift-confirm__detail__title">Wage</div>
+        <div>&euro; {{meta.payPerHr}} /hr</div>
+      </div>
+
+      <div class="new-shift-confirm__detail__item new-shift-confirm__detail__item--break">
+        <div class="new-shift-confirm__detail__title">Break</div>
+        <div>{{meta.breakTimeSecs}} min</div>
+      </div>
+
+      <div class="new-shift-confirm__detail__item new-shift-confirm__detail__item--night-suppl-pay-pct">
+        <div class="new-shift-confirm__detail__title">Add. Night Pay</div>
+        <div> {{meta.nightSupplPayPct}} &percnt;</div>
+      </div>
+
+      <div class="new-shift-confirm__detail__item new-shift-confirm__detail__item--sunday-suppl-pay-pct">
+        <div class="new-shift-confirm__detail__title">Add. Sunday Pay</div>
+        <div> {{meta.sundaySupplPayPct}} &percnt;</div>
+      </div>
+    </div>
+  </div>
+  <!-- /META INFO -->
+
+  <!-- DATE AND TIMES -->
+  <div class="ui top attached segment new-shift__date">
+    <div class="ui top attached label">
+      Date and times
+    </div>
+
+    <div id="new-shift-confirm__detail--date" class="new-shift-confirm__detail new-shift-confirm__detail--date">
+      <div class="new-shift-confirm__detail__item new-shift-confirm__detail__item--date">
+        <div class="new-shift-confirm__detail__title">Date</div>
+        <div>{{formatWeekDayMonthNumMonthNameYear shift.date}}</div>
+      </div>
+
+      <div class="new-shift-confirm__detail__item new-shift-confirm__detail__item--start-time">
+        <div class="new-shift-confirm__detail__title">Start Time</div>
+        <div>{{formatTimeAmPm shift.startTime}}</div>
+      </div>
+
+      <div class="new-shift-confirm__detail__item new-shift-confirm__detail__item--end-time">
+        <div class="new-shift-confirm__detail__title">End Time</div>
+        <div>{{formatTimeAmPm shift.endTime}}</div>
+      </div>
+    </div>
+  </div>
+  <!-- /DATE AND TIMES -->
+
+  <div class="new-shift-confirm__buttons">
+    {{{buttons}}}
+  </div>
+</div>

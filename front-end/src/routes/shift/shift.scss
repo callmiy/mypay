@@ -1,3 +1,5 @@
+@import "../../variables";
+
 .new-shift-main {
   overflow-x: hidden;
   overflow-y: auto;
@@ -55,9 +57,42 @@
   width: 100%;
 }
 
-.new-shift-form__buttons {
+.new-shift-form__buttons,
+.new-shift-confirm__buttons {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 15px;
+}
+
+.new-shift-confirm__detail__item {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 3px;
+  margin-bottom: 2px;
+  border: 1px solid $app-color;
+}
+
+.new-shift-confirm__header {
+  &.ui.label {
+    display: block;
+    border-radius: 0;
+    width: 100%;
+    text-align: center;
+    font-weight: 900;
+    font-size: 1.2rem;
+  }
+}
+
+.new-shift-confirm__segment {
+  &.new-shift-confirm__segment--meta.ui {
+    margin-top: 0;
+  }
+}
+
+.new-shift-confirm__detail__title {
+  background-color: $app-color;
+  color: #fff;
+  padding-left: 6px;
+  font-weight: 600;
 }
