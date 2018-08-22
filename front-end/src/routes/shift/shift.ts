@@ -302,12 +302,16 @@ export class ShiftController {
     );
   };
 
-  renderSelectMetaEl = async () => {
+  renderSelectMetaEl = async (reRender = false) => {
     this.selectMetaEl = document.getElementById(
       "select-meta"
     ) as HTMLSelectElement;
 
-    if (!this.selectMetaEl || this.props.isServerRendered()) {
+    if (!this.selectMetaEl) {
+      return;
+    }
+
+    if (this.props.isServerRendered() && !reRender) {
       return;
     }
 
@@ -316,12 +320,16 @@ export class ShiftController {
     });
   };
 
-  renderDateSegmentEl = () => {
+  renderDateSegmentEl = (reRender = false) => {
     this.dateSegmentEl = document.getElementById(
       "new-shift-form-date-segment-template"
     ) as HTMLDivElement;
 
-    if (!this.dateSegmentEl || this.props.isServerRendered()) {
+    if (!this.dateSegmentEl) {
+      return;
+    }
+
+    if (this.props.isServerRendered() && !reRender) {
       return;
     }
 
@@ -548,22 +556,13 @@ export class ShiftController {
   };
 
   resetElHandler = () => {
-    // Get the hidden elements which represent the default values and reset
-    // form elements that user will interact with to those hidden default values
     Object.values(this.formElements).forEach(el => {
-      const defaultValEl = document.getElementById(
-        `${el.name}-default`
-      ) as HTMLInputElement;
-
-      if (defaultValEl) {
-        el.value = defaultValEl.value;
-      }
-
       clearFieldErrors(getFieldAndErrorEls(el));
     });
 
+    this.renderSelectMetaEl(true);
+    this.renderDateSegmentEl(true);
     setMainErrorClass(this.mainErrorContainer, "hide");
-
     this.submitEl.disabled = false;
     this.submitEl.classList.remove("loading");
     this.formErrors = {};
