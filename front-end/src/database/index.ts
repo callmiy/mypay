@@ -16,8 +16,8 @@ type DatabaseContent =
   | GetInitialSocketData_offlineToken
   | GetInitialSocketData_metas;
 
-const POUCH_DB_OLD_VERSION = 1;
-const POUCH_DB_CURRENT_VERSION = 2;
+const POUCH_DB_OLD_VERSION = 2;
+const POUCH_DB_CURRENT_VERSION = 3;
 
 export class Database {
   db: PouchDB.Database<DatabaseContent>;
