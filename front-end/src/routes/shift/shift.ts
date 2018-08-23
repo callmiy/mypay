@@ -24,7 +24,6 @@ import { Database } from "../../database";
 import { prepForOfflineSave } from "../../database";
 import { META_TYPENAME, SHIFT_TYPENAME } from "../../constants";
 import { OFFLINE_MSG } from "../../constants";
-import { SHIFT_OFFLINE_TYPENAME } from "../../constants";
 
 import * as newShiftDateTemplate from "../../templates/newShiftDateTemplate.handlebars";
 
@@ -712,10 +711,10 @@ export class ShiftController {
             nightSupplPay: "N/A",
             sundayHours: "N/A",
             sundaySupplPay: "N/A",
-            totalPay: "N/A"
+            totalPay: "N/A",
+            meta: this.selectedMeta
           },
-          SHIFT_TYPENAME,
-          SHIFT_OFFLINE_TYPENAME
+          SHIFT_TYPENAME
         );
 
         this.props.database.db.put(offlineShift);

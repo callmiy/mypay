@@ -23,10 +23,13 @@ defmodule BurdaWeb.UserSocket do
   # To deny connection, return `:error`.
   #
   # See `Phoenix.Token` documentation for examples in
-  # performing token verification on connect.
-  def connect(_params, socket) do
-    {:ok, socket}
-  end
+  # performing token verification on connect
+
+  @doc false
+  def connect(%{"data_sync_clients" => clients}, socket),
+    do: {:ok, assign(socket, :data_sync_clients, clients)}
+
+  def connect(_params, _socket), do: :error
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
   #

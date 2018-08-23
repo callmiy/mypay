@@ -62,18 +62,15 @@ export class Database {
   getDbName = (version: number) => "WORKER-WAGES-maneptha-" + version;
 }
 
-const genId = () => new Date().toJSON().slice(0, -1) + "000Z";
-
-const genRandomId = () => {
-  const fromDate = +(new Date().getTime() + "").slice(0, 4);
-  return fromDate + Math.floor(Math.random() * 1000) + "";
-};
+const genId = () =>
+  new Date().toJSON().slice(0, -1) +
+  (Math.floor(Math.random() * 1000000) + "").slice(0, 3) +
+  "Z";
 
 export const prepForOfflineSave = (
   // tslint:disable-next-line:no-any
   data: any,
-  typeName: string,
-  offlineTypeName: string
+  typeName: string
 ) => {
   const _id = genId();
 
@@ -81,8 +78,6 @@ export const prepForOfflineSave = (
     ...data,
     [DB_INDEX_SCHEMA_TYPE_NAME]: typeName,
     [DB_INDEX_OFFLINE_INSERT_TYPENAME]: OFFLINE_INSERT_TYPENAME,
-    id: genRandomId(),
-    offlineId: offlineTypeName + "-" + _id,
     _id
   };
 };

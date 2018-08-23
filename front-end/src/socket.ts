@@ -6,11 +6,19 @@ import INITIAL_DATA_GQL from "./graphql/initial-socket-data.query";
 import { GetInitialSocketDataVariables } from "./graphql/gen.types";
 import { GetInitialSocketData } from "./graphql/gen.types";
 import { GetInitialSocketData_offlineToken } from "./graphql/gen.types";
-import { OFFLINE_TOKEN_TYPENAME } from "./constants";
+import CREATE_SHIFT_GQL from "./graphql/create-shift.mutation";
+import { OFFLINE_TOKEN_TYPENAME, OFFLINE_ID_KEY } from "./constants";
 import { DATA_CHANNEL_TOPIC_GRAPHQL } from "./constants";
+import { DB_INDEX_OFFLINE_INSERT_TYPENAME } from "./constants";
+import { OFFLINE_INSERT_TYPENAME } from "./constants";
+import { OfflineDataFromDb } from "./constants";
+import { DATA_SYNC_IDS_KEY } from "./constants";
+import { DATA_SYNC_IDS } from "./constants";
 import { getShiftsQueryVairable } from "./routes/utils";
-import { writeInitialDataToDb as writeInitialIndexDataToDb } from "./routes/utils";
+import { shiftFromOffline } from "./routes/utils";
 import { Database } from "./database";
+
+import { writeInitialDataToDb as writeInitialIndexDataToDb } from "./routes/utils";
 
 // tslint:disable-next-line:no-any
 type OnChannelMessage = (msg: any) => void;
@@ -26,6 +34,10 @@ interface ChannelMessageNoTopic {
   onTimeout?: (reason: any) => void;
 }
 
+interface Props {
+  database: Database;
+}
+
 export interface ChannelMessage extends ChannelMessageNoTopic {
   topic: string;
 }
@@ -36,8 +48,10 @@ export class AppSocket {
   dataChannel: Channel;
   dataChannelJoined = false;
 
-  constructor(private database: Database) {
-    this.socket = new Socket("/socket", {});
+  constructor(private props: Props) {
+    this.socket = new Socket("/socket", {
+      params: { [DATA_SYNC_IDS_KEY]: DATA_SYNC_IDS }
+    });
     this.socket.connect();
     this.socket.onOpen(() => {
       window.appInterface.serverOnlineStatus = true;
@@ -46,10 +60,94 @@ export class AppSocket {
     this.joinDataChannel();
   }
 
-  joinDataChannel = () => {
-    this.dataChannel = this.socket.channel(this.dataChannelName, {});
-    this.channelJoin(this.dataChannelName, this.dataChannel);
+  joinDataChannel = async () => {
+    const params = await this.props.database.db
+      .find({
+        selector: {
+          [DB_INDEX_OFFLINE_INSERT_TYPENAME]: OFFLINE_INSERT_TYPENAME
+        }
+      })
+      .then(({ docs }: { docs: OfflineDataFromDb }) => {
+        if (!docs.length) {
+          return {};
+        }
+
+        return toRunableDocument(CREATE_SHIFT_GQL, {
+          shift: shiftFromOffline(docs[0])
+        });
+      });
+
+    this.dataChannel = this.socket.channel(this.dataChannelName, params);
+    this.channelJoin(this.dataChannel);
+
+    this.dataChannel.on("data-synced", this.dataSyncedCb);
+
     this.getInitialData();
+  };
+
+  // tslint:disable-next-line:no-any
+  dataSyncedCb = async (msg: any) => {
+    const fields = msg.offline_fields;
+
+    const data = await this.props.database.db.find({
+      selector: {
+        _id: {
+          $eq: fields[OFFLINE_ID_KEY]
+        },
+
+        [DB_INDEX_OFFLINE_INSERT_TYPENAME]: {
+          $eq: OFFLINE_INSERT_TYPENAME
+        }
+      }
+    });
+
+    // tslint:disable-next-line:no-console
+    console.log(
+      `
+
+
+    logging starts
+
+
+    data from database with offline fields`,
+      data,
+      `
+
+    logging ends
+
+
+    `
+    );
+
+    if (msg.errors) {
+      // tslint:disable-next-line:no-console
+      console.log(
+        `
+
+
+      logging starts
+
+
+      data from server on sync error`,
+        msg,
+        `
+
+      logging ends
+
+
+      `
+      );
+    }
+
+    if (msg.data) {
+      const new_data = {
+        ...msg.data.shift,
+        _id: fields[OFFLINE_ID_KEY],
+        _rev: fields.rev
+      };
+      await this.props.database.db.put(new_data);
+      window.location.reload(true);
+    }
   };
 
   getInitialData = async () => {
@@ -67,19 +165,13 @@ export class AppSocket {
   };
 
   channelJoin = (
-    channelName: string,
     channel: Channel,
-    params?: { ok: OnChannelMessage }
+    params?: { ok: OnChannelMessage },
+    _channelName?: string
   ) => {
     channel
       .join()
       .receive("ok", messages => {
-        // tslint:disable-next-line:no-console
-        console.log(
-          `\n\n\n\nJoining channel: ${channelName} at ${new Date().getTime()}`,
-          messages
-        );
-
         if (params && params.ok) {
           params.ok(messages);
         }
@@ -94,9 +186,9 @@ export class AppSocket {
   };
 
   sendChannelMsg = (
-    channelName: string,
     channel: Channel,
-    { topic, ok, error, params, onTimeout }: ChannelMessage
+    { topic, ok, error, params, onTimeout }: ChannelMessage,
+    _channelName?: string
   ) => {
     channel
       .push(topic, params || {})
@@ -105,24 +197,19 @@ export class AppSocket {
         if (error) {
           error(reasons);
         }
-        // tslint:disable-next-line:no-console
-        console.log(`Error on push to ${channelName}:${topic}`, reasons);
       })
       .receive("timeout", reasons => {
         if (onTimeout) {
           onTimeout(reasons);
         }
-
-        // tslint:disable-next-line:no-console
-        console.log("Networking issue...", reasons);
       });
   };
 
   writeInitialDataToDb = (data: GetInitialSocketData) => {
     window.appInterface.initialData = data;
-    writeInitialIndexDataToDb(this.database, data);
+    writeInitialIndexDataToDb(this.props.database, data);
 
-    this.database.db
+    this.props.database.db
       .find({
         selector: {
           schemaType: { $eq: OFFLINE_TOKEN_TYPENAME }
@@ -139,7 +226,7 @@ export class AppSocket {
 
         // this is our first insert = happy
         if (!offlineTokens.length) {
-          this.database.db.put(offlineToken);
+          this.props.database.db.put(offlineToken);
           return;
         }
 
@@ -156,8 +243,8 @@ export class AppSocket {
 
         // ok we have a new token - update existing doc so we
         // only have 1 copy
-        this.database.db.get(offlineTokenFromDoc._id).then(doc => {
-          return this.database.db.put({
+        this.props.database.db.get(offlineTokenFromDoc._id).then(doc => {
+          return this.props.database.db.put({
             ...offlineToken,
             _id: doc._id,
             _rev: doc._rev
@@ -167,7 +254,7 @@ export class AppSocket {
   };
 
   queryGraphQl = (params: ChannelMessageNoTopic) =>
-    this.sendChannelMsg(this.dataChannelName, this.dataChannel, {
+    this.sendChannelMsg(this.dataChannel, {
       topic: DATA_CHANNEL_TOPIC_GRAPHQL,
 
       ...params

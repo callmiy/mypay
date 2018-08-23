@@ -15,3 +15,5 @@ alias BurdaWeb.ShiftController
 alias BurdaWeb.ShiftView
 alias BurdaWeb.Offline
 alias Mix.Tasks.Deploy
+alias Burda.OfflineSync
+alias BurdaWeb.Schema

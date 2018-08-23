@@ -8,6 +8,7 @@ defmodule BurdaWeb.Schema do
   import_types(BurdaWeb.Schema.Shift)
   import_types(BurdaWeb.Schema.Meta)
   import_types(BurdaWeb.Schema.Adhoc)
+  import_types(BurdaWeb.Schema.OfflineSync)
 
   alias Burda.Shift.Api, as: ShiftApi
   alias Burda.Meta.Api, as: MetaApi
@@ -21,6 +22,7 @@ defmodule BurdaWeb.Schema do
   mutation do
     import_fields(:meta_mutation)
     import_fields(:shift_mutation)
+    import_fields(:offline_sync_mutation)
   end
 
   def context(ctx) do

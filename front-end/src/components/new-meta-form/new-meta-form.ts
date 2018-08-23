@@ -12,7 +12,6 @@ import { setMainErrorClass } from "../../utils/form-things";
 import { formHasErrors } from "../../utils/form-things";
 import { getFieldAndErrorEls } from "../../utils/form-things";
 import { AppSocket } from "../../socket";
-import { META_OFFLINE_TYPENAME } from "../../constants";
 import { META_TYPENAME } from "../../constants";
 import { OFFLINE_MSG } from "../../constants";
 import { Database } from "../../database";
@@ -197,11 +196,7 @@ export class NewMeta {
             this.mainErrorContainer.textContent = OFFLINE_MSG;
             setMainErrorClass(this.mainErrorContainer, "show");
 
-            const offlineMeta = prepForOfflineSave(
-              meta,
-              META_TYPENAME,
-              META_OFFLINE_TYPENAME
-            );
+            const offlineMeta = prepForOfflineSave(meta, META_TYPENAME);
 
             this.props.database.db.put(offlineMeta);
 

@@ -48,7 +48,10 @@ const processSidebar = () => {
 
 (function App() {
   const db = new Database();
-  const socket = new AppSocket(db);
+
+  const socket = new AppSocket({
+    database: db
+  });
 
   window.appInterface.db = db;
   window.appInterface.socket = socket;
