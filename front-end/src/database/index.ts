@@ -6,6 +6,9 @@ import { GetInitialSocketData_shifts } from "../graphql/gen.types";
 import { GetInitialSocketData_newShiftUrl } from "../graphql/gen.types";
 import { GetInitialSocketData_offlineToken } from "../graphql/gen.types";
 import { GetInitialSocketData_metas } from "../graphql/gen.types";
+import { DB_INDEX_SCHEMA_TYPE_NAME } from "../constants";
+import { DB_INDEX_OFFLINE_INSERT_TYPENAME } from "../constants";
+import { OFFLINE_INSERT_TYPENAME } from "../constants";
 
 type DatabaseContent =
   | GetInitialSocketData_shifts
@@ -28,13 +31,13 @@ export class Database {
     PouchDB.plugin(PouchdbDebug);
 
     this.db.createIndex({
-      index: { fields: ["schemaType"] }
+      index: {
+        fields: [DB_INDEX_SCHEMA_TYPE_NAME, DB_INDEX_OFFLINE_INSERT_TYPENAME]
+      }
     });
 
     this.onStart();
   }
-
-  genId = () => new Date().toJSON().slice(0, -1) + "000Z";
 
   destroyOldDb = async () => {
     const dbName = this.getDbName(POUCH_DB_OLD_VERSION);
@@ -58,5 +61,30 @@ export class Database {
 
   getDbName = (version: number) => "WORKER-WAGES-maneptha-" + version;
 }
+
+const genId = () => new Date().toJSON().slice(0, -1) + "000Z";
+
+const genRandomId = () => {
+  const fromDate = +(new Date().getTime() + "").slice(0, 4);
+  return fromDate + Math.floor(Math.random() * 1000) + "";
+};
+
+export const prepForOfflineSave = (
+  // tslint:disable-next-line:no-any
+  data: any,
+  typeName: string,
+  offlineTypeName: string
+) => {
+  const _id = genId();
+
+  return {
+    ...data,
+    [DB_INDEX_SCHEMA_TYPE_NAME]: typeName,
+    [DB_INDEX_OFFLINE_INSERT_TYPENAME]: OFFLINE_INSERT_TYPENAME,
+    id: genRandomId(),
+    offlineId: offlineTypeName + "-" + _id,
+    _id
+  };
+};
 
 export default Database;

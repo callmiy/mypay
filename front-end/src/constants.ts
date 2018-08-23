@@ -7,6 +7,11 @@ export const NEW_SHIFT_URL_TYPENAME = "NewShiftUrl";
 export const OFFLINE_TOKEN_TYPENAME = "OfflineToken";
 export const DATA_CHANNEL_TOPIC_GRAPHQL = "graphql";
 export const META_TYPENAME = "Meta";
+export const META_OFFLINE_TYPENAME = "MetaOffline";
+export const SHIFT_OFFLINE_TYPENAME = "ShiftOffline";
+export const OFFLINE_INSERT_TYPENAME = "OfflineInsert";
+export const DB_INDEX_SCHEMA_TYPE_NAME = "schemaType";
+export const DB_INDEX_OFFLINE_INSERT_TYPENAME = "offlineInsertIndex";
 
 export type InitialShiftFromDb = PouchDB.Core.ExistingDocument<
   GetInitialSocketData_shifts

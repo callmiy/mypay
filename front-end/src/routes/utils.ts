@@ -205,8 +205,21 @@ export const writeInitialDataToDb = (
 
   writeInitialShiftsDataToDb(database, allShifts);
   writeInitialUrlDataToDb(database, newShiftUrl);
+  writeInitialMetasDataToDb(database, metas);
+};
 
-  if (data.metas) {
-    writeInitialMetasDataToDb(database, metas);
+export const camelize = (val: string) => {
+  const splitted = val.split("_").filter(s => !!s);
+
+  if (!splitted.length || splitted.length === 1) {
+    return val;
   }
+
+  return (
+    splitted[0] +
+    splitted
+      .slice(1)
+      .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+      .join("")
+  );
 };

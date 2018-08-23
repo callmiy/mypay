@@ -3,7 +3,15 @@ const dimmer = document.getElementById("body-modal-dimmer");
 const modal = document.getElementById("body-modal");
 const dismissBtn = document.getElementById("body-modal-dismiss");
 
-export const dismissModal = () => dismissBtn && dismissBtn.click();
+export const dismissModal = (onDismiss?: () => void) => {
+  if (dismissBtn) {
+    dismissBtn.click();
+  }
+
+  if (onDismiss) {
+    onDismiss();
+  }
+};
 
 export const destroyModal = (onDismiss: void | (() => void)) =>
   function modalDimissal(evt: MouseEvent) {

@@ -1,31 +1,38 @@
 import * as Yup from "yup";
 import { ValidationError } from "yup";
 
-import CREATE_META from "../../graphql/create-meta.mutation";
+import CREATE_META_GQL from "../../graphql/create-meta.mutation";
 import { toRunableDocument } from "../../graphql/helpers";
 import { stringifyGraphQlErrors } from "../../graphql/helpers";
-import { CreateMeta } from "../../graphql/gen.types";
+import { CreateMeta_meta } from "../../graphql/gen.types";
 import { makeFormThings } from "../../utils/form-things";
 import { setFieldError } from "../../utils/form-things";
 import { clearFieldErrors } from "../../utils/form-things";
 import { setMainErrorClass } from "../../utils/form-things";
 import { formHasErrors } from "../../utils/form-things";
 import { getFieldAndErrorEls } from "../../utils/form-things";
-import NEW_META_FORM_GQL from "../../graphql/new-meta-form.query";
-import { GetNewMetaForm } from "../../graphql/gen.types";
-import { GetNewMetaForm_newMetaForm } from "../../graphql/gen.types";
 import { AppSocket } from "../../socket";
+import { META_OFFLINE_TYPENAME } from "../../constants";
+import { META_TYPENAME } from "../../constants";
+import { Database } from "../../database";
+import { prepForOfflineSave } from "../../database";
 
 enum FormElementsName {
-  BREAK_TIME_SECS = "break_time_secs",
-  PAY_PER_HOUR = "pay_per_hr",
-  NIGHT_SUPPL_PAY = "night_suppl_pay_pct",
-  SUNDAY_SUPPL_PAY = "sunday_suppl_pay_pct"
+  BREAK_TIME_SECS = "breakTimeSecs",
+  PAY_PER_HOUR = "payPerHr",
+  NIGHT_SUPPL_PAY = "nightSupplPayPct",
+  SUNDAY_SUPPL_PAY = "sundaySupplPayPct"
 }
 
 interface NewMetaFormData {
   // tslint:disable-next-line:no-any
   [key: string]: any;
+}
+
+interface Props {
+  socket: AppSocket;
+  onMetaCreated: (data: CreateMeta_meta) => void;
+  database: Database;
 }
 
 const genericError = "Invalid Number";
@@ -64,12 +71,7 @@ export class NewMeta {
 
   inputs: NodeListOf<HTMLInputElement>;
 
-  constructor(
-    private socket: AppSocket,
-    private onMetaCreated: (data: CreateMeta) => void
-  ) {
-    this.getNewMetaForm();
-  }
+  constructor(private props: Props) {}
 
   setUpDOM = () => {
     this.formSubmit = document.getElementById(
@@ -91,8 +93,8 @@ export class NewMeta {
     Array.prototype.forEach.call(this.inputs, this.setUpInput);
 
     if (this.formSubmit && this.formReset && this.mainErrorContainer) {
-      this.formSubmit.addEventListener("click", this.formSubmitElHandler);
-      this.formReset.addEventListener("click", this.formResetElHandler);
+      this.formSubmit.addEventListener("click", this.submitElHandler);
+      this.formReset.addEventListener("click", this.resetElHandler);
     }
   };
 
@@ -155,7 +157,7 @@ export class NewMeta {
     el.addEventListener("blur", inputListener);
   };
 
-  formSubmitElHandler = () => {
+  submitElHandler = () => {
     const data = {} as NewMetaFormData;
 
     Object.keys(this.formThings.doms).forEach(
@@ -165,14 +167,19 @@ export class NewMeta {
     this.schema
       .validate(data, { abortEarly: false })
       .then((meta: { [k: string]: number }) => {
-        this.socket.queryGraphQl({
-          params: toRunableDocument(CREATE_META, {
-            // The user input is in minutes, so we convert break_time_secs to
-            // seconds by multiplying minutes by 60
-            meta: { ...meta, break_time_secs: meta.break_time_secs * 60 }
+        // The user input is in minutes, so we convert break_time_secs to
+        // seconds by multiplying minutes by 60
+        meta = { ...meta, breakTimeSecs: meta.breakTimeSecs * 60 };
+
+        this.props.socket.queryGraphQl({
+          params: toRunableDocument(CREATE_META_GQL, {
+            meta
           }),
 
-          ok: this.onMetaCreated,
+          ok: ({ meta: createdMeta }) => {
+            this.props.database.db.put(createdMeta);
+            this.props.onMetaCreated(createdMeta);
+          },
 
           error: reason => {
             this.formSubmit.classList.remove("loading");
@@ -182,8 +189,25 @@ export class NewMeta {
             );
 
             setMainErrorClass(this.mainErrorContainer, "show");
-
             this.formReset.disabled = false;
+          },
+
+          onTimeout: () => {
+            this.mainErrorContainer.textContent =
+              "You appear to be offline 😞😞";
+            setMainErrorClass(this.mainErrorContainer, "show");
+
+            const offlineMeta = prepForOfflineSave(
+              meta,
+              META_TYPENAME,
+              META_OFFLINE_TYPENAME
+            );
+
+            this.props.database.db.put(offlineMeta);
+
+            setTimeout(() => {
+              this.props.onMetaCreated(offlineMeta);
+            }, 1000);
           }
         });
 
@@ -205,7 +229,7 @@ export class NewMeta {
       });
   };
 
-  formResetElHandler = () => {
+  resetElHandler = () => {
     Object.keys(this.formThings.doms).forEach(k => {
       const { el, fieldEl, errorEl } = this.formThings.doms[k];
       el.value = "";
@@ -224,25 +248,14 @@ export class NewMeta {
   };
 
   cleanUp = () => {
-    this.formSubmit.removeEventListener("click", this.formSubmitElHandler);
-    this.formReset.removeEventListener("click", this.formResetElHandler);
+    this.formSubmit.removeEventListener("click", this.submitElHandler);
+    this.formReset.removeEventListener("click", this.resetElHandler);
 
     Object.values(this.formThings.doms).forEach(v => {
       const { el, focusListener, inputListener } = v;
       el.removeEventListener("focus", focusListener);
       el.removeEventListener("input", inputListener);
       el.removeEventListener("blur", inputListener);
-    });
-  };
-
-  getNewMetaForm = async () => {
-    this.socket.queryGraphQl({
-      params: toRunableDocument(NEW_META_FORM_GQL),
-      ok: msg => {
-        const response = msg as GetNewMetaForm;
-        const newMetaForm = response.newMetaForm as GetNewMetaForm_newMetaForm;
-        window.appInterface.newMetaFormData = newMetaForm;
-      }
     });
   };
 }

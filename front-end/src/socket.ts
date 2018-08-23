@@ -20,7 +20,10 @@ interface ChannelMessageNoTopic {
   params?: any;
   ok: OnChannelMessage;
   // tslint:disable-next-line:no-any
-  error?: (reason: any) => void;
+  error?: (reason?: any) => void;
+
+  // tslint:disable-next-line:no-any
+  onTimeout?: (reason: any) => void;
 }
 
 export interface ChannelMessage extends ChannelMessageNoTopic {
@@ -93,7 +96,7 @@ export class AppSocket {
   sendChannelMsg = (
     channelName: string,
     channel: Channel,
-    { topic, ok, error, params }: ChannelMessage
+    { topic, ok, error, params, onTimeout }: ChannelMessage
   ) => {
     channel
       .push(topic, params || {})
@@ -101,14 +104,17 @@ export class AppSocket {
       .receive("error", reasons => {
         if (error) {
           error(reasons);
-        } else {
-          // tslint:disable-next-line:no-console
-          console.log(`Error on push to ${channelName}:${topic}`, reasons);
         }
-      })
-      .receive("timeout", () => {
         // tslint:disable-next-line:no-console
-        console.log("Networking issue...");
+        console.log(`Error on push to ${channelName}:${topic}`, reasons);
+      })
+      .receive("timeout", reasons => {
+        if (onTimeout) {
+          onTimeout(reasons);
+        }
+
+        // tslint:disable-next-line:no-console
+        console.log("Networking issue...", reasons);
       });
   };
 

@@ -7,9 +7,6 @@ import { GetInitialSocketData } from "./graphql/gen.types";
 declare global {
   interface Window {
     appInterface: {
-      newMetaFormData?: {
-        html: string;
-      };
       serverOnlineStatus: boolean;
 
       db: Database;

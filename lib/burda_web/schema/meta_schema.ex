@@ -28,17 +28,6 @@ defmodule BurdaWeb.Schema.Meta do
     end
   end
 
-  object :new_meta_form do
-    field :html, non_null(:string) do
-      resolve(fn _, _, _ ->
-        {
-          :ok,
-          Phoenix.View.render_to_string(BurdaWeb.MetaView, "new-meta.html", [])
-        }
-      end)
-    end
-  end
-
   @desc "Inputs for creating a meta"
   input_object :create_meta_input do
     field(:break_time_secs, :integer)
@@ -71,15 +60,10 @@ defmodule BurdaWeb.Schema.Meta do
   # QUERIES
   @desc "Queries allowed on Meta object"
   object :meta_query do
-    @desc "Get the form for creating a meta"
-    field(:new_meta_form, type: :new_meta_form, resolve: &empty/2)
-
     @desc "Get all metas optionally filtered"
     field :metas, type: list_of(:meta) do
       arg(:meta, :get_meta_input)
       resolve(&Resolver.metas/3)
     end
   end
-
-  defp empty(_, _), do: {:ok, %{}}
 end

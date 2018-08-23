@@ -5,7 +5,6 @@ import { ValidationError } from "yup";
 import { showModal } from "../../components/modals";
 import { dismissModal } from "../../components/modals";
 import { NewMeta } from "../../components/new-meta-form/new-meta-form";
-import { CreateMeta } from "../../graphql/gen.types";
 import { CreateMeta_meta } from "../../graphql/gen.types";
 import { GetInitialSocketData_metas } from "../../graphql/gen.types";
 import { CreateShift } from "../../graphql/gen.types";
@@ -32,6 +31,8 @@ import * as newShiftMetasSelectTemplate from "../../templates/newShiftMetasSelec
 import * as newShiftConfirmTemplate from "../../templates/newShiftConfirmTemplate.handlebars";
 
 import * as newShiftConfirmSubmitButtonsTemplate from "../../templates/newShiftConfirmSubmitButtonsTemplate.handlebars";
+
+import * as newMetaFormTemplate from "../../templates/newMetaFormTemplate.handlebars";
 
 interface DaysOfMonth {
   [key: number]: {
@@ -131,7 +132,11 @@ export class ShiftController {
   newMetaForm: NewMeta;
 
   constructor(private props: Props) {
-    this.newMetaForm = new NewMeta(this.props.socket, this.onMetaCreated);
+    this.newMetaForm = new NewMeta({
+      socket: this.props.socket,
+      onMetaCreated: this.onMetaCreated,
+      database: this.props.database
+    });
     this.render();
   }
 
@@ -408,16 +413,8 @@ export class ShiftController {
   };
 
   fetchNewMetaElClickHandler = async () => {
-    if (!window.appInterface.newMetaFormData) {
-      await this.newMetaForm.getNewMetaForm();
-    }
-
-    if (!window.appInterface.newMetaFormData) {
-      return;
-    }
-
     showModal({
-      content: window.appInterface.newMetaFormData.html,
+      content: newMetaFormTemplate(),
 
       onShow: () => {
         this.newMetaForm.setUpDOM();
@@ -426,9 +423,7 @@ export class ShiftController {
     });
   };
 
-  onMetaCreated = (data: CreateMeta) => {
-    const meta = data.meta as CreateMeta_meta;
-
+  onMetaCreated = (meta: CreateMeta_meta) => {
     const opt = this.makeMetaSelectOption(meta);
     this.selectMetaEl.selectedIndex = -1;
     this.selectMetaEl.appendChild(opt);
@@ -439,7 +434,7 @@ export class ShiftController {
 
     this.selectMetaEl.dispatchEvent(new Event("input"));
 
-    dismissModal();
+    dismissModal(this.newMetaForm.cleanUp);
 
     // We keep the newly created meta as the default so that if user
     // wishes to reset the form, she always gets the latest meta as the

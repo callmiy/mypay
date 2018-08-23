@@ -9,10 +9,12 @@
 
 export interface CreateMeta_meta {
   id: string;
+  _id: string;
   breakTimeSecs: number;
-  nightSupplPayPct: any;
   payPerHr: any;
+  nightSupplPayPct: any;
   sundaySupplPayPct: any;
+  schemaType: string;
 }
 
 export interface CreateMeta {
@@ -124,22 +126,6 @@ export interface GetInitialSocketData {
 export interface GetInitialSocketDataVariables {
   shift?: GetShiftInput | null;
   getMetasInput?: GetMetaInput | null;
-}
-
-
-/* tslint:disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GetNewMetaForm
-// ====================================================
-
-export interface GetNewMetaForm_newMetaForm {
-  html: string;
-}
-
-export interface GetNewMetaForm {
-  newMetaForm: GetNewMetaForm_newMetaForm | null;  // Get the form for creating a meta
 }
 
 
