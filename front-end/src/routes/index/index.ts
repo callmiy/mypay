@@ -53,7 +53,19 @@ export class IndexController {
 
     this.shiftEarningsSummaryEl.innerHTML = shiftEarningSummaryTemplate({
       totalEarnings: shifts
-        .reduce((a, b) => a + +((b && b.totalPay) || 0), 0)
+        .reduce((a, b) => {
+          let x = 0;
+
+          if (b && b.totalPay) {
+            x = +b.totalPay;
+
+            if (isNaN(x)) {
+              x = 0;
+            }
+          }
+
+          return a + x;
+        }, 0)
         .toFixed(2),
       currentMonthYear
     });

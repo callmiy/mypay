@@ -21,8 +21,10 @@ import { AppSocket } from "../../socket";
 import { docReady } from "../../utils/utils";
 import { isServerRendered } from "../../utils/utils";
 import { Database } from "../../database";
-import { META_TYPENAME } from "../../constants";
-import { writeInitialShiftsDataToDb } from "../utils";
+import { prepForOfflineSave } from "../../database";
+import { META_TYPENAME, SHIFT_TYPENAME } from "../../constants";
+import { OFFLINE_MSG } from "../../constants";
+import { SHIFT_OFFLINE_TYPENAME } from "../../constants";
 
 import * as newShiftDateTemplate from "../../templates/newShiftDateTemplate.handlebars";
 
@@ -671,7 +673,7 @@ export class ShiftController {
 
       ok: ({ shift: createdShift }: CreateShift) => {
         if (createdShift) {
-          writeInitialShiftsDataToDb(this.props.database, [createdShift]);
+          this.props.database.db.put(createdShift);
 
           const html = newShiftConfirmTemplate({
             meta: this.selectedMeta,
@@ -681,12 +683,7 @@ export class ShiftController {
           showModal({
             content: html,
             onShow: () => {
-              this.selectedMeta = undefined;
-              this.newShiftToSave = undefined;
-              this.submitEl.classList.remove("loading");
-              this.submitEl.disabled = false;
-              this.resetEl.disabled = false;
-
+              this.cleanUpAfterSave();
               return () => (window.location.href = "/");
             }
           });
@@ -702,11 +699,53 @@ export class ShiftController {
         );
 
         setMainErrorClass(this.mainErrorContainer, "show");
+      },
+
+      onTimeout: () => {
+        const offlineShift = prepForOfflineSave(
+          {
+            ...this.newShiftToSave,
+            hoursGross: "N/A",
+            normalHours: "N/A",
+            normalPay: "N/A",
+            nightHours: "N/A",
+            nightSupplPay: "N/A",
+            sundayHours: "N/A",
+            sundaySupplPay: "N/A",
+            totalPay: "N/A"
+          },
+          SHIFT_TYPENAME,
+          SHIFT_OFFLINE_TYPENAME
+        );
+
+        this.props.database.db.put(offlineShift);
+
+        const html = newShiftConfirmTemplate({
+          meta: this.selectedMeta,
+          shift: offlineShift,
+          topMessage: `<div class="top-error">${OFFLINE_MSG}</div>`
+        });
+
+        showModal({
+          content: html,
+          onShow: () => {
+            this.cleanUpAfterSave();
+            return () => (window.location.href = "/");
+          }
+        });
       }
     });
 
     dismissModal();
     this.tearDownConfirmedEls();
+  };
+
+  cleanUpAfterSave = () => {
+    this.selectedMeta = undefined;
+    this.newShiftToSave = undefined;
+    this.submitEl.classList.remove("loading");
+    this.submitEl.disabled = false;
+    this.resetEl.disabled = false;
   };
 
   /**

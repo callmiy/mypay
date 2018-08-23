@@ -73,9 +73,17 @@
   border: 1px solid $app-color;
 }
 
+.top-error {
+  @extend %error-container;
+  margin-bottom: 5px;
+  padding: 5px;
+  text-align: center;
+}
+
 .new-shift-confirm__header {
   &.ui.label {
     display: block;
+    margin: 0;
     border-radius: 0;
     width: 100%;
     text-align: center;

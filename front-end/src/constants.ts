@@ -12,6 +12,7 @@ export const SHIFT_OFFLINE_TYPENAME = "ShiftOffline";
 export const OFFLINE_INSERT_TYPENAME = "OfflineInsert";
 export const DB_INDEX_SCHEMA_TYPE_NAME = "schemaType";
 export const DB_INDEX_OFFLINE_INSERT_TYPENAME = "offlineInsertIndex";
+export const OFFLINE_MSG = "You appear to be offline 😞😞";
 
 export type InitialShiftFromDb = PouchDB.Core.ExistingDocument<
   GetInitialSocketData_shifts

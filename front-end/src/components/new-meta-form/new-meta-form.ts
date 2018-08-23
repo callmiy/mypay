@@ -14,6 +14,7 @@ import { getFieldAndErrorEls } from "../../utils/form-things";
 import { AppSocket } from "../../socket";
 import { META_OFFLINE_TYPENAME } from "../../constants";
 import { META_TYPENAME } from "../../constants";
+import { OFFLINE_MSG } from "../../constants";
 import { Database } from "../../database";
 import { prepForOfflineSave } from "../../database";
 
@@ -193,8 +194,7 @@ export class NewMeta {
           },
 
           onTimeout: () => {
-            this.mainErrorContainer.textContent =
-              "You appear to be offline 😞😞";
+            this.mainErrorContainer.textContent = OFFLINE_MSG;
             setMainErrorClass(this.mainErrorContainer, "show");
 
             const offlineMeta = prepForOfflineSave(

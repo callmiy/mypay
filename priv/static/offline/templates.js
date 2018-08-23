@@ -44,14 +44,22 @@ templates['newShiftConfirmSubmitButtonsTemplate'] = template({"compiler":[7,">= 
     return "<div class=\"ui buttons\">\n  <button id=\"new-shift-confirm__submit\" type=\"button\" class=\"ui positive button new-shift-confirm__submit\">\n    Save\n  </button>\n\n  <div class=\"or\"></div>\n\n  <button id=\"new-shift-confirm__edit\" type=\"button\" class=\"ui button new-shift-confirm__edit\">\n    Edit\n  </button>\n</div>\n";
 },"useData":true});
 templates['newShiftConfirmTemplate'] = template({"1":function(container,depth0,helpers,partials,data) {
-    return " Please Confirm Before Saving! ";
+    var stack1, helper;
+
+  return " "
+    + ((stack1 = ((helper = (helper = helpers.topMessage || (depth0 != null ? depth0.topMessage : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"topMessage","hash":{},"data":data}) : helper))) != null ? stack1 : "")
+    + " ";
 },"3":function(container,depth0,helpers,partials,data) {
+    return " Please Confirm Before Saving! ";
+},"5":function(container,depth0,helpers,partials,data) {
     return " Congrats! Successfully Saved 😃😃 ";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.lambda, alias3=container.escapeExpression, alias4=helpers.helperMissing;
 
-  return "<div class=\"new-shift-confirm\">\n\n  <div class=\"ui top label new-shift-confirm__header\">\n    "
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.saving : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(3, data, 0),"data":data})) != null ? stack1 : "")
+  return "<div class=\"new-shift-confirm\">\n\n  "
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.topMessage : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "\n\n  <div class=\"ui top label new-shift-confirm__header\">\n    "
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.saving : depth0),{"name":"if","hash":{},"fn":container.program(3, data, 0),"inverse":container.program(5, data, 0),"data":data})) != null ? stack1 : "")
     + "\n  </div>\n  <!-- META INFO -->\n  <div class=\"ui top attached segment new-shift-confirm__segment new-shift-confirm__segment--meta\">\n    <div class=\"ui top attached label\">\n      Meta\n    </div>\n\n    <div class=\"new-shift-confirm__detail--meta new-shift-confirm__detail\">\n      <div class=\"new-shift-confirm__detail__item new-shift-confirm__detail__item--wage\">\n        <div class=\"new-shift-confirm__detail__title\">Wage</div>\n        <div>&euro; "
     + alias3(alias2(((stack1 = (depth0 != null ? depth0.meta : depth0)) != null ? stack1.payPerHr : stack1), depth0))
     + " /hr</div>\n      </div>\n\n      <div class=\"new-shift-confirm__detail__item new-shift-confirm__detail__item--break\">\n        <div class=\"new-shift-confirm__detail__title\">Break</div>\n        <div>"
