@@ -12,28 +12,18 @@ defmodule BurdaWeb.Offline do
   @build_service_worker_file "_build/#{System.get_env("MIX_ENV") || "dev"}/lib/burda/priv/static/offline/service-worker1.js"
 
   @manifest_json_file Path.expand("cache_manifest.json", @static_folder)
+  @rejected_static ["favicon", "offline", "robots", "webpack"]
 
   def get_service_worker_cache_assets,
     do:
       @phoenix_digest_manifest_file_path
       |> File.read!()
       |> Poison.decode!()
-      |> Map.get("digests")
-      |> Enum.reduce([], fn {latest, value}, acc ->
-        path = value["logical_path"]
-
-        l =
-          path
-          |> String.split("/")
-          |> hd()
-
-        if l in ["favicon", "offline", "robots.txt"] do
-          acc
-        else
-          [{path, latest} | acc]
-        end
+      |> Map.get("latest")
+      |> Map.values()
+      |> Enum.reject(fn l ->
+        Enum.any?(@rejected_static, &String.starts_with?(l, &1))
       end)
-      |> Enum.into(%{})
 
   def generate_templates,
     do:
@@ -148,9 +138,7 @@ defmodule BurdaWeb.Offline do
   end
 
   defp service_worker_cache_assets(:prod),
-    do:
-      get_service_worker_cache_assets()
-      |> Map.values()
+    do: get_service_worker_cache_assets()
 
   defp service_worker_cache_assets(:dev),
     do:
