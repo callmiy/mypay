@@ -1,4 +1,4 @@
-defmodule Burda.DataCase do
+defmodule MyPay.DataCase do
   @moduledoc """
   This module defines the setup for tests requiring
   access to the application's data layer.
@@ -16,20 +16,20 @@ defmodule Burda.DataCase do
 
   using do
     quote do
-      alias Burda.Repo
+      alias MyPay.Repo
 
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import Burda.DataCase
+      import MyPay.DataCase
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Burda.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(MyPay.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Burda.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(MyPay.Repo, {:shared, self()})
     end
 
     :ok

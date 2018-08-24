@@ -1,3 +1,3 @@
-defmodule BurdaWeb.PageViewTest do
-  use BurdaWeb.ConnCase, async: true
+defmodule MyPayWeb.PageViewTest do
+  use MyPayWeb.ConnCase, async: true
 end

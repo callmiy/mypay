@@ -1,11 +1,11 @@
-defmodule BurdaWeb.ChangesetView do
-  use BurdaWeb, :view
+defmodule MyPayWeb.ChangesetView do
+  use MyPayWeb, :view
 
   @doc """
   Traverses and translates changeset errors.
 
   See `Ecto.Changeset.traverse_errors/2` and
-  `BurdaWeb.ErrorHelpers.translate_error/1` for more details.
+  `MyPayWeb.ErrorHelpers.translate_error/1` for more details.
   """
   def translate_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, &translate_error/1)

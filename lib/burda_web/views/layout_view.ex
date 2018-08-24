@@ -1,9 +1,9 @@
-defmodule BurdaWeb.LayoutView do
-  use BurdaWeb, :view
+defmodule MyPayWeb.LayoutView do
+  use MyPayWeb, :view
 
   require EEx
 
-  alias BurdaWeb.Endpoint
+  alias MyPayWeb.Endpoint
 
   @index_js_path "commons.js"
   @index_css_path "commons.css"
@@ -147,7 +147,7 @@ defmodule BurdaWeb.LayoutView do
   @spec get_frontend_env(key :: Atom.t()) :: Atom.t()
   def get_frontend_env(key),
     do:
-      :burda
+      :mypay
       |> Application.get_env(:frontend)
       |> get_frontend_env(key)
 

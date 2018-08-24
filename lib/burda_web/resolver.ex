@@ -1,4 +1,4 @@
-defmodule BurdaWeb.Resolver do
+defmodule MyPayWeb.Resolver do
   @moduledoc """
   Helper utilities for resolvers
   """

@@ -1,4 +1,4 @@
-defmodule BurdaWeb.Schema.Types do
+defmodule MyPayWeb.Schema.Types do
   @moduledoc """
   Custom types (scalars, objects and input types) shared among schema types
   """

@@ -1,11 +1,11 @@
-defmodule BurdaWeb.Schema.ShiftTest do
-  use Burda.DataCase
+defmodule MyPayWeb.Schema.ShiftTest do
+  use MyPay.DataCase
 
-  alias BurdaWeb.Schema
-  alias BurdaWeb.Query.Shift, as: Query
-  alias Burda.Factory.Shift, as: Factory
-  alias Burda.Factory.Meta, as: MetaFactory
-  alias Burda.Shift.Api
+  alias MyPayWeb.Schema
+  alias MyPayWeb.Query.Shift, as: Query
+  alias MyPay.Factory.Shift, as: Factory
+  alias MyPay.Factory.Meta, as: MetaFactory
+  alias MyPay.Shift.Api
 
   @iso_time "{ISOtime}"
   @iso_date "{ISOdate}"

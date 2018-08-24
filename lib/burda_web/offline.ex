@@ -1,5 +1,5 @@
-defmodule BurdaWeb.Offline do
-  alias BurdaWeb.LayoutView
+defmodule MyPayWeb.Offline do
+  alias MyPayWeb.LayoutView
 
   @phoenix_digest_manifest_file_path "priv/static/cache_manifest.json"
   @webpack_manifest_file_path "priv/static/webpack-manifest.json"
@@ -28,8 +28,8 @@ defmodule BurdaWeb.Offline do
   def generate_templates,
     do:
       [
-        {BurdaWeb.IndexController, :index_offline_templates},
-        {BurdaWeb.ShiftController, :new_offline_templates}
+        {MyPayWeb.IndexController, :index_offline_templates},
+        {MyPayWeb.ShiftController, :new_offline_templates}
       ]
       |> Enum.flat_map(fn {module, templates_fun} ->
         module

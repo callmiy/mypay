@@ -1,10 +1,10 @@
-defmodule BurdaWeb.DataChannel do
-  use BurdaWeb, :channel
+defmodule MyPayWeb.DataChannel do
+  use MyPayWeb, :channel
 
   @dialyzer {:no_return, handle_in: 3, handle_info: 2}
 
-  alias BurdaWeb.Schema
-  alias Burda.OfflineSync
+  alias MyPayWeb.Schema
+  alias MyPay.OfflineSync
 
   @offline_fields ["rev", "offline_id"]
 

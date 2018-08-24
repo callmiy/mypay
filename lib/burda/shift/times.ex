@@ -1,4 +1,4 @@
-defmodule Burda.Shift.Times do
+defmodule MyPay.Shift.Times do
   @moduledoc ~S"""
     Compute the various times involved with shift work
   """

@@ -5,7 +5,7 @@ defmodule Mix.Tasks.Deploy do
   Tasks for managing deployment of burda app
   """
 
-  alias BurdaWeb.Offline
+  alias MyPayWeb.Offline
 
   @moduledoc ~S"""
   Task for deploying to heroku
@@ -46,7 +46,7 @@ defmodule Mix.Tasks.Deploy do
   end
 
   defp deploy(["local"]) do
-    Application.put_env(:burda, :frontend, asset: :prod)
+    Application.put_env(:mypay, :frontend, asset: :prod)
     :ok = reset_static_folder()
     deploy(["compile", "templates", "dev"])
     :ok = process_static_files()
@@ -56,7 +56,7 @@ defmodule Mix.Tasks.Deploy do
 
   defp deploy(["prod"]) do
     System.put_env("MIX_ENV", "prod")
-    Application.put_env(:burda, :frontend, asset: :prod)
+    Application.put_env(:mypay, :frontend, asset: :prod)
 
     :ok = run_cmd("git", ["checkout", "dev"])
 

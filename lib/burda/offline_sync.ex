@@ -1,8 +1,8 @@
-defmodule Burda.OfflineSync do
+defmodule MyPay.OfflineSync do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Burda.Repo
+  alias MyPay.Repo
 
   @timestamps_opts [
     type: Timex.Ecto.DateTime,

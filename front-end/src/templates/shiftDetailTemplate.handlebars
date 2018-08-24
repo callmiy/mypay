@@ -13,13 +13,13 @@
         </div>
 
         <span>
-          {{ hoursGross }} hours &nbsp;&nbsp; (gross)
+                {{#if hoursGross }} {{ hoursGross }} hrs {{/if}}
         </span>
       </div>
 
       <div class="hours-earnings-container">
         <div class="hours-earnings detail">
-          <span>Shift</span>
+          <span>Normal</span>
           <span>
 {{ normalHours }}          </span>
           <span>&euro;

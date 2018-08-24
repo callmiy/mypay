@@ -1,4 +1,4 @@
-defmodule Burda.Repo.Migrations.CreateMetas do
+defmodule MyPay.Repo.Migrations.CreateMetas do
   use Ecto.Migration
 
   def change do

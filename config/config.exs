@@ -6,24 +6,24 @@
 use Mix.Config
 
 # General application configuration
-config :burda,
-  ecto_repos: [Burda.Repo]
+config :mypay,
+  ecto_repos: [MyPay.Repo]
 
 # Configures the endpoint
-config :burda, BurdaWeb.Endpoint,
+config :mypay, MyPayWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "xVKtZA1LYNSQpRmMByNnmELmTYxHfOEaQk+KrlmuPZt9CmT9fEjdOrXBZsu1YgGw",
-  render_errors: [view: BurdaWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Burda.PubSub, adapter: Phoenix.PubSub.PG2]
+  render_errors: [view: MyPayWeb.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: MyPay.PubSub, adapter: Phoenix.PubSub.PG2]
 
-config :absinthe, schema: BurdaWeb.Schema
+config :absinthe, schema: MyPayWeb.Schema
 
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-config :burda, :frontend,
+config :mypay, :frontend,
   token_id: "jIVgOfNGqsrykk6M4ytTAv60aeT0Uj3poEHghgbRA1BbvGVVkGI",
   token_value: "hjXt6YqWSMs1mW1KG9QlOsEITkp6zrZQnSxxGbX5BirtEqagAcifHKkii37dnlpw"
 

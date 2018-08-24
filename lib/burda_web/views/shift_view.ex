@@ -1,5 +1,5 @@
-defmodule BurdaWeb.ShiftView do
-  use BurdaWeb, :view
+defmodule MyPayWeb.ShiftView do
+  use MyPayWeb, :view
 
   @doc ~S"""
     Send the top menu to be rendered by the layout view

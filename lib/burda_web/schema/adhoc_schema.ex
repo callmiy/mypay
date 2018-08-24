@@ -1,20 +1,20 @@
-defmodule BurdaWeb.Schema.Adhoc do
+defmodule MyPayWeb.Schema.Adhoc do
   @moduledoc ~S"""
     Absinthe schema for objects that do not map to any Ecto Schema
   """
   use Absinthe.Schema.Notation
 
-  alias BurdaWeb.Endpoint
-  alias BurdaWeb.LayoutView
-  alias BurdaWeb.IndexController
-  alias BurdaWeb.ShiftController
-  alias BurdaWeb.Schema
+  alias MyPayWeb.Endpoint
+  alias MyPayWeb.LayoutView
+  alias MyPayWeb.IndexController
+  alias MyPayWeb.ShiftController
+  alias MyPayWeb.Schema
 
-  @offline_token_id :burda
+  @offline_token_id :mypay
                     |> Application.get_env(:frontend)
                     |> Keyword.fetch!(:token_id)
 
-  @offline_token_value :burda
+  @offline_token_value :mypay
                        |> Application.get_env(:frontend)
                        |> Keyword.fetch!(:token_value)
 
@@ -32,7 +32,7 @@ defmodule BurdaWeb.Schema.Adhoc do
       resolve(fn _, _, _ ->
         {
           :ok,
-          BurdaWeb.Router.Helpers.shift_path(Endpoint, :new)
+          MyPayWeb.Router.Helpers.shift_path(Endpoint, :new)
         }
       end)
     end

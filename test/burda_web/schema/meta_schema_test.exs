@@ -1,9 +1,9 @@
-defmodule BurdaWeb.Schema.MetaTest do
-  use Burda.DataCase
+defmodule MyPayWeb.Schema.MetaTest do
+  use MyPay.DataCase
 
-  alias BurdaWeb.Schema
-  alias BurdaWeb.Query.Meta, as: Query
-  alias Burda.Factory.Meta, as: Factory
+  alias MyPayWeb.Schema
+  alias MyPayWeb.Query.Meta, as: Query
+  alias MyPay.Factory.Meta, as: Factory
 
   @date_time_pattern ~r/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z/
 

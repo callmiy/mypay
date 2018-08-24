@@ -1,6 +1,6 @@
-defmodule Burda do
+defmodule MyPay do
   @moduledoc """
-  Burda keeps the contexts that define your domain
+  MyPay keeps the contexts that define your domain
   and business logic.
 
   Contexts are also responsible for managing your data, regardless

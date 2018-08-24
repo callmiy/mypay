@@ -1,4 +1,4 @@
-defmodule Burda.Shift.Wages do
+defmodule MyPay.Shift.Wages do
   @moduledoc ~S"""
     The various wages earned by a shift worker are computed
   """

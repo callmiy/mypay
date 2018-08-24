@@ -5,15 +5,15 @@
 # Inside the script, you can read and write to any of your
 # repositories directly:
 #
-#     Burda.Repo.insert!(%Burda.SomeSchema{})
+#     MyPay.Repo.insert!(%MyPay.SomeSchema{})
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
-alias Burda.Shift
-alias Burda.Factory.Shift, as: ShiftFactory
-alias Burda.Meta
-alias Burda.Factory.Meta, as: MetaFactory
-alias Burda.Repo
+alias MyPay.Shift
+alias MyPay.Factory.Shift, as: ShiftFactory
+alias MyPay.Meta
+alias MyPay.Factory.Meta, as: MetaFactory
+alias MyPay.Repo
 
 Repo.delete_all(Shift)
 Repo.delete_all(Meta)

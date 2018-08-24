@@ -1,4 +1,4 @@
-defmodule BurdaWeb.Schema.Shift do
+defmodule MyPayWeb.Schema.Shift do
   @moduledoc ~S"""
     Absinthe schema for Shift
   """
@@ -6,8 +6,8 @@ defmodule BurdaWeb.Schema.Shift do
 
   import Absinthe.Resolution.Helpers, only: [dataloader: 1]
 
-  alias BurdaWeb.Resolver.Shift, as: Resolver
-  alias BurdaWeb.Schema
+  alias MyPayWeb.Resolver.Shift, as: Resolver
+  alias MyPayWeb.Schema
 
   @desc "A shift"
   object :shift do
@@ -32,7 +32,7 @@ defmodule BurdaWeb.Schema.Shift do
     field(:inserted_at, non_null(:iso_datetime))
     field(:updated_at, non_null(:iso_datetime))
 
-    field(:meta, :meta, resolve: dataloader(Burda.Meta.Api))
+    field(:meta, :meta, resolve: dataloader(MyPay.Meta.Api))
 
     field :schema_type, non_null(:string) do
       resolve(fn _, _, _ -> {:ok, "Shift"} end)

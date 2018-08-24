@@ -1,4 +1,4 @@
-defmodule BurdaWeb.Query.Meta do
+defmodule MyPayWeb.Query.Meta do
   @doc false
   def all_fields_fragment do
     name = "MetaAllFieldsFragment"

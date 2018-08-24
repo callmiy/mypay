@@ -1,9 +1,9 @@
-defmodule Burda.MetaApiTest do
-  use Burda.DataCase
+defmodule MyPay.MetaApiTest do
+  use MyPay.DataCase
 
-  alias Burda.Meta.Api
-  alias Burda.Meta
-  alias Burda.Factory.Meta, as: Factory
+  alias MyPay.Meta.Api
+  alias MyPay.Meta
+  alias MyPay.Factory.Meta, as: Factory
 
   test "list/0 returns all metas" do
     meta = Factory.insert()

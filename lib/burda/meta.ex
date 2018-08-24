@@ -1,4 +1,4 @@
-defmodule Burda.Meta do
+defmodule MyPay.Meta do
   use Ecto.Schema
   import Ecto.Changeset
 

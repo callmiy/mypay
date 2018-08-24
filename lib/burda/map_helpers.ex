@@ -1,4 +1,4 @@
-defmodule Burda.MapHelpers do
+defmodule MyPay.MapHelpers do
   @moduledoc """
   Functions to transform maps
   """

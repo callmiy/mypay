@@ -1,4 +1,4 @@
-defmodule BurdaWeb.ChannelCase do
+defmodule MyPayWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -21,15 +21,15 @@ defmodule BurdaWeb.ChannelCase do
       use Phoenix.ChannelTest
 
       # The default endpoint for testing
-      @endpoint BurdaWeb.Endpoint
+      @endpoint MyPayWeb.Endpoint
     end
   end
 
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Burda.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(MyPay.Repo)
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Burda.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(MyPay.Repo, {:shared, self()})
     end
     :ok
   end

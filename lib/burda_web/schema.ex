@@ -1,17 +1,17 @@
-defmodule BurdaWeb.Schema do
+defmodule MyPayWeb.Schema do
   use Absinthe.Schema
 
   @dialyzer {:no_return, run_query: 1, run_query: 2}
 
   import_types(Absinthe.Type.Custom)
-  import_types(BurdaWeb.Schema.Types)
-  import_types(BurdaWeb.Schema.Shift)
-  import_types(BurdaWeb.Schema.Meta)
-  import_types(BurdaWeb.Schema.Adhoc)
-  import_types(BurdaWeb.Schema.OfflineSync)
+  import_types(MyPayWeb.Schema.Types)
+  import_types(MyPayWeb.Schema.Shift)
+  import_types(MyPayWeb.Schema.Meta)
+  import_types(MyPayWeb.Schema.Adhoc)
+  import_types(MyPayWeb.Schema.OfflineSync)
 
-  alias Burda.Shift.Api, as: ShiftApi
-  alias Burda.Meta.Api, as: MetaApi
+  alias MyPay.Shift.Api, as: ShiftApi
+  alias MyPay.Meta.Api, as: MetaApi
 
   query do
     import_fields(:shift_query)

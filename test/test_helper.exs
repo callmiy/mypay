@@ -1,5 +1,5 @@
-Absinthe.Test.prime(BurdaWeb.Schema)
+Absinthe.Test.prime(MyPayWeb.Schema)
 
 ExUnit.start()
 
-Ecto.Adapters.SQL.Sandbox.mode(Burda.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(MyPay.Repo, :manual)

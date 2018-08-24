@@ -1,5 +1,5 @@
-defmodule BurdaWeb.Router do
-  use BurdaWeb, :router
+defmodule MyPayWeb.Router do
+  use MyPayWeb, :router
 
   pipeline :browser do
     plug(:accepts, ["html"])
@@ -13,7 +13,7 @@ defmodule BurdaWeb.Router do
     plug(:accepts, ["json"])
   end
 
-  scope "/", BurdaWeb do
+  scope "/", MyPayWeb do
     pipe_through(:browser)
 
     get(
@@ -33,8 +33,8 @@ defmodule BurdaWeb.Router do
       forward(
         "/graphql",
         Absinthe.Plug.GraphiQL,
-        schema: BurdaWeb.Schema,
-        context: %{pubsub: BurdaWeb.Endpoint}
+        schema: MyPayWeb.Schema,
+        context: %{pubsub: MyPayWeb.Endpoint}
       )
     end
   end

@@ -1,4 +1,4 @@
-defmodule Burda.QueryHelper do
+defmodule MyPay.QueryHelper do
   @extract_month_from_date "extract(month from date) = ?"
   @extract_year_from_date "extract(year from date) = ?"
 

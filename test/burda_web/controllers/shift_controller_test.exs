@@ -1,8 +1,8 @@
-defmodule BurdaWeb.ShiftControllerTest do
-  use BurdaWeb.ConnCase
+defmodule MyPayWeb.ShiftControllerTest do
+  use MyPayWeb.ConnCase
 
-  alias Burda.ShiftApi
-  alias Burda.Shift
+  alias MyPay.ShiftApi
+  alias MyPay.Shift
 
   @create_attrs %{
     date: ~D[2010-04-17],

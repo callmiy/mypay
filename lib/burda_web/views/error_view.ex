@@ -1,5 +1,5 @@
-defmodule BurdaWeb.ErrorView do
-  use BurdaWeb, :view
+defmodule MyPayWeb.ErrorView do
+  use MyPayWeb, :view
 
   def render("404.html", _assigns) do
     "Page not found"

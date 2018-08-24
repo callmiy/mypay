@@ -1,5 +1,5 @@
-defmodule BurdaWeb.Query.Shift do
-  alias BurdaWeb.Query.Meta, as: MetaQuery
+defmodule MyPayWeb.Query.Shift do
+  alias MyPayWeb.Query.Meta, as: MetaQuery
 
   def all_fields_fragment do
     name = "ShiftAllFieldsFragment"

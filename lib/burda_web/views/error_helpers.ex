@@ -1,4 +1,4 @@
-defmodule BurdaWeb.ErrorHelpers do
+defmodule MyPayWeb.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """
@@ -32,9 +32,9 @@ defmodule BurdaWeb.ErrorHelpers do
     #     dgettext "errors", "is invalid"
     #
     if count = opts[:count] do
-      Gettext.dngettext(BurdaWeb.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(MyPayWeb.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(BurdaWeb.Gettext, "errors", msg, opts)
+      Gettext.dgettext(MyPayWeb.Gettext, "errors", msg, opts)
     end
   end
 end

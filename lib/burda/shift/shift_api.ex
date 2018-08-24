@@ -1,17 +1,17 @@
-defmodule Burda.Shift.Api do
+defmodule MyPay.Shift.Api do
   @moduledoc """
   The Shifts context.
   """
 
   import Ecto.Query, warn: false
 
-  alias Burda.Repo
-  alias Burda.QueryHelper
-  alias Burda.Shift
-  alias Burda.Shift.Wages
-  alias Burda.Shift.Times
-  alias Burda.Meta
-  alias Burda.Meta.Api, as: MetaApi
+  alias MyPay.Repo
+  alias MyPay.QueryHelper
+  alias MyPay.Shift
+  alias MyPay.Shift.Wages
+  alias MyPay.Shift.Times
+  alias MyPay.Meta
+  alias MyPay.Meta.Api, as: MetaApi
 
   @doc """
   Returns the list of ShiftApi.
@@ -63,7 +63,7 @@ defmodule Burda.Shift.Api do
             start_time: Time.t(),
             meta_id: Integer.t() | String.t()
           },
-          Burda.Meta.t() | nil
+          MyPay.Meta.t() | nil
         ) :: {:ok, %Shift{}} | {:error, %Ecto.Changeset{}}
 
   def create_(%{meta_id: id} = attrs) do

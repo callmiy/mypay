@@ -1,9 +1,9 @@
-defmodule Burda.Factory.Shift do
-  alias Burda.Meta
-  alias Burda.Meta.Api, as: MetaApi
-  alias Burda.Shift.Api
-  alias Burda.Factory, as: FactoryUtils
-  alias Burda.Factory.Meta, as: MetaFactory
+defmodule MyPay.Factory.Shift do
+  alias MyPay.Meta
+  alias MyPay.Meta.Api, as: MetaApi
+  alias MyPay.Shift.Api
+  alias MyPay.Factory, as: FactoryUtils
+  alias MyPay.Factory.Meta, as: MetaFactory
 
   @start_date ~D[1900-01-01]
   @null_time ~T[00:00:00.000000]

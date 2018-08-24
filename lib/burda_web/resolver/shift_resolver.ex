@@ -1,7 +1,7 @@
-defmodule BurdaWeb.Resolver.Shift do
-  alias Burda.Shift.Api
-  alias BurdaWeb.Resolver
-  alias Burda.Shift
+defmodule MyPayWeb.Resolver.Shift do
+  alias MyPay.Shift.Api
+  alias MyPayWeb.Resolver
+  alias MyPay.Shift
 
   def shifts(_root, %{shift: filter} = _args, _info),
     do: {:ok, Api.list(filter)}

@@ -1,7 +1,7 @@
-defmodule BurdaWeb.Resolver.Meta do
-  alias Burda.Meta
-  alias Burda.Meta.Api
-  alias BurdaWeb.Resolver
+defmodule MyPayWeb.Resolver.Meta do
+  alias MyPay.Meta
+  alias MyPay.Meta.Api
+  alias MyPayWeb.Resolver
 
   def create(_root, %{meta: input}, _info) do
     case Api.create_(input) do

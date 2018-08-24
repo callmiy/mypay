@@ -1,4 +1,4 @@
-defmodule Burda.Repo.Migrations.CreateShifts do
+defmodule MyPay.Repo.Migrations.CreateShifts do
   use Ecto.Migration
 
   def change do

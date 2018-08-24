@@ -1,7 +1,7 @@
-defmodule BurdaWeb.IndexView do
-  use BurdaWeb, :view
+defmodule MyPayWeb.IndexView do
+  use MyPayWeb, :view
 
-  alias Burda.Shift
+  alias MyPay.Shift
 
   @iso_time "{ISOtime}"
   @new_decimal Decimal.new("0.00")

@@ -1,11 +1,11 @@
-defmodule BurdaWeb.Schema.Meta do
+defmodule MyPayWeb.Schema.Meta do
   @moduledoc ~S"""
     Absinthe schema for Meta
   """
   use Absinthe.Schema.Notation
 
-  alias BurdaWeb.Resolver.Meta, as: Resolver
-  alias BurdaWeb.Schema
+  alias MyPayWeb.Resolver.Meta, as: Resolver
+  alias MyPayWeb.Schema
 
   @desc "A Meta"
   object :meta do

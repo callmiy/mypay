@@ -1,10 +1,10 @@
-defmodule Burda.Shift.WagesTest do
+defmodule MyPay.Shift.WagesTest do
   use ExUnit.Case, async: true
 
-  alias Burda.Shift.Wages
-  alias Burda.Factory.Shift, as: ShiftFactory
-  alias Burda.Factory.Meta, as: MetaFactory
-  alias Burda.Shift.Times
+  alias MyPay.Shift.Wages
+  alias MyPay.Factory.Shift, as: ShiftFactory
+  alias MyPay.Factory.Meta, as: MetaFactory
+  alias MyPay.Shift.Times
 
   test "wages/2" do
     meta =

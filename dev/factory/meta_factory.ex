@@ -1,7 +1,7 @@
-defmodule Burda.Factory.Meta do
-  alias Burda.Factory, as: FactoryUtils
-  alias Burda.Meta.Api
-  alias Burda.Meta
+defmodule MyPay.Factory.Meta do
+  alias MyPay.Factory, as: FactoryUtils
+  alias MyPay.Meta.Api
+  alias MyPay.Meta
 
   @non_required_keys Meta.non_required_keys()
 

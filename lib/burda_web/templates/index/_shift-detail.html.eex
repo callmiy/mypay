@@ -17,13 +17,18 @@
         </div>
 
         <span>
-          <%= shift[:hours_gross] || "{{ hoursGross }}" %> hours &nbsp;&nbsp; (gross)
+          <%= if shift[:hours_gross] do %>
+            (
+            <%= shift[:hours_gross] %> hrs)
+              <% else %>
+                {{#if hoursGross }} {{ hoursGross }} hrs {{/if}}
+                <% end %>
         </span>
       </div>
 
       <div class="hours-earnings-container">
         <div class="hours-earnings detail">
-          <span>Shift</span>
+          <span>Normal</span>
           <span>
             <%= shift[:normal_hours] || "{{ normalHours }}" %>
           </span>

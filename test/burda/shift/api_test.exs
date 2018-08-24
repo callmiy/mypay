@@ -1,9 +1,9 @@
-defmodule Burda.Shift.ApiTest do
-  use Burda.DataCase
+defmodule MyPay.Shift.ApiTest do
+  use MyPay.DataCase
 
-  alias Burda.Shift
-  alias Burda.Shift.Api
-  alias Burda.Factory.Shift, as: Factory
+  alias MyPay.Shift
+  alias MyPay.Shift.Api
+  alias MyPay.Factory.Shift, as: Factory
 
   test "list/0" do
     shift = Factory.insert()

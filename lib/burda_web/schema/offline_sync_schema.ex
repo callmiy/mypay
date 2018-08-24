@@ -1,11 +1,11 @@
-defmodule BurdaWeb.Schema.OfflineSync do
+defmodule MyPayWeb.Schema.OfflineSync do
   @moduledoc ~S"""
     Absinthe schema for OfflineSync
   """
   use Absinthe.Schema.Notation
 
-  alias Burda.OfflineSync
-  alias BurdaWeb.Resolver
+  alias MyPay.OfflineSync
+  alias MyPayWeb.Resolver
 
   @desc "An Offline Sync Object"
   object :offline_sync do

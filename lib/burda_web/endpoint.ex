@@ -1,18 +1,18 @@
-defmodule BurdaWeb.Endpoint do
-  use Phoenix.Endpoint, otp_app: :burda
+defmodule MyPayWeb.Endpoint do
+  use Phoenix.Endpoint, otp_app: :mypay
 
-  @offline_token_id :burda
+  @offline_token_id :mypay
                     |> Application.get_env(:frontend)
                     |> Keyword.fetch!(:token_id)
 
-  @offline_token_value :burda
+  @offline_token_value :mypay
                        |> Application.get_env(:frontend)
                        |> Keyword.fetch!(:token_value)
 
   @input_hidden ~s(<input type="hidden" id="#{@offline_token_id}" value="#{@offline_token_value}" style="display: none" name="3snsaaPmwVPzy6mFtib" />)
                 |> Phoenix.HTML.raw()
 
-  socket("/socket", BurdaWeb.UserSocket)
+  socket("/socket", MyPayWeb.UserSocket)
 
   plug(:put_service_worker_allowed_header)
 
@@ -24,7 +24,7 @@ defmodule BurdaWeb.Endpoint do
     Plug.Static,
     # from: {:app_name, "priv/app/path"},
     at: "/",
-    from: :burda,
+    from: :mypay,
     gzip: true,
     only: ~w(
         css
@@ -76,7 +76,7 @@ defmodule BurdaWeb.Endpoint do
   )
 
   plug(:put_offline_token)
-  plug(BurdaWeb.Router)
+  plug(MyPayWeb.Router)
 
   @doc """
   Callback invoked for dynamically configuring the endpoint.

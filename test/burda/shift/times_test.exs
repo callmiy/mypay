@@ -1,9 +1,9 @@
-defmodule Burda.Shift.TimeTest do
+defmodule MyPay.Shift.TimeTest do
   use ExUnit.Case, async: true
 
-  alias Burda.Shift.Times, as: Times
-  alias Burda.Factory.Shift, as: ShiftFactory
-  alias Burda.Factory, as: FactoryUtils
+  alias MyPay.Shift.Times, as: Times
+  alias MyPay.Factory.Shift, as: ShiftFactory
+  alias MyPay.Factory, as: FactoryUtils
 
   @one_hour_secs 60 * 60
   @break_time_secs 1_800

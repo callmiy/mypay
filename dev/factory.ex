@@ -1,4 +1,4 @@
-defmodule Burda.Factory do
+defmodule MyPay.Factory do
   @ten 10
 
   def random_float_between(lower, upper, scale \\ 0)

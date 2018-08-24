@@ -1,10 +1,10 @@
-defmodule BurdaWeb.ShiftController do
+defmodule MyPayWeb.ShiftController do
   use Phoenix.Controller
 
   @dialyzer {:no_return, metas: 0, new: 2}
 
-  alias BurdaWeb.LayoutView
-  alias BurdaWeb.ShiftView
+  alias MyPayWeb.LayoutView
+  alias MyPayWeb.ShiftView
 
   @new_shift_html "new-shift.html"
   @menu_html "menu.html"
@@ -138,7 +138,7 @@ defmodule BurdaWeb.ShiftController do
   def new_meta_offline_template,
     do:
       Phoenix.View.render_to_string(
-        BurdaWeb.MetaView,
+        MyPayWeb.MetaView,
         "new-meta.html",
         []
       )
@@ -166,7 +166,7 @@ defmodule BurdaWeb.ShiftController do
       )
 
   defp metas do
-    case BurdaWeb.Schema.run_query(@metas_query, @metas_query_variables) do
+    case MyPayWeb.Schema.run_query(@metas_query, @metas_query_variables) do
       {:ok, %{errors: _}} ->
         []
 
@@ -189,8 +189,8 @@ defmodule BurdaWeb.ShiftController do
   end
 
   defp go_back_url(conn) do
-    index_path = BurdaWeb.Router.Helpers.index_path(conn, :index)
-    this_path = BurdaWeb.Router.Helpers.shift_path(conn, :new)
+    index_path = MyPayWeb.Router.Helpers.index_path(conn, :index)
+    this_path = MyPayWeb.Router.Helpers.shift_path(conn, :new)
 
     case get_req_header(conn, "referer") do
       [url | _] ->

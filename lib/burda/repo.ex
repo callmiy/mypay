@@ -1,5 +1,5 @@
-defmodule Burda.Repo do
-  use Ecto.Repo, otp_app: :burda
+defmodule MyPay.Repo do
+  use Ecto.Repo, otp_app: :mypay
 
   @doc """
   Dynamically loads the repository url from the

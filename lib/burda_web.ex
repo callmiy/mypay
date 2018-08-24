@@ -1,12 +1,12 @@
-defmodule BurdaWeb do
+defmodule MyPayWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
   as controllers, views, channels and so on.
 
   This can be used in your application as:
 
-      use BurdaWeb, :controller
-      use BurdaWeb, :view
+      use MyPayWeb, :controller
+      use MyPayWeb, :view
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -19,17 +19,17 @@ defmodule BurdaWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: BurdaWeb
+      use Phoenix.Controller, namespace: MyPayWeb
       import Plug.Conn
-      import BurdaWeb.Router.Helpers
-      import BurdaWeb.Gettext
+      import MyPayWeb.Router.Helpers
+      import MyPayWeb.Gettext
     end
   end
 
   def view do
     quote do
       use Phoenix.View, root: "lib/burda_web/templates",
-                        namespace: BurdaWeb
+                        namespace: MyPayWeb
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_flash: 2, view_module: 1]
@@ -37,9 +37,9 @@ defmodule BurdaWeb do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import BurdaWeb.Router.Helpers
-      import BurdaWeb.ErrorHelpers
-      import BurdaWeb.Gettext
+      import MyPayWeb.Router.Helpers
+      import MyPayWeb.ErrorHelpers
+      import MyPayWeb.Gettext
     end
   end
 
@@ -54,7 +54,7 @@ defmodule BurdaWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import BurdaWeb.Gettext
+      import MyPayWeb.Gettext
     end
   end
 

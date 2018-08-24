@@ -1,13 +1,13 @@
-defmodule Burda.Meta.Api do
+defmodule MyPay.Meta.Api do
   @moduledoc """
   The Metas context.
   """
 
   import Ecto.Query, warn: false
 
-  alias Burda.Repo
-  alias Burda.Meta
-  alias Burda.QueryHelper
+  alias MyPay.Repo
+  alias MyPay.Meta
+  alias MyPay.QueryHelper
 
   @default_break_time_secs 30 * 60
 
@@ -104,11 +104,11 @@ defmodule Burda.Meta.Api do
 
   """
 
-  @spec change_(meta :: Burda.Meta.t()) :: Ecto.Changeset.t()
+  @spec change_(meta :: MyPay.Meta.t()) :: Ecto.Changeset.t()
   def change_(meta \\ %Meta{}), do: change_(meta, %{})
 
   @spec change_(
-          meta :: Burda.Meta.t(),
+          meta :: MyPay.Meta.t(),
           params :: %{
             optional(:__struct__) => none(),
             optional(atom() | binary()) => any()

@@ -1,8 +1,8 @@
-defmodule Burda.Shift do
+defmodule MyPay.Shift do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Burda.Meta
+  alias MyPay.Meta
 
   @timestamps_opts [
     type: Timex.Ecto.DateTime,

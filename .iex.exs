@@ -1,19 +1,19 @@
 import Ecto.Query
 
-alias Burda.Repo
-alias Burda.Factory.Shift, as: ShiftFactory
-alias Burda.Shift
-alias Burda.Shift.Api, as: ShiftApi
-alias Burda.Meta
-alias Burda.Meta.Api, as: MetaApi
-alias Burda.Factory, as: FactoryUtils
-alias Burda.Factory.Meta, as: MetaFactory
-alias BurdaWeb.LayoutView
-alias BurdaWeb.IndexController
-alias BurdaWeb.IndexView
-alias BurdaWeb.ShiftController
-alias BurdaWeb.ShiftView
-alias BurdaWeb.Offline
+alias MyPay.Repo
+alias MyPay.Factory.Shift, as: ShiftFactory
+alias MyPay.Shift
+alias MyPay.Shift.Api, as: ShiftApi
+alias MyPay.Meta
+alias MyPay.Meta.Api, as: MetaApi
+alias MyPay.Factory, as: FactoryUtils
+alias MyPay.Factory.Meta, as: MetaFactory
+alias MyPayWeb.LayoutView
+alias MyPayWeb.IndexController
+alias MyPayWeb.IndexView
+alias MyPayWeb.ShiftController
+alias MyPayWeb.ShiftView
+alias MyPayWeb.Offline
 alias Mix.Tasks.Deploy
-alias Burda.OfflineSync
-alias BurdaWeb.Schema
+alias MyPay.OfflineSync
+alias MyPayWeb.Schema

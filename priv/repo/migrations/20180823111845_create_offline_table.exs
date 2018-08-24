@@ -1,4 +1,4 @@
-defmodule Burda.Repo.Migrations.CreateOfflineTable do
+defmodule MyPay.Repo.Migrations.CreateOfflineTable do
   use Ecto.Migration
 
   def change do

@@ -1,3 +1,3 @@
-defmodule BurdaWeb.MetaView do
-  use BurdaWeb, :view
+defmodule MyPayWeb.MetaView do
+  use MyPayWeb, :view
 end

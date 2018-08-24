@@ -1,11 +1,11 @@
-defmodule BurdaWeb.IndexController do
+defmodule MyPayWeb.IndexController do
   use Phoenix.Controller
 
   @dialyzer {:no_return, get_offline_template_assigns: 2}
 
-  alias Burda.Shift.Api
-  alias BurdaWeb.LayoutView
-  alias BurdaWeb.IndexView
+  alias MyPay.Shift.Api
+  alias MyPayWeb.LayoutView
+  alias MyPayWeb.IndexView
 
   @main_css_handlebar "{{{ mainCss }}}"
   @main_js_handlebar "{{{ mainJs }}}"
@@ -82,7 +82,7 @@ defmodule BurdaWeb.IndexController do
           where: %{year: today.year, month: today.month},
           order_by: %{id: :desc}
         }),
-      new_shift_path: BurdaWeb.Router.Helpers.shift_path(conn, :new)
+      new_shift_path: MyPayWeb.Router.Helpers.shift_path(conn, :new)
     )
   end
 
@@ -122,7 +122,7 @@ defmodule BurdaWeb.IndexController do
   def app_shell_offline_template,
     do:
       Phoenix.View.render_to_string(
-        BurdaWeb.LayoutView,
+        MyPayWeb.LayoutView,
         @app_html,
         view_module_: true,
         page_title: @page_title_handlebar,
@@ -138,7 +138,7 @@ defmodule BurdaWeb.IndexController do
 
   def get_offline_template_assigns(conn, _) do
     {_, data} =
-      BurdaWeb.Schema.run_query(
+      MyPayWeb.Schema.run_query(
         @offline_template_assigns_query,
         @offline_template_assigns_query_variables
       )

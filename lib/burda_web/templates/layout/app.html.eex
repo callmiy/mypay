@@ -25,11 +25,11 @@
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="wages shift work clocks clock wage">
+  <meta name="description" content="wages shift work clocks clock wage pay salary">
 
 
   <title>
-    <%= assigns[:page_title] || "Shift times" %>
+    <%= assigns[:page_title] || "My Pay" %>
   </title>
 
   <%= assigns[:main_css_handlebar] || page_css(:index) || "" %>
