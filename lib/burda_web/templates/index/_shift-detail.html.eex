@@ -21,7 +21,7 @@
             (
             <%= shift[:hours_gross] %> hrs)
               <% else %>
-                {{#if hoursGross }} {{ hoursGross }} hrs {{/if}}
+                {{#if hoursGross }} ({{ hoursGross }} hrs) {{/if}}
                 <% end %>
         </span>
       </div>
