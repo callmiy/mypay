@@ -12,12 +12,12 @@ config :mypay, MyPayWeb.Endpoint,
   code_reloader: true,
   check_origin: false,
   watchers: [
-    "cmd.exe": [
-      "/c",
-      "yarn",
-      "start",
-      cd: Path.expand("../front-end", __DIR__)
-    ]
+    # "cmd.exe": [
+    #   "/c",
+    #   "yarn",
+    #   "start",
+    #   cd: Path.expand("../front-end", __DIR__)
+    # ]
   ]
 
 # ## SSL Support

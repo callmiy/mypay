@@ -133,6 +133,18 @@
         "command": "start chrome --new-window --incognito --system-developer-mode \"http://localhost:8018\""
       },
       "problemMatcher": []
+    },
+
+    {
+      "label": "start fronend dev",
+      "type": "shell",
+      "windows": {
+        "command": ".\\launch-with-cmder.bat \"yarn start\"  && .\\launch-with-cmder.bat \"yarn test\" "
+      },
+      "options": {
+        "cwd": "front-end"
+      },
+      "problemMatcher": []
     }
   ]
 }
