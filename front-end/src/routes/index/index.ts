@@ -39,26 +39,10 @@ export class IndexController {
   }
 
   shiftDataSyncedCb = async (shifts: InitialShiftFromDb[]) => {
-    if (!shifts) {
+    if (!(shifts && shifts.forEach)) {
       return;
     }
-    // tslint:disable-next-line:no-console
-    console.log(
-      `
 
-
-    logging starts
-
-
-    synced in index route`,
-      shifts,
-      `
-
-    logging ends
-
-
-    `
-    );
     shifts.forEach(shift => {
       const shiftRowEl = document.getElementById(
         `shift-detail-row-${shift._id}`

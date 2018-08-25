@@ -112,13 +112,6 @@ self.addEventListener("fetch", event => {
                 return response;
               })
               .catch(error => {
-                // tslint:disable-next-line:no-console
-                console.log(
-                  "\n\n\nerror fetching request after not found in cache:",
-                  error,
-                  request.clone()
-                );
-
                 return error;
               })
         )

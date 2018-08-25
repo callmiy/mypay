@@ -174,13 +174,14 @@ export class AppSocket {
       const fields = dataVal.offline_fields;
 
       if (data) {
-        const newData = data.meta || data.shift;
-
-        toSave.push({
+        let newData = data.meta || data.shift;
+        newData = {
           ...newData,
           _id: fields[OFFLINE_ID_KEY],
           _rev: fields.rev
-        });
+        };
+
+        toSave.push(newData);
 
         if (data.meta) {
           toEmit.metas.push(newData);
@@ -189,25 +190,6 @@ export class AppSocket {
         }
       }
     });
-
-    // tslint:disable-next-line:no-console
-    console.log(
-      `
-
-
-    logging starts
-
-
-    toSave`,
-      toSave,
-      toEmit,
-      `
-
-    logging ends
-
-
-    `
-    );
 
     if (toSave.length) {
       await this.props.database.db.bulkDocs(toSave);

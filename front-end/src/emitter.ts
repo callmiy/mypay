@@ -29,7 +29,7 @@ export class Emitter {
     let sub$ = this.subs$.get(topic);
 
     if (!sub$) {
-      sub$ = new BehaviorSubject({});
+      sub$ = new BehaviorSubject(undefined);
       this.subs$.set(topic, sub$);
     }
 

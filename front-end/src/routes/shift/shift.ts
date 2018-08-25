@@ -690,6 +690,9 @@ export class ShiftController {
       ...prepForOfflineSave(SHIFT_TYPENAME)
     };
 
+    // We delete the id because we can _id to be the id for offline purpose
+    delete offlineShift.id;
+
     await this.props.database.db.put(offlineShift);
 
     const html = newShiftConfirmTemplate({

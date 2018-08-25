@@ -73,6 +73,7 @@ export const prepForOfflineSave = (typeName: string) => {
   return {
     [DB_INDEX_SCHEMA_TYPE_NAME]: typeName,
     [DB_INDEX_OFFLINE_INSERT_TYPENAME]: OFFLINE_INSERT_TYPENAME,
+    id: _id.slice(-7, -1),
     _id
   };
 };

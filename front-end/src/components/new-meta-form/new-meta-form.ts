@@ -230,8 +230,7 @@ export class NewMeta {
     const offlineData = prepForOfflineSave(META_TYPENAME);
     const offlineMeta = {
       ...meta,
-      ...offlineData,
-      id: offlineData._id.slice(-7, -1)
+      ...offlineData
     };
 
     await this.props.database.db.put(offlineMeta);
