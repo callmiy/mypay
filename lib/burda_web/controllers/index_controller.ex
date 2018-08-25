@@ -122,7 +122,6 @@ defmodule MyPayWeb.IndexController do
 
   def index_offline_template_assigns,
     do: %{
-      page_title: "Shift Times",
       page_main_css: LayoutView.page_css(@page_css, nil),
       page_main_js: LayoutView.page_js(@page_js, nil)
     }
