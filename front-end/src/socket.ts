@@ -58,9 +58,11 @@ export class AppSocket {
     });
     this.socket.connect();
     this.socket.onOpen(() => {
-      window.appInterface.serverOnlineStatus = true;
+      // window.appInterface.serverOnlineStatus = true;
     });
-    this.socket.onError(() => (window.appInterface.serverOnlineStatus = false));
+    this.socket.onError(() => {
+      // (window.appInterface.serverOnlineStatus = false)
+    });
     this.joinDataChannel();
   }
 
@@ -144,12 +146,12 @@ export class AppSocket {
           params.ok(messages);
         }
       })
-      .receive("error", ({ reason }) => {
+      .receive("error", _reason => {
         // tslint:disable-next-line:no-console
-        console.log("failed join", reason);
+        // console.log("failed to join", reason);
       })
       .receive("timeout", () => {
-        window.appInterface.serverOnlineStatus = false;
+        // window.appInterface.serverOnlineStatus = false;
       });
   };
 

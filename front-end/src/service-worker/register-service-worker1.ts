@@ -59,12 +59,11 @@ export const registerServiceWorker = async () => {
       });
     });
 
-  navigator.serviceWorker.addEventListener("controllerchange", () =>
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
     // window.location.reload()
-
     // tslint:disable-next-line:no-console
-    console.log("\n\n\n\ncontroller changed. Page is now refreshed", "\n\n\n")
-  );
+    // console.log("\n\n\n\ncontroller changed. Page is now refreshed", "\n\n\n")
+  });
 };
 
 export default registerServiceWorker;

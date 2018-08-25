@@ -124,7 +124,7 @@ self.addEventListener("fetch", event => {
         )
         .catch(error => {
           // tslint:disable-next-line:no-console
-          console.log("\n\n\nerror matching request:", error, request.clone());
+          // console.log("\n\n\nerror matching request:", error, request.clone());
         })
     );
   }
