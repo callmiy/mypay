@@ -230,7 +230,8 @@ export interface CreateMetaInput {
 export interface CreateShiftInput {
   date: any;
   endTime: any;
-  metaId: string;
+  meta?: CreateMetaInput | null;
+  metaId?: string | null;
   startTime: any;
 }
 
