@@ -71,7 +71,7 @@ defmodule MyPayWeb.Endpoint do
   plug(
     Plug.Session,
     store: :cookie,
-    key: "_burda_key",
+    key: "_mypay_key",
     signing_salt: "AL7ymQAm"
   )
 

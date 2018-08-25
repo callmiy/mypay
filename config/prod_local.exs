@@ -71,7 +71,7 @@ config :mypay, MyPay.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",
-  database: "burda_dev",
+  database: "mypay_dev",
   hostname: "localhost",
   pool_size: 10
 

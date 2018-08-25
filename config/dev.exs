@@ -42,8 +42,8 @@ config :mypay, MyPayWeb.Endpoint,
     patterns: [
       ~r{priv/static/.*(ts|scss|js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
-      ~r{lib/burda_web/views/.*(ex)$},
-      ~r{lib/burda_web/templates/.*(eex)$}
+      ~r{lib/mypay_web/views/.*(ex)$},
+      ~r{lib/mypay_web/templates/.*(eex)$}
     ]
   ]
 
@@ -59,7 +59,7 @@ config :mypay, MyPay.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",
-  database: "burda_dev",
+  database: "mypay_dev",
   hostname: "localhost",
   pool_size: 10
 

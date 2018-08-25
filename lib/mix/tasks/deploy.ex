@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Deploy do
   use Mix.Task
 
   @shortdoc ~S"""
-  Tasks for managing deployment of burda app
+  Tasks for managing deployment of mypay app
   """
 
   alias MyPayWeb.Offline

@@ -23,7 +23,7 @@ const entryCss = (name, pathStr) => {
 };
 
 module.exports = {
-  phoenixTemplatePath: path.resolve(appDirectory, "../lib/burda_web/templates"),
+  phoenixTemplatePath: path.resolve(appDirectory, "../lib/mypay_web/templates"),
 
   dotenv: resolveApp(".env"),
 
