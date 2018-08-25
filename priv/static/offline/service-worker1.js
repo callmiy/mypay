@@ -1,7 +1,7 @@
 importScripts("handlebars.runtime.min.js", "templates.js");
 
 const CACHE_PREFIX = "THE-SHIFT-WORKER-THINGS";
-const CACHE_VERSION = 1535231527;
+const CACHE_VERSION = 1535231611;
 const CACHE_NAME = `${CACHE_PREFIX}-v${CACHE_VERSION}`;
 const appShellTemplate = Handlebars.templates.appShellTemplate;
 
