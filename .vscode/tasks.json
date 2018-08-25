@@ -134,12 +134,12 @@
       },
       "problemMatcher": []
     },
-
+    // && .\\launch-with-cmder.bat \"yarn test\"
     {
       "label": "start fronend dev",
       "type": "shell",
       "windows": {
-        "command": ".\\launch-with-cmder.bat \"yarn start\"  && .\\launch-with-cmder.bat \"yarn test\" "
+        "command": " .\\launch-with-cmder.bat \"yarn start\"   "
       },
       "options": {
         "cwd": "front-end"

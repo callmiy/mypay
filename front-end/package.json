@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node config/test.js --env=jsdom",
     "deploy": "cross-env NODE_ENV=production webpack --port=4019 --config=config/webpacks/prod.js",
     "start": "cross-env NODE_ENV=development WEBPACK_DEV_SERVER_URL=http://localhost:4019 yarn run watch",
     "watch": "webpack-dev-server --port=4019 --config=config/webpacks/dev.js --colors --watch-stdin",
@@ -28,6 +28,7 @@
   "devDependencies": {
     "@types/dom-inputevent": "^1.0.1",
     "@types/graphql": "^0.13.4",
+    "@types/jest": "^23.3.1",
     "@types/lodash-es": "^4.17.1",
     "@types/node": "^10.5.5",
     "@types/phoenix": "^0.0.4",
@@ -79,8 +80,10 @@
   },
   "dependencies": {
     "@babel/runtime": "7.0.0-beta.55",
+    "babel-jest": "^23.4.2",
     "graphql-tag": "^2.9.2",
     "handlebars": "^4.0.11",
+    "jest": "^23.5.0",
     "lodash-es": "^4.17.10",
     "moment": "^2.22.2",
     "phoenix": "^1.3.4",
@@ -88,7 +91,43 @@
     "pouchdb-debug": "^7.0.0",
     "pouchdb-find": "^7.0.0",
     "rxjs": "^6.2.2",
+    "ts-jest": "^23.1.4",
     "tslib": "^1.9.3",
     "yup": "^0.26.0"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,ts}"
+    ],
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.(j|t)s",
+      "<rootDir>/src/**/?(*.)(spec|test).(j|t)s"
+    ],
+    "testEnvironment": "node",
+    "testURL": "http://localhost",
+    "transform": {
+      "^.+\\.ts$": "ts-jest",
+      "^.+\\.(js|mjs)$": "<rootDir>/node_modules/babel-jest",
+      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
+      "^(?!.*\\.(js|mjs|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|ts)$"
+    ],
+    "moduleFileExtensions": [
+      "web.ts",
+      "ts",
+      "web.js",
+      "js",
+      "json",
+      "node",
+      "mjs",
+      "handlebars"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.test.json"
+      }
+    }
   }
 }
