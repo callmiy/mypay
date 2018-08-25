@@ -17,7 +17,7 @@ config :mypay, MyPayWeb.Endpoint,
   load_from_system_env: true,
   url: [
     scheme: "https",
-    host: "mypay.herokuapp.com/",
+    host: "burda.herokuapp.com/",
     port: 443
   ],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
@@ -25,7 +25,7 @@ config :mypay, MyPayWeb.Endpoint,
     System.get_env()
     |> Map.fetch!("SECRET_KEY_BASE"),
   check_origin: [
-    "https://mypay.herokuapp.com/"
+    "https://burda.herokuapp.com/"
   ],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
