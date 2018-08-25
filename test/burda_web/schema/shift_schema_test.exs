@@ -6,6 +6,7 @@ defmodule MyPayWeb.Schema.ShiftTest do
   alias MyPay.Factory.Shift, as: Factory
   alias MyPay.Factory.Meta, as: MetaFactory
   alias MyPay.Shift.Api
+  alias MyPay.Meta.Api, as: MetaApi
 
   @iso_time "{ISOtime}"
   @iso_date "{ISOdate}"
@@ -124,7 +125,7 @@ defmodule MyPayWeb.Schema.ShiftTest do
   end
 
   describe "mutation" do
-    test "create shift succeeds" do
+    test "create shift succeeds with meta ID" do
       meta = MetaFactory.insert()
 
       params =
@@ -198,6 +199,48 @@ defmodule MyPayWeb.Schema.ShiftTest do
                    "shift" => params
                  }
                )
+    end
+
+    test "create shift succeeds with meta creation input" do
+      assert MetaApi.list() |> length() == 0
+
+      meta =
+        MetaFactory.params()
+        |> MetaFactory.stringify()
+
+      params =
+        Factory.params()
+        |> Factory.stringify()
+        |> Map.put("meta", meta)
+
+      assert {:ok,
+              %{
+                data: %{
+                  "shift" => %{
+                    "id" => _id,
+                    "date" => _,
+                    "startTime" => _,
+                    "endTime" => _,
+                    "hoursGross" => _,
+                    "normalHours" => _,
+                    "nightHours" => _,
+                    "sundayHours" => _,
+                    "normalPay" => _,
+                    "nightSupplPay" => _,
+                    "sundaySupplPay" => _,
+                    "totalPay" => _
+                  }
+                }
+              }} =
+               Absinthe.run(
+                 Query.create_shift(),
+                 Schema,
+                 variables: %{
+                   "shift" => params
+                 }
+               )
+
+      assert MetaApi.list() |> length() == 1
     end
   end
 

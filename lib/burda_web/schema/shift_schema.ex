@@ -41,10 +41,11 @@ defmodule MyPayWeb.Schema.Shift do
 
   @desc "Inputs for creating shift"
   input_object :create_shift_input do
-    field(:meta_id, non_null(:id))
+    field(:meta_id, :id)
     field(:date, non_null(:date))
     field(:start_time, non_null(:time))
     field(:end_time, non_null(:time))
+    field(:meta, :create_meta_input)
   end
 
   @desc "input for sorting"

@@ -60,4 +60,13 @@ defmodule MyPay.Factory.Meta do
   def night_suppl_pay_pct(), do: FactoryUtils.random_float_decimal_between(1.0, 25, 2)
 
   def sunday_suppl_pay_pct(), do: FactoryUtils.random_float_decimal_between(25, 65, 2)
+
+  def stringify(%{} = params),
+    do:
+      params
+      |> Enum.map(fn
+        {k, %Decimal{} = v} -> {Atom.to_string(k), Decimal.to_float(v)}
+        {k, v} -> {Atom.to_string(k), v}
+      end)
+      |> Enum.into(%{})
 end

@@ -9,6 +9,8 @@ defmodule MyPay.Factory.Shift do
   @null_time ~T[00:00:00.000000]
   @one_hr_millsecs 3_600_000_000
   @date_offset 0..30_000
+  @iso_time "{ISOtime}"
+  @iso_date "{ISOdate}"
 
   def insert(params \\ %{}) do
     {:ok, meta} =
@@ -74,6 +76,17 @@ defmodule MyPay.Factory.Shift do
     end
   end
 
+  def stringify(%{} = params) do
+    params
+    |> Enum.map(fn
+      {:date, d} -> {"date", format_date(d)}
+      {:end_time, t} -> {"endTime", format_time(t)}
+      {:start_time, t} -> {"startTime", format_time(t)}
+      x -> x
+    end)
+    |> Enum.into(%{})
+  end
+
   defp date(nil), do: random_date()
 
   defp date(val), do: val
@@ -101,4 +114,7 @@ defmodule MyPay.Factory.Shift do
   end
 
   defp end_time(val, _), do: val
+
+  defp format_time(%Time{} = time), do: Timex.format!(time, @iso_time)
+  defp format_date(%Date{} = date), do: Timex.format!(date, @iso_date)
 end

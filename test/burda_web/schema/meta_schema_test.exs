@@ -11,7 +11,7 @@ defmodule MyPayWeb.Schema.MetaTest do
     test "create succeeds" do
       params =
         Factory.params()
-        |> stringify()
+        |> Factory.stringify()
 
       assert {:ok,
               %{
@@ -38,7 +38,7 @@ defmodule MyPayWeb.Schema.MetaTest do
       params =
         Factory.params()
         |> Map.drop([:pay_per_hr])
-        |> stringify()
+        |> Factory.stringify()
 
       assert {:ok,
               %{
@@ -83,13 +83,4 @@ defmodule MyPayWeb.Schema.MetaTest do
       assert Enum.map(metas, & &1["id"]) == Enum.reverse(created_metas_ids)
     end
   end
-
-  defp stringify(%{} = params),
-    do:
-      params
-      |> Enum.map(fn
-        {k, %Decimal{} = v} -> {Atom.to_string(k), Decimal.to_float(v)}
-        {k, v} -> {Atom.to_string(k), v}
-      end)
-      |> Enum.into(%{})
 end
