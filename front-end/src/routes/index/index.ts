@@ -164,7 +164,11 @@ export class IndexController {
             }
           })
           .then(({ docs }: { docs: InitialShiftFromDb[] }) =>
-            docs.sort((a, b) => +b.id - +a.id)
+            docs.sort((a, b) => {
+              return moment(`${b.date}T${b.startTime}`).diff(
+                moment(`${a.date}T${a.startTime}`)
+              );
+            })
           ));
   };
 }
