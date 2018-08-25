@@ -22,4 +22,6 @@ export const shiftFragment = gql`
   }
 `;
 
+export const name = "ShiftFragment";
+
 export default shiftFragment;

@@ -8,7 +8,7 @@ import { Emitter } from "./emitter";
 declare global {
   interface Window {
     appInterface: {
-      serverOnlineStatus: boolean;
+      socketConnected: boolean;
 
       db: Database;
 

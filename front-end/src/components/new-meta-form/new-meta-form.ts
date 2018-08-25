@@ -2,7 +2,7 @@ import * as Yup from "yup";
 import { ValidationError } from "yup";
 
 import CREATE_META_GQL from "../../graphql/create-meta.mutation";
-import { toRunableDocument } from "../../graphql/helpers";
+import { toRunnableDocument } from "../../graphql/helpers";
 import { stringifyGraphQlErrors } from "../../graphql/helpers";
 import { CreateMeta_meta } from "../../graphql/gen.types";
 import { makeFormThings } from "../../utils/form-things";
@@ -171,40 +171,11 @@ export class NewMeta {
         // seconds by multiplying minutes by 60
         meta = { ...meta, breakTimeSecs: meta.breakTimeSecs * 60 };
 
-        this.props.socket.queryGraphQl({
-          params: toRunableDocument(CREATE_META_GQL, {
-            meta
-          }),
-
-          ok: ({ meta: createdMeta }) => {
-            this.props.database.db.put(createdMeta);
-            this.props.onMetaCreated(createdMeta);
-          },
-
-          error: reason => {
-            this.formSubmit.classList.remove("loading");
-            this.mainErrorContainer.textContent = stringifyGraphQlErrors(
-              "meta",
-              reason
-            );
-
-            setMainErrorClass(this.mainErrorContainer, "show");
-            this.formReset.disabled = false;
-          },
-
-          onTimeout: () => {
-            this.mainErrorContainer.textContent = OFFLINE_MSG;
-            setMainErrorClass(this.mainErrorContainer, "show");
-
-            const offlineMeta = prepForOfflineSave(meta, META_TYPENAME);
-
-            this.props.database.db.put(offlineMeta);
-
-            setTimeout(() => {
-              this.props.onMetaCreated(offlineMeta);
-            }, 1000);
-          }
-        });
+        if (window.appInterface.socketConnected) {
+          this.saveOnline(meta);
+        } else {
+          this.saveOffline(meta);
+        }
 
         this.formSubmit.classList.add("loading");
         this.formSubmit.disabled = true;
@@ -222,6 +193,52 @@ export class NewMeta {
           };
         });
       });
+  };
+
+  // tslint:disable-next-line:no-any
+  saveOnline = (meta: any) => {
+    this.props.socket.queryGraphQl({
+      params: toRunnableDocument(CREATE_META_GQL, {
+        meta
+      }),
+
+      ok: ({ meta: createdMeta }) => {
+        this.props.database.db.put(createdMeta);
+        this.props.onMetaCreated(createdMeta);
+      },
+
+      error: reason => {
+        this.formSubmit.classList.remove("loading");
+        this.mainErrorContainer.textContent = stringifyGraphQlErrors(
+          "meta",
+          reason
+        );
+
+        setMainErrorClass(this.mainErrorContainer, "show");
+        this.formReset.disabled = false;
+      },
+
+      onTimeout: () => this.saveOffline(meta)
+    });
+  };
+
+  // tslint:disable-next-line:no-any
+  saveOffline = async (meta: any) => {
+    this.mainErrorContainer.textContent = OFFLINE_MSG;
+    setMainErrorClass(this.mainErrorContainer, "show");
+
+    const offlineData = prepForOfflineSave(META_TYPENAME);
+    const offlineMeta = {
+      ...meta,
+      ...offlineData,
+      id: offlineData._id.slice(-7, -1)
+    };
+
+    await this.props.database.db.put(offlineMeta);
+
+    setTimeout(() => {
+      this.props.onMetaCreated(offlineMeta);
+    }, 1000);
   };
 
   resetElHandler = () => {

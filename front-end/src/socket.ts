@@ -1,12 +1,16 @@
 import { Socket } from "phoenix";
 import { Channel } from "phoenix";
+import loGroupBy from "lodash-es/groupBy";
 
-import { toRunableDocument } from "./graphql/helpers";
+import { toRunnableDocument } from "./graphql/helpers";
 import INITIAL_DATA_GQL from "./graphql/initial-socket-data.query";
 import { GetInitialSocketDataVariables } from "./graphql/gen.types";
 import { GetInitialSocketData } from "./graphql/gen.types";
-import { GetInitialSocketData_offlineToken } from "./graphql/gen.types";
 import CREATE_SHIFT_GQL from "./graphql/create-shift.mutation";
+import CREATE_META_GQL from "./graphql/create-meta.mutation";
+import { GetInitialSocketData_offlineToken } from "./graphql/gen.types";
+import { CreateShiftInput } from "./graphql/gen.types";
+import { CreateMetaInput } from "./graphql/gen.types";
 import { OFFLINE_TOKEN_TYPENAME, OFFLINE_ID_KEY } from "./constants";
 import { DATA_CHANNEL_TOPIC_GRAPHQL } from "./constants";
 import { DB_INDEX_OFFLINE_INSERT_TYPENAME } from "./constants";
@@ -14,13 +18,22 @@ import { OFFLINE_INSERT_TYPENAME } from "./constants";
 import { OfflineDataFromDb } from "./constants";
 import { DATA_SYNC_IDS_KEY } from "./constants";
 import { DATA_SYNC_IDS } from "./constants";
+import { DB_INDEX_SCHEMA_TYPE_NAME } from "./constants";
+import { SHIFT_TYPENAME } from "./constants";
+import { META_TYPENAME } from "./constants";
 import { getShiftsQueryVairable } from "./routes/utils";
-import { shiftFromOffline } from "./routes/utils";
 import { Database } from "./database";
 import { Emitter } from "./emitter";
 import { Topic } from "./emitter";
 
 import { writeInitialDataToDb as writeInitialIndexDataToDb } from "./routes/utils";
+
+const createMetaVariables: Array<keyof CreateMetaInput> = [
+  "breakTimeSecs",
+  "nightSupplPayPct",
+  "payPerHr",
+  "sundaySupplPayPct"
+];
 
 // tslint:disable-next-line:no-any
 type OnChannelMessage = (msg: any) => void;
@@ -56,74 +69,159 @@ export class AppSocket {
     this.socket = new Socket("/socket", {
       params: { [DATA_SYNC_IDS_KEY]: DATA_SYNC_IDS }
     });
+
     this.socket.connect();
+
     this.socket.onOpen(() => {
-      // window.appInterface.serverOnlineStatus = true;
+      window.appInterface.socketConnected = true;
+      this.props.emitter.emit(Topic.SOCKET_CONNECTED, true);
+      this.joinDataChannel();
     });
+
     this.socket.onError(() => {
-      // (window.appInterface.serverOnlineStatus = false)
+      window.appInterface.socketConnected = false;
+      this.props.emitter.emit(Topic.SOCKET_CONNECTED, false);
     });
-    this.joinDataChannel();
   }
 
   joinDataChannel = async () => {
-    const params = await this.props.database.db
+    const params = await this.processOfflineDataFromDb();
+
+    this.dataChannel = this.socket.channel(this.dataChannelName, params);
+    this.channelJoin(this.dataChannel);
+    this.dataChannel.on("data-synced", this.dataSyncedCb);
+    this.getInitialData();
+  };
+
+  processOfflineDataFromDb = async () => {
+    const docss = await this.props.database.db
       .find({
         selector: {
           [DB_INDEX_OFFLINE_INSERT_TYPENAME]: OFFLINE_INSERT_TYPENAME
         }
       })
       .then(({ docs }: { docs: OfflineDataFromDb }) => {
-        if (!docs.length) {
-          return {};
-        }
-
-        return toRunableDocument(CREATE_SHIFT_GQL, {
-          shift: shiftFromOffline(docs[0])
-        });
+        return docs;
       });
 
-    this.dataChannel = this.socket.channel(this.dataChannelName, params);
-    this.channelJoin(this.dataChannel);
+    if (!docss.length) {
+      return {};
+    }
 
-    this.dataChannel.on("data-synced", this.dataSyncedCb);
+    const grouped = loGroupBy(docss, DB_INDEX_SCHEMA_TYPE_NAME);
+    let metas = grouped[META_TYPENAME] || [];
 
-    this.getInitialData();
+    // tslint:disable-next-line:no-any
+    const shifts = (grouped[SHIFT_TYPENAME] || []).map((s: any) => {
+      const shiftMetaId = s.meta._id;
+
+      metas.find((m, mIndex) => {
+        // this means the meta was created offline. We will create the shift
+        // and meta together
+        if (m._id === shiftMetaId) {
+          // We remove this meta from among metas to be created because it will
+          // be created together with its shift
+          metas.splice(mIndex, 1);
+          delete s.metaId;
+          s = { ...s, meta: m };
+          return true;
+        }
+
+        // This means the meta was not created offline so we delete it
+        delete s.meta;
+        return false;
+      });
+
+      const doc = toRunnableDocument(
+        CREATE_SHIFT_GQL,
+        this.getCreateShiftVariables(s)
+      );
+
+      return {
+        ...doc,
+        variables: { shift: doc.variables },
+        offline_attrs: { rev: s._rev, [OFFLINE_ID_KEY]: s._id }
+      };
+    });
+
+    metas = metas.map(m => {
+      const doc = toRunnableDocument(
+        CREATE_META_GQL,
+        this.getCreateMetaVariables(m)
+      );
+
+      return {
+        ...doc,
+        variables: { meta: doc.variables },
+        offline_attrs: { rev: m._rev, [OFFLINE_ID_KEY]: m._id }
+      };
+    });
+
+    const payload = [...shifts, ...metas];
+    return payload.length ? { payload } : {};
   };
 
   // tslint:disable-next-line:no-any
-  dataSyncedCb = async (msg: any) => {
-    const fields = msg.offline_fields;
+  dataSyncedCb = async (syncedData: any) => {
+    // tslint:disable-next-line:no-any
+    const toEmit = { metas: [], shifts: [] } as any;
+    // tslint:disable-next-line:no-any
+    const toSave = [] as any;
 
-    if (msg.errors) {
-      // const data = await this.props.database.db.find({
-      //   selector: {
-      //     _id: {
-      //       $eq: fields[OFFLINE_ID_KEY]
-      //     },
-      //     [DB_INDEX_OFFLINE_INSERT_TYPENAME]: {
-      //       $eq: OFFLINE_INSERT_TYPENAME
-      //     }
-      //   }
-      // });
-      // this.props.emitter.emit(Topic.SHIFT_SYNCED_ERROR, msg.errors);
+    // tslint:disable-next-line:no-any
+    syncedData.synced.forEach((dataVal: any) => {
+      const data = dataVal.data;
+      const fields = dataVal.offline_fields;
+
+      if (data) {
+        const newData = data.meta || data.shift;
+
+        toSave.push({
+          ...newData,
+          _id: fields[OFFLINE_ID_KEY],
+          _rev: fields.rev
+        });
+
+        if (data.meta) {
+          toEmit.metas.push(newData);
+        } else if (data.shift) {
+          toEmit.shifts.push(newData);
+        }
+      }
+    });
+
+    // tslint:disable-next-line:no-console
+    console.log(
+      `
+
+
+    logging starts
+
+
+    toSave`,
+      toSave,
+      toEmit,
+      `
+
+    logging ends
+
+
+    `
+    );
+
+    if (toSave.length) {
+      await this.props.database.db.bulkDocs(toSave);
     }
 
-    if (msg.data) {
-      const newData = {
-        ...msg.data.shift,
-        _id: fields[OFFLINE_ID_KEY],
-        _rev: fields.rev
-      };
-      await this.props.database.db.put(newData);
-      this.props.emitter.emit(Topic.SHIFT_SYNCED_SUCCESS, newData);
+    if (toEmit.shifts) {
+      this.props.emitter.emit(Topic.SHIFT_SYNCED_SUCCESS, toEmit.shifts);
     }
   };
 
   getInitialData = async () => {
     const variables = getShiftsQueryVairable();
 
-    const initialDataQuery = toRunableDocument<GetInitialSocketDataVariables>(
+    const initialDataQuery = toRunnableDocument<GetInitialSocketDataVariables>(
       INITIAL_DATA_GQL,
       variables
     );
@@ -139,6 +237,10 @@ export class AppSocket {
     params?: { ok: OnChannelMessage },
     _channelName?: string
   ) => {
+    if (!channel) {
+      return;
+    }
+
     channel
       .join()
       .receive("ok", messages => {
@@ -160,6 +262,10 @@ export class AppSocket {
     { topic, ok, error, params, onTimeout }: ChannelMessage,
     _channelName?: string
   ) => {
+    if (!channel) {
+      return;
+    }
+
     channel
       .push(topic, params || {})
       .receive("ok", ok)
@@ -229,5 +335,27 @@ export class AppSocket {
 
       ...params
     });
+
+  getCreateShiftVariables = (shift: CreateShiftInput) => {
+    const variables = ["startTime", "endTime", "date", "metaId"].reduce(
+      (acc, k: keyof CreateShiftInput) => ({ ...acc, [k]: shift[k] }),
+      {}
+      // tslint:disable-next-line:no-any
+    ) as any;
+
+    if (shift.meta) {
+      delete variables.metaId;
+      variables.meta = this.getCreateMetaVariables(shift.meta);
+    }
+
+    return variables;
+  };
+
+  getCreateMetaVariables = (meta: CreateMetaInput) => {
+    return createMetaVariables.reduce(
+      (acc, k) => ({ ...acc, [k]: meta[k] }),
+      {}
+    );
+  };
 }
 export default AppSocket;

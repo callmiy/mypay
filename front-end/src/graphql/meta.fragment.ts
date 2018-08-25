@@ -12,4 +12,6 @@ export const metaFragment = gql`
   }
 `;
 
+export const name = "MetaFragment";
+
 export default metaFragment;

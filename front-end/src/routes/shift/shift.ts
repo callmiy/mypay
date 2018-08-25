@@ -12,7 +12,7 @@ import { setFieldError } from "../../utils/form-things";
 import { clearFieldErrors } from "../../utils/form-things";
 import { formHasErrors } from "../../utils/form-things";
 import { getFieldAndErrorEls } from "../../utils/form-things";
-import { toRunableDocument } from "../../graphql/helpers";
+import { toRunnableDocument } from "../../graphql/helpers";
 import CREATE_SHIFT_GQL from "../../graphql/create-shift.mutation";
 import { htmlfyGraphQlErrors } from "../../graphql/helpers";
 import { setMainErrorClass } from "../../utils/form-things";
@@ -665,8 +665,51 @@ export class ShiftController {
     this.submitEl.disabled = true;
     this.resetEl.disabled = true;
 
+    if (window.appInterface.socketConnected) {
+      this.saveOnline();
+    } else {
+      this.saveOffline();
+    }
+
+    dismissModal();
+    this.tearDownConfirmedEls();
+  };
+
+  saveOffline = async () => {
+    const offlineShift = {
+      ...this.newShiftToSave,
+      hoursGross: "N/A",
+      normalHours: "N/A",
+      normalPay: "N/A",
+      nightHours: "N/A",
+      nightSupplPay: "N/A",
+      sundayHours: "N/A",
+      sundaySupplPay: "N/A",
+      totalPay: "N/A",
+      meta: this.selectedMeta,
+      ...prepForOfflineSave(SHIFT_TYPENAME)
+    };
+
+    await this.props.database.db.put(offlineShift);
+
+    const html = newShiftConfirmTemplate({
+      meta: this.selectedMeta,
+      shift: offlineShift,
+      topMessage: `<div class="top-error">${OFFLINE_MSG}</div>`
+    });
+
+    showModal({
+      content: html,
+      onShow: () => {
+        this.cleanUpAfterSave();
+        return () => (window.location.href = "/");
+      }
+    });
+  };
+
+  saveOnline = () => {
     this.props.socket.queryGraphQl({
-      params: toRunableDocument(CREATE_SHIFT_GQL, {
+      params: toRunnableDocument(CREATE_SHIFT_GQL, {
         shift: this.newShiftToSave
       }),
 
@@ -700,43 +743,8 @@ export class ShiftController {
         setMainErrorClass(this.mainErrorContainer, "show");
       },
 
-      onTimeout: () => {
-        const offlineShift = prepForOfflineSave(
-          {
-            ...this.newShiftToSave,
-            hoursGross: "N/A",
-            normalHours: "N/A",
-            normalPay: "N/A",
-            nightHours: "N/A",
-            nightSupplPay: "N/A",
-            sundayHours: "N/A",
-            sundaySupplPay: "N/A",
-            totalPay: "N/A",
-            meta: this.selectedMeta
-          },
-          SHIFT_TYPENAME
-        );
-
-        this.props.database.db.put(offlineShift);
-
-        const html = newShiftConfirmTemplate({
-          meta: this.selectedMeta,
-          shift: offlineShift,
-          topMessage: `<div class="top-error">${OFFLINE_MSG}</div>`
-        });
-
-        showModal({
-          content: html,
-          onShow: () => {
-            this.cleanUpAfterSave();
-            return () => (window.location.href = "/");
-          }
-        });
-      }
+      onTimeout: this.saveOffline
     });
-
-    dismissModal();
-    this.tearDownConfirmedEls();
   };
 
   cleanUpAfterSave = () => {

@@ -8,10 +8,7 @@ import { GetInitialSocketData_newShiftUrl } from "../graphql/gen.types";
 import { GetInitialSocketData_metas } from "../graphql/gen.types";
 import { SHIFT_TYPENAME } from "../constants";
 import { NEW_SHIFT_URL_TYPENAME } from "../constants";
-import { DB_INDEX_OFFLINE_INSERT_TYPENAME } from "../constants";
-import { DB_INDEX_SCHEMA_TYPE_NAME } from "../constants";
 import { META_TYPENAME } from "../constants";
-import { OFFLINE_ID_KEY } from "../constants";
 import { Database } from "../database";
 
 export const getShiftsQueryVairable = (): GetInitialSocketDataVariables => {
@@ -225,28 +222,4 @@ export const camelize = (val: string) => {
       .map(s => s.charAt(0).toUpperCase() + s.slice(1))
       .join("")
   );
-};
-
-// tslint:disable-next-line:no-any
-export const shiftFromOffline = (shift: any) => {
-  shift.rev = shift._rev;
-  shift[OFFLINE_ID_KEY] = shift._id;
-
-  [
-    "hoursGross",
-    "normalHours",
-    "normalPay",
-    "nightHours",
-    "nightSupplPay",
-    "sundayHours",
-    "sundaySupplPay",
-    "totalPay",
-    "meta",
-    "_id",
-    "_rev",
-    DB_INDEX_OFFLINE_INSERT_TYPENAME,
-    DB_INDEX_SCHEMA_TYPE_NAME
-  ].forEach(s => delete shift[s]);
-
-  return shift;
 };

@@ -6,11 +6,9 @@ defmodule MyPayWeb.DataChannel do
   alias MyPayWeb.Schema
   alias MyPay.OfflineSync
 
-  @offline_fields ["rev", "offline_id"]
-
   @doc false
-  def join("data:data", %{"query" => query} = params, socket) when is_binary(query) do
-    send(self(), {:offline_sync, params})
+  def join("data:data", %{"payload" => payload}, socket) do
+    send(self(), {:offline_sync, payload})
     {:ok, socket}
   end
 
@@ -34,43 +32,38 @@ defmodule MyPayWeb.DataChannel do
     {:reply, response, socket}
   end
 
-  def handle_info({:offline_sync, params}, socket) do
-    query = params["query"]
-    variables = params["variables"] || %{}
-
-    case Map.get(variables, "shift") do
-      nil ->
-        :ok
-
-      shift ->
-        offline_attrs = Map.take(shift, @offline_fields)
-
-        response =
-          case get_offline_object(offline_attrs) do
-            nil ->
-              case Schema.run_query(
-                     query,
-                     %{"shift" => Map.drop(shift, @offline_fields)}
-                   ) do
-                {:ok, %{errors: errors}} ->
-                  %{errors: errors, offline_fields: offline_attrs}
-
-                {:ok, %{data: data}} ->
-                  OfflineSync.create_(offline_attrs)
-                  %{data: data, offline_fields: offline_attrs}
-              end
-
-            _ ->
-              %{
-                all_ready_synced: true,
-                offline_fields: offline_attrs
-              }
-          end
-
-        broadcast(socket, "data-synced", response)
-    end
+  def handle_info({:offline_sync, payload}, socket) do
+    push(
+      socket,
+      "data-synced",
+      %{
+        synced: Enum.map(payload, &process_payload/1)
+      }
+    )
 
     {:noreply, socket}
+  end
+
+  defp process_payload(%{"query" => q, "variables" => v} = data) do
+    offline_attrs = data["offline_attrs"]
+
+    case get_offline_object(offline_attrs) do
+      nil ->
+        case Schema.run_query(q, v) do
+          {:ok, %{errors: errors}} ->
+            %{errors: errors}
+
+          {:ok, %{data: data}} ->
+            OfflineSync.create_(offline_attrs)
+            %{data: data}
+        end
+
+      _ ->
+        %{all_ready_synced: true}
+    end
+    |> Map.merge(%{
+      offline_fields: offline_attrs
+    })
   end
 
   defp get_offline_object(fields),

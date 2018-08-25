@@ -67,15 +67,10 @@ const genId = () =>
   (Math.floor(Math.random() * 1000000) + "").slice(0, 3) +
   "Z";
 
-export const prepForOfflineSave = (
-  // tslint:disable-next-line:no-any
-  data: any,
-  typeName: string
-) => {
+export const prepForOfflineSave = (typeName: string) => {
   const _id = genId();
 
   return {
-    ...data,
     [DB_INDEX_SCHEMA_TYPE_NAME]: typeName,
     [DB_INDEX_OFFLINE_INSERT_TYPENAME]: OFFLINE_INSERT_TYPENAME,
     _id

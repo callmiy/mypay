@@ -41,6 +41,11 @@ defmodule MyPayWeb.Schema do
   def run_query(%{"query" => query} = params),
     do: run_query(query, params["variables"] || %{})
 
+  def run_query(%{query: query} = params),
+    do: run_query(query, params[:variables] || %{})
+
+  def run_query(query) when is_binary(query), do: run_query(query)
+
   def run_query(query, variables \\ %{}),
     do: Absinthe.run(query, __MODULE__, variables: variables)
 

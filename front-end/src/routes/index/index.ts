@@ -38,16 +38,39 @@ export class IndexController {
     });
   }
 
-  // tslint:disable-next-line:no-any
-  shiftDataSyncedCb = async (msg: any) => {
-    const shiftRowEl = document.getElementById(`shift-detail-row-${msg._id}`);
-
-    if (!shiftRowEl) {
+  shiftDataSyncedCb = async (shifts: InitialShiftFromDb[]) => {
+    if (!shifts) {
       return;
     }
+    // tslint:disable-next-line:no-console
+    console.log(
+      `
 
-    shiftRowEl.id = `shift-detail-row-${msg.id}`;
-    shiftRowEl.innerHTML = shiftDetailRowTemplate({ shift: msg });
+
+    logging starts
+
+
+    synced in index route`,
+      shifts,
+      `
+
+    logging ends
+
+
+    `
+    );
+    shifts.forEach(shift => {
+      const shiftRowEl = document.getElementById(
+        `shift-detail-row-${shift._id}`
+      );
+
+      if (!shiftRowEl) {
+        return;
+      }
+
+      shiftRowEl.id = `shift-detail-row-${shift.id}`;
+      shiftRowEl.innerHTML = shiftDetailRowTemplate({ shift });
+    });
   };
 
   render = async () => {
