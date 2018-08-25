@@ -468,11 +468,19 @@ export class ShiftController {
         if (!formHasErrors(this.formErrors)) {
           this.submitEl.disabled = false;
         }
+
+        if (name === this.selectMetaEl.name) {
+          this.setAndGetSelectedMeta(target.value);
+        }
       })
       .catch((error: ValidationError) => {
         setFieldError({ fieldEl, errorEl }, error.message);
         this.submitEl.disabled = true;
         this.formErrors[name] = error;
+
+        if (name === this.selectMetaEl.name) {
+          this.selectedMeta = undefined;
+        }
       });
   };
 
@@ -571,7 +579,7 @@ export class ShiftController {
       });
   };
 
-  setAndGetSelectedMeta = (id: number) => {
+  setAndGetSelectedMeta = (id: number | string) => {
     const selectedOptionEl = this.selectMetaEl.querySelector(
       `option[value="${id}"]`
     ) as HTMLOptionElement;

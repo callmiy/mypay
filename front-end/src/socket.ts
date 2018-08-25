@@ -123,7 +123,7 @@ export class AppSocket {
           // be created together with its shift
           metas.splice(mIndex, 1);
           delete s.metaId;
-          s = { ...s, meta: m };
+          s.meta = m;
           return true;
         }
 
