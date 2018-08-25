@@ -9,7 +9,7 @@ defmodule MyPayWeb.Offline do
   @cache_static_files_text "const CACHE_STATICS = "
 
   @service_worker_file "priv/static/offline/service-worker1.js"
-  @build_service_worker_file "_build/#{System.get_env("MIX_ENV") || "dev"}/lib/burda/priv/static/offline/service-worker1.js"
+  @build_service_worker_file "_build/#{System.get_env("MIX_ENV") || "dev"}/lib/mypay/priv/static/offline/service-worker1.js"
 
   @manifest_json_file Path.expand("cache_manifest.json", @static_folder)
   @rejected_static ["favicon", "offline", "robots", "webpack"]
@@ -47,6 +47,9 @@ defmodule MyPayWeb.Offline do
         end)
       end)
       |> Enum.map(fn [file, string] -> File.write!(file, string) end)
+
+  def write_cache_static_file(env),
+    do: write_cache_static_file_for_asset_env(env)
 
   def write_cache_static_file,
     do:

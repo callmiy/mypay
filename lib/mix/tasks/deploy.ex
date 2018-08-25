@@ -81,6 +81,7 @@ defmodule Mix.Tasks.Deploy do
     :ok = run_cmd("git", ["checkout", "dev"])
     :ok = run_cmd("git", ["merge", "master"])
     :ok = reset_static_folder()
+    Offline.write_cache_static_file(:dev)
     :ok = run_cmd("git", ["add", "."])
     :ok = run_cmd("git", ["commit", "-m", "Static folder reset"])
 
