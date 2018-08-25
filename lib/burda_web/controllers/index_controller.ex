@@ -23,6 +23,7 @@ defmodule MyPayWeb.IndexController do
   @index_html "index.html"
   @menu_html "menu.html"
   @shift_detail "_shift-detail.html"
+  @shift_detail_row "_shift-detail-row.html"
   @shift_earnings_summary "_shift.earnings.summary.html"
 
   @index_offline_templates [
@@ -30,6 +31,7 @@ defmodule MyPayWeb.IndexController do
     index_offline_menu_template: "indexMenuTemplate",
     app_shell_offline_template: "appShellTemplate",
     shift_detail_offline_template: "shiftDetailTemplate",
+    shift_detail_row_offline_template: "partials/shiftDetailRowTemplate",
     shift_earnings_summary_offline_template: "shiftEarningSummaryTemplate"
   ]
 
@@ -106,6 +108,14 @@ defmodule MyPayWeb.IndexController do
 
   def shift_detail_offline_template,
     do: Phoenix.View.render_to_string(IndexView, @shift_detail, [])
+
+  def shift_detail_row_offline_template,
+    do:
+      Phoenix.View.render_to_string(
+        IndexView,
+        @shift_detail_row,
+        []
+      )
 
   def shift_earnings_summary_offline_template,
     do: Phoenix.View.render_to_string(IndexView, @shift_earnings_summary, [])

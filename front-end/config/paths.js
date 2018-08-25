@@ -74,5 +74,7 @@ module.exports = {
 
   semanticThemeConfig: resolveApp("semantic-theme/theme.config"),
 
-  handleBarsHelperDir: resolveApp("src/templates/helpers")
+  handleBarsHelperDirs: [resolveApp("src/templates/helpers")],
+
+  handleBarsPartialDirs: [resolveApp("src/templates/partials")]
 };

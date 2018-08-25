@@ -1,25 +1,27 @@
 import * as moment from "moment";
-import { Channel } from "phoenix";
 import { AppSocket } from "../../socket";
 
 import { NEW_SHIFT_URL_TYPENAME } from "./../../constants";
 import { SHIFT_TYPENAME } from "./../../constants";
 import { InitialShiftFromDb } from "../../constants";
 import { InitialUrlFromDb } from "../../constants";
-import { getDataClientChannelName } from "../../constants";
-import { INDEX_ROUTE_DATA_SYNC_ID } from "../../constants";
 import { Database } from "../../database";
 import { docReady } from "../../utils/utils";
 import { isServerRendered } from "../../utils/utils";
+import { Emitter } from "../../emitter";
+import { Topic } from "../../emitter";
 
 import * as shiftDetailTemplate from "../../templates/shiftDetailTemplate.handlebars";
 
 import * as shiftEarningSummaryTemplate from "../../templates/shiftEarningSummaryTemplate.handlebars";
 
+import shiftDetailRowTemplate from "../../templates/partials/shiftDetailRowTemplate.handlebars";
+
 interface Props {
   database: Database;
   isServerRendered: () => boolean;
   socket: AppSocket;
+  emitter: Emitter;
 }
 
 export class IndexController {
@@ -28,40 +30,24 @@ export class IndexController {
   menuTitleEl: HTMLDivElement;
   newShiftLinkEl: HTMLLinkElement;
   shiftsFromDb: InitialShiftFromDb[];
-  dataSyncChannel: Channel;
 
   constructor(private props: Props) {
     this.render();
-
-    this.dataSyncChannel = props.socket.socket.channel(
-      getDataClientChannelName(INDEX_ROUTE_DATA_SYNC_ID),
-      {}
-    );
-
-    props.socket.channelJoin(this.dataSyncChannel);
-
-    this.dataSyncChannel.on("data-synced", this.dataSyncedCb);
+    this.props.emitter.listen(Topic.SHIFT_SYNCED_SUCCESS, {
+      next: this.shiftDataSyncedCb
+    });
   }
 
   // tslint:disable-next-line:no-any
-  dataSyncedCb = async (msg: any) => {
-    // tslint:disable-next-line:no-console
-    console.log(
-      `
+  shiftDataSyncedCb = async (msg: any) => {
+    const shiftRowEl = document.getElementById(`shift-detail-row-${msg._id}`);
 
+    if (!shiftRowEl) {
+      return;
+    }
 
-    logging starts
-
-
-    data synced call back inside index route`,
-      msg,
-      `
-
-    logging ends
-
-
-    `
-    );
+    shiftRowEl.id = `shift-detail-row-${msg.id}`;
+    shiftRowEl.innerHTML = shiftDetailRowTemplate({ shift: msg });
   };
 
   render = async () => {
@@ -190,6 +176,7 @@ docReady(
     new IndexController({
       database: window.appInterface.db,
       socket: window.appInterface.socket,
+      emitter: window.appInterface.emitter,
       isServerRendered
     })
 );

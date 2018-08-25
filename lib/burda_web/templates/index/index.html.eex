@@ -16,9 +16,8 @@
 
     <div id="index-route-shifts-details" class="index-route-shifts-details">
       <%= for shift <- all_shifts do %>
-        <% shift = Map.from_struct(shift) %>
-          <%= render("_shift-detail.html", shift: shift) %>
-            <% end %>
+        <%= render("_shift-detail.html", shift: Map.from_struct(shift)) %>
+          <% end %>
     </div>
 
     <!-- LINK TO NEW SHIFT -->

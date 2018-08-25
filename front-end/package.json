@@ -87,6 +87,7 @@
     "pouchdb-browser": "^7.0.0",
     "pouchdb-debug": "^7.0.0",
     "pouchdb-find": "^7.0.0",
+    "rxjs": "^6.2.2",
     "tslib": "^1.9.3",
     "yup": "^0.26.0"
   }

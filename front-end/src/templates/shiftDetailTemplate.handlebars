@@ -1,50 +1,9 @@
-  {{#each shifts}}
-    <div class="shift-detail-row">
-      <div class="date-times">
-        <span>
-{{formatWeekDayMonthNum date }}        </span>
 
-        <div class="times">
-          <span>
-{{truncateString startTime }}          </span>
-          -
-          <span>
-{{truncateString endTime }}          </span>
-        </div>
+    {{#each shifts as |shift|}}
 
-        <span>
-                {{#if hoursGross }} {{ hoursGross }} hrs {{/if}}
-        </span>
-      </div>
-
-      <div class="hours-earnings-container">
-        <div class="hours-earnings detail">
-          <span>Normal</span>
-          <span>
-{{ normalHours }}          </span>
-          <span>&euro;
-{{ normalPay }}          </span>
-        </div>
-
-        <div class="hours-earnings detail">
-          <span>Night</span>
-          <span>
-{{ nightHours }}          </span>
-          <span>&euro;
-{{ nightSupplPay }}          </span>
-        </div>
-
-        <div class="hours-earnings detail">
-          <span>Sunday</span>
-          <span>
-{{ sundayHours }}          </span>
-          <span>&euro;
-{{ sundaySupplPay }}          </span>
-        </div>
-      </div>
-
-      <div class="total-earning"> Total: &euro;
-{{ totalPay }}      </div>
-
+    <div id="shift-detail-row-{{#if shift.id }}{{shift.id}}{{else}}{{shift._id}}{{/if}}" class="shift-detail-row">
+      {{> shiftDetailRowTemplate shift=shift }}
     </div>
-{{/each}}
+
+    {{/each}}
+

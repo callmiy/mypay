@@ -127,7 +127,8 @@ module.exports = {
         test: /\.handlebars$/,
         loader: "handlebars-loader",
         query: {
-          helperDirs: paths.handleBarsHelperDir
+          helperDirs: paths.handleBarsHelperDirs,
+          partialDirs: paths.handleBarsPartialDirs
         }
       }
     ]

@@ -3,6 +3,7 @@ import registerServiceWorker1 from "./service-worker/register-service-worker1";
 import { Database } from "./database";
 import { docReady } from "./utils/utils";
 import { GetInitialSocketData } from "./graphql/gen.types";
+import { Emitter } from "./emitter";
 
 declare global {
   interface Window {
@@ -14,6 +15,8 @@ declare global {
       socket: AppSocket;
 
       initialData: GetInitialSocketData | null;
+
+      emitter: Emitter;
     };
   }
 }
@@ -47,14 +50,17 @@ const processSidebar = () => {
 };
 
 (function App() {
+  const emitter = new Emitter();
   const db = new Database();
 
   const socket = new AppSocket({
-    database: db
+    database: db,
+    emitter
   });
 
   window.appInterface.db = db;
   window.appInterface.socket = socket;
+  window.appInterface.emitter = emitter;
   docReady(processSidebar);
 })();
 

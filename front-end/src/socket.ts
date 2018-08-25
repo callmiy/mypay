@@ -17,6 +17,8 @@ import { DATA_SYNC_IDS } from "./constants";
 import { getShiftsQueryVairable } from "./routes/utils";
 import { shiftFromOffline } from "./routes/utils";
 import { Database } from "./database";
+import { Emitter } from "./emitter";
+import { Topic } from "./emitter";
 
 import { writeInitialDataToDb as writeInitialIndexDataToDb } from "./routes/utils";
 
@@ -36,6 +38,8 @@ interface ChannelMessageNoTopic {
 
 interface Props {
   database: Database;
+
+  emitter: Emitter;
 }
 
 export interface ChannelMessage extends ChannelMessageNoTopic {
@@ -89,64 +93,28 @@ export class AppSocket {
   dataSyncedCb = async (msg: any) => {
     const fields = msg.offline_fields;
 
-    const data = await this.props.database.db.find({
-      selector: {
-        _id: {
-          $eq: fields[OFFLINE_ID_KEY]
-        },
-
-        [DB_INDEX_OFFLINE_INSERT_TYPENAME]: {
-          $eq: OFFLINE_INSERT_TYPENAME
-        }
-      }
-    });
-
-    // tslint:disable-next-line:no-console
-    console.log(
-      `
-
-
-    logging starts
-
-
-    data from database with offline fields`,
-      data,
-      `
-
-    logging ends
-
-
-    `
-    );
-
     if (msg.errors) {
-      // tslint:disable-next-line:no-console
-      console.log(
-        `
-
-
-      logging starts
-
-
-      data from server on sync error`,
-        msg,
-        `
-
-      logging ends
-
-
-      `
-      );
+      // const data = await this.props.database.db.find({
+      //   selector: {
+      //     _id: {
+      //       $eq: fields[OFFLINE_ID_KEY]
+      //     },
+      //     [DB_INDEX_OFFLINE_INSERT_TYPENAME]: {
+      //       $eq: OFFLINE_INSERT_TYPENAME
+      //     }
+      //   }
+      // });
+      // this.props.emitter.emit(Topic.SHIFT_SYNCED_ERROR, msg.errors);
     }
 
     if (msg.data) {
-      const new_data = {
+      const newData = {
         ...msg.data.shift,
         _id: fields[OFFLINE_ID_KEY],
         _rev: fields.rev
       };
-      await this.props.database.db.put(new_data);
-      window.location.reload(true);
+      await this.props.database.db.put(newData);
+      this.props.emitter.emit(Topic.SHIFT_SYNCED_SUCCESS, newData);
     }
   };
 
