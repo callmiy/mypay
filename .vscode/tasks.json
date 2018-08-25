@@ -95,7 +95,10 @@
     {
       "label": "Apollo code gen",
       "type": "shell",
-      "command": "mix absinthe.schema.json front-end/src/graphql/schema.json && cd front-end && apollo-codegen generate src/graphql/*.ts --schema src/graphql/schema.json --target typescript --output src/graphql/gen.types.ts",
+      "command": "apollo-codegen introspect-schema http://localhost:4018/graphql --output src/graphql/schema.json &&apollo-codegen generate src/graphql/*.ts --schema src/graphql/schema.json --target typescript --output src/graphql/gen.types.ts",
+      "options": {
+        "cwd": "front-end"
+      },
       "problemMatcher": []
     },
 
