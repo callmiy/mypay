@@ -120,11 +120,6 @@ defmodule MyPay.Shift.Api do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_(%Shift{} = shift, %{sunday_hours: sun_hrs} = attrs) do
-    shift
-    |> Shift.changeset(attrs)
-    |> Repo.update()
-  end
 
   def update_(%Shift{} = shift, attrs) do
     shift
