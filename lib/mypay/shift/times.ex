@@ -10,6 +10,7 @@ defmodule MyPay.Shift.Times do
           sunday_hours: Float.t()
         }
 
+  @midnight_zero ~T[00:00:00.000000]
   @night_shift_start ~T[21:45:00]
   @morning_shift_start ~T[05:45:00]
   @midnight ~T[23:59:59.999999]
@@ -72,11 +73,21 @@ defmodule MyPay.Shift.Times do
       |> Kernel./(@one_hr_in_secs)
       |> Float.round(2)
 
+  @doc false
   def morning_shift_start, do: @morning_shift_start
+
+  @doc false
   def night_shift_start, do: @night_shift_start
+
+  @doc false
   def work_secs_half_break, do: @work_secs_half_break
+
   def work_secs_full_break, do: @work_secs_full_break
+
+  @doc false
   def invalid_shift_duration_secs, do: @invalid_shift_duration_secs
+
+  @doc false
   def correct_seconds(secs) when secs < 0, do: @twenty_four_hrs_in_secs + secs
   def correct_seconds(secs), do: secs
 
@@ -89,6 +100,9 @@ defmodule MyPay.Shift.Times do
          %Time{} = end_time
        ) do
     case Date.day_of_week(date) do
+      day when day == 6 ->
+        get_sunday_secs_starts_saturday(start_time, end_time)
+
       day when day < 7 ->
         0.00
 
@@ -98,6 +112,19 @@ defmodule MyPay.Shift.Times do
           :eq -> duration
           _ -> Time.diff(@midnight, start_time)
         end
+    end
+  end
+
+  defp get_sunday_secs_starts_saturday(%Time{} = start_time, %Time{} = end_time) do
+    case Time.compare(start_time, end_time) do
+      :eq ->
+        0.00
+
+      :lt ->
+        0.00
+
+      _ ->
+        Time.diff(end_time, @midnight_zero)
     end
   end
 

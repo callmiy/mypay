@@ -6,8 +6,10 @@ defmodule MyPay.Shift.TimeTest do
   alias MyPay.Factory, as: FactoryUtils
 
   @one_hour_secs 60 * 60
+  @one_min_secs 60
   @break_time_secs 1_800
   @fixed_date Timex.now() |> Timex.to_date()
+  @midnight_zero ~T[00:00:00.000000]
   @midnight ~T[23:59:59.999999]
   @invalid_shift_duration_secs Times.invalid_shift_duration_secs()
   @work_secs_half_break Times.work_secs_half_break()
@@ -399,11 +401,48 @@ defmodule MyPay.Shift.TimeTest do
       end
 
     assert times.sunday_hours == sunday_hours
-
-    # IO.inspect({start_time, end_time}, label: "
-    #   -----------label------------
-    #   ")
   end
+
+  test "times/4 starting on saturday and ending on sunday by morning shift" do
+    date =
+      ShiftFactory.random_date()
+      |> FactoryUtils.next_sunday_date()
+      |> Date.add(-1)
+
+    assert Date.day_of_week(date) == 6
+
+    start_hrs_bf_midnight = FactoryUtils.random_float_between(1.0, 2.25, 2)
+
+    start_time =
+      @midnight
+      |> Time.add(
+        @one_hour_secs
+        |> Kernel.*(-start_hrs_bf_midnight)
+        |> trunc()
+      )
+
+    # ends between 0 and 3 hours before morning_shift_start
+    end_time =
+      Times.morning_shift_start()
+      |> Time.add(
+        0.00
+        |> FactoryUtils.random_float_between(1.00)
+        |> Kernel.*(-@one_hour_secs)
+        |> trunc()
+      )
+
+    times = Times.times(date, start_time, end_time, @break_time_secs)
+
+    sunday_hours =
+      end_time
+      |> Time.diff(@midnight_zero)
+      |> Kernel.-(@break_time_secs)
+      |> Times.secs_to_hrs()
+
+    assert times.sunday_hours == sunday_hours
+  end
+
+
 
   defp secs_gross(%Time{} = start_time, %Time{} = end_time),
     do:
