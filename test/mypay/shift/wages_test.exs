@@ -41,6 +41,11 @@ defmodule MyPay.Shift.WagesTest do
     assert normal_pay == wages.normal_pay
     assert night_suppl_pay == wages.night_suppl_pay
     assert sunday_suppl_pay == wages.sunday_suppl_pay
-    assert wages.total_pay == normal_pay + night_suppl_pay + sunday_suppl_pay
+
+    assert wages.total_pay ==
+             normal_pay
+             |> Kernel.+(night_suppl_pay)
+             |> Kernel.+(sunday_suppl_pay)
+             |> Float.round(2)
   end
 end

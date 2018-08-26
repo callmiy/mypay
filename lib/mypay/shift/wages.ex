@@ -12,43 +12,56 @@ defmodule MyPay.Shift.Wages do
 
   @scale 2
 
+  @pay_keys [:normal_pay, :night_suppl_pay, :sunday_suppl_pay]
+  @hours_keys [:normal_hours, :night_hours, :sunday_hours]
+  @supplemental_pay_percent_key [
+    nil,
+    :night_suppl_pay_pct,
+    :sunday_suppl_pay_pct
+  ]
+
+  @pay_key_hrs_suppl for {p, index} <- Enum.with_index(@pay_keys),
+                         do: {
+                           p,
+                           Enum.at(@hours_keys, index),
+                           Enum.at(@supplemental_pay_percent_key, index)
+                         }
+
   @spec wages(shift_times :: Map.t(), pay_info :: Map.t()) :: t
   def wages(%{} = times, %{} = pay_info) do
-    normal_pay =
-      times.normal_hours
-      |> to_string()
-      |> Decimal.mult(pay_info.pay_per_hr)
-      |> Decimal.round(@scale)
+    pays =
+      @pay_key_hrs_suppl
+      |> Enum.map(fn {k, hrs, suppl} ->
+        {k, pay(times, pay_info, hrs, suppl)}
+      end)
+      |> Enum.into(%{})
 
-    night_suppl_pay =
-      times.night_hours
+    pays
+    |> total_pay()
+    |> Map.merge(pays)
+  end
+
+  @doc false
+  def pay(%{} = times, %{} = pay_info, hrs_key, suppl_pay_key),
+    do:
+      times[hrs_key]
       |> to_string()
       |> Decimal.mult(pay_info.pay_per_hr)
       |> Decimal.mult(
-        pay_info.night_suppl_pay_pct
+        pay_info
+        |> Map.get(suppl_pay_key)
+        |> Kernel.||(100)
         |> Decimal.div("100")
       )
       |> Decimal.round(@scale)
 
-    sunday_suppl_pay =
-      times.sunday_hours
-      |> to_string()
-      |> Decimal.mult(pay_info.pay_per_hr)
-      |> Decimal.mult(
-        pay_info.sunday_suppl_pay_pct
-        |> Decimal.div("100")
-      )
-      |> Decimal.round(@scale)
-
-    %{
-      normal_pay: normal_pay,
-      night_suppl_pay: night_suppl_pay,
-      sunday_suppl_pay: sunday_suppl_pay,
+  @doc false
+  def total_pay(%{} = pays),
+    do: %{
       total_pay:
-        normal_pay
-        |> Decimal.add(night_suppl_pay)
-        |> Decimal.add(sunday_suppl_pay)
+        pays.normal_pay
+        |> Decimal.add(pays.night_suppl_pay)
+        |> Decimal.add(pays.sunday_suppl_pay)
         |> Decimal.round(@scale)
     }
-  end
 end

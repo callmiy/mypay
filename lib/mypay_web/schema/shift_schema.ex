@@ -66,6 +66,12 @@ defmodule MyPayWeb.Schema.Shift do
     field(:order_by, :sorting)
   end
 
+  @desc "Inputs for updating shift"
+  input_object :update_shift_input do
+    field(:id, non_null(:id))
+    field(:sunday_hours, non_null(:float))
+  end
+
   # QUERIES
   @desc "Queries allowed on Shift object"
   object :shift_query do
@@ -82,6 +88,13 @@ defmodule MyPayWeb.Schema.Shift do
     @desc "Create a shift"
     field :shift, type: :shift do
       arg(:shift, non_null(:create_shift_input))
+
+      resolve(&Resolver.create/3)
+    end
+
+    @desc "Update a shift"
+    field :update, type: :shift do
+      arg(:shift, non_null(:update_shift_input))
 
       resolve(&Resolver.create/3)
     end
