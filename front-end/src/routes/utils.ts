@@ -61,17 +61,25 @@ export const writeInitialShiftsDataToDb = (
         docs: Array<PouchDB.Core.ExistingDocument<GetInitialSocketData_shifts>>;
       }) => {
         const shiftsFromDbToUpdate = docs
-          .map(d => {
-            allShiftsIdsInDb.push(d.id);
-            const shiftFromNetworkAlreadyInDb = allNetworkShiftsMap[d.id];
+          .map(doc => {
+            allShiftsIdsInDb.push(doc.id);
+            const shiftFromNetworkAlreadyInDb = allNetworkShiftsMap[doc.id];
 
-            return shiftFromNetworkAlreadyInDb &&
-              !isEqual(
+            if (shiftFromNetworkAlreadyInDb) {
+              return !isEqual(
                 { ...shiftFromNetworkAlreadyInDb, _id: null, _rev: null },
-                { ...d, _id: null, _rev: null }
+                { ...doc, _id: null, _rev: null }
               )
-              ? { ...shiftFromNetworkAlreadyInDb, _id: d._id, _rev: d._rev }
-              : null;
+                ? {
+                    ...shiftFromNetworkAlreadyInDb,
+                    _id: doc._id,
+                    _rev: doc._rev
+                  }
+                : null;
+            }
+
+            // we will delete this document as it no longer exists on server
+            return { ...doc, _deleted: true };
           })
           .filter(db => !!db);
 
@@ -164,28 +172,33 @@ export const writeInitialMetasDataToDb = (
         docs: Array<PouchDB.Core.ExistingDocument<GetInitialSocketData_metas>>;
       }) => {
         const metasToUpdate = docs
-          .map(db => {
-            metasIdsFromDb.push(db.id);
-            const metaFromNetwork = metasFromNetworkMap[db.id];
+          .map(doc => {
+            metasIdsFromDb.push(doc.id);
+            const metaFromNetwork = metasFromNetworkMap[doc.id];
 
             if (metaFromNetwork) {
               const shouldUpdate = !isEqual(
-                { ...db, _id: null, _rev: null },
+                { ...doc, _id: null, _rev: null },
                 { ...metaFromNetwork, _id: null, _rev: null }
               );
 
               return shouldUpdate
-                ? { ...metaFromNetwork, _id: db._id, _rev: db._rev }
+                ? { ...metaFromNetwork, _id: doc._id, _rev: doc._rev }
                 : null;
             }
 
-            return null;
+            // we will delete this document as it no longer exists on server
+            return { ...doc, _deleted: true };
           })
           .filter(db => !!db);
 
+        const metasFromDbToSave = metas.filter(
+          m => !metasIdsFromDb.includes(m.id)
+        );
+
         const metasToSave = [
           ...metasToUpdate,
-          ...metas.filter(m => !metasIdsFromDb.includes(m.id))
+          ...metasFromDbToSave
         ] as GetInitialSocketData_metas[];
 
         if (metasToSave.length) {
