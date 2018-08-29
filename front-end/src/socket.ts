@@ -115,22 +115,28 @@ export class AppSocket {
     const shifts = (grouped[SHIFT_TYPENAME] || []).map((s: any) => {
       const shiftMetaId = s.meta._id;
 
-      metas.find((m, mIndex) => {
+      const offlineMetaForShift = metas.find((m, mIndex) => {
         // this means the meta was created offline. We will create the shift
         // and meta together
         if (m._id === shiftMetaId) {
           // We remove this meta from among metas to be created because it will
           // be created together with its shift
           metas.splice(mIndex, 1);
-          delete s.metaId;
-          s.meta = m;
+
           return true;
         }
 
-        // This means the meta was not created offline so we delete it
-        delete s.meta;
         return false;
       });
+
+      if (offlineMetaForShift) {
+        // the meta for the shift was created offline
+        delete s.metaId;
+        s.meta = offlineMetaForShift;
+      } else {
+        // This means the meta was not created offline so we delete it
+        delete s.meta;
+      }
 
       const doc = toRunnableDocument(
         CREATE_SHIFT_GQL,

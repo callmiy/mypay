@@ -47,23 +47,37 @@ defmodule MyPayWeb.DataChannel do
   defp process_payload(%{"query" => q, "variables" => v} = data) do
     offline_attrs = data["offline_attrs"]
 
-    case get_offline_object(offline_attrs) do
-      nil ->
-        case Schema.run_query(q, v) do
-          {:ok, %{errors: errors}} ->
-            %{errors: errors}
+    result =
+      case get_offline_object(offline_attrs) do
+        nil ->
+          case Schema.run_query(q, v) do
+            {:ok, %{errors: errors}} ->
+              %{errors: errors}
 
-          {:ok, %{data: data}} ->
-            OfflineSync.create_(offline_attrs)
-            %{data: data}
-        end
+            {:ok, %{data: data}} ->
+              OfflineSync.create_(offline_attrs)
+              %{data: data}
+          end
 
-      _ ->
-        %{all_ready_synced: true}
-    end
-    |> Map.merge(%{
-      offline_fields: offline_attrs
-    })
+        _ ->
+          %{all_ready_synced: true}
+      end
+      |> Map.merge(%{
+        offline_fields: offline_attrs
+      })
+
+    IO.puts("""
+
+
+
+    result:
+        #{inspect(result)}
+
+
+
+    """)
+
+    result
   end
 
   defp get_offline_object(fields),

@@ -38,7 +38,7 @@ export class IndexController {
     });
   }
 
-  shiftDataSyncedCb = async (shifts: InitialShiftFromDb[]) => {
+  shiftDataSyncedCb = (shifts: InitialShiftFromDb[]) => {
     if (!(shifts && shifts.forEach)) {
       return;
     }
@@ -53,8 +53,17 @@ export class IndexController {
       }
 
       shiftRowEl.id = `shift-detail-row-${shift.id}`;
+      shiftRowEl.setAttribute("data-value", JSON.stringify(shift));
       shiftRowEl.innerHTML = shiftDetailRowTemplate({ shift });
     });
+
+    const shiftsFromDOM = Array.from(
+      document.querySelectorAll('[id^="shift-detail-row-"]')
+    ).map(s =>
+      JSON.parse(s.getAttribute("data-value") || "{}")
+    ) as InitialShiftFromDb[];
+
+    this.renderShiftEarningsSummaryEl(shiftsFromDOM);
   };
 
   render = async () => {
@@ -64,7 +73,7 @@ export class IndexController {
     this.renderMenuTitleEl();
   };
 
-  renderShiftEarningsSummaryEl = async () => {
+  renderShiftEarningsSummaryEl = async (shifts?: InitialShiftFromDb[]) => {
     this.shiftEarningsSummaryEl = document.getElementById(
       "shift__earnings-summary"
     ) as HTMLDivElement;
@@ -78,11 +87,27 @@ export class IndexController {
     }
 
     const currentMonthYear = moment(new Date()).format("MMM/YYYY");
-    const shifts = await this.getAndSetShiftsFromDb();
 
+    if (!shifts) {
+      shifts = await this.getAndSetShiftsFromDb();
+    }
+
+    const {
+      totalEarnings,
+      totalNormalHours
+    } = this.calculateTotalEarningsAndNormalHours(shifts);
+
+    this.shiftEarningsSummaryEl.innerHTML = shiftEarningSummaryTemplate({
+      totalEarnings: totalEarnings.toFixed(2),
+      totalNormalHours: totalNormalHours.toFixed(2),
+      currentMonthYear
+    });
+  };
+
+  calculateTotalEarningsAndNormalHours = (shifts: InitialShiftFromDb[]) => {
     const acc = { totalEarnings: 0, totalNormalHours: 0 };
 
-    const { totalEarnings, totalNormalHours } = shifts.reduce((acc1, b) => {
+    return shifts.reduce((acc1, b) => {
       let earnings = 0;
       let hours = 0;
 
@@ -101,12 +126,6 @@ export class IndexController {
         totalNormalHours: acc1.totalNormalHours + hours
       };
     }, acc);
-
-    this.shiftEarningsSummaryEl.innerHTML = shiftEarningSummaryTemplate({
-      totalEarnings: totalEarnings.toFixed(2),
-      totalNormalHours: totalNormalHours.toFixed(2),
-      currentMonthYear
-    });
   };
 
   renderShiftsDetailsEl = async () => {
