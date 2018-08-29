@@ -1,6 +1,6 @@
 {
-  "short_name": "Wages",
-  "name": "Work Wages",
+  "short_name": "MyPay",
+  "name": "My Work Pay",
   "start_url": "/",
   "background_color": "#21ba45",
   "theme_color": "#21ba45",
