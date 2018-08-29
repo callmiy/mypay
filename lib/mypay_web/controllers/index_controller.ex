@@ -70,24 +70,49 @@ defmodule MyPayWeb.IndexController do
     }
   }
 
+  @new_decimal Decimal.new("0.00")
+
   plug(:assign_defaults)
 
   @spec index(Plug.Conn.t(), any()) :: Plug.Conn.t()
   def index(conn, _) do
     today = conn.assigns.today
 
+    {all_shifts, total_earnings, total_normal_hours} =
+      case Api.list(%{
+             where: %{year: today.year, month: today.month},
+             order_by: %{id: :desc}
+           }) do
+        [] ->
+          {nil, nil, nil}
+
+        shifts ->
+          {total_earnings, total_normal_hours} =
+            Enum.reduce(
+              shifts,
+              {@new_decimal, 0},
+              fn shift, {earnings, hours} ->
+                {
+                  Decimal.add(shift.total_pay, earnings),
+                  shift.normal_hours + hours
+                }
+              end
+            )
+
+          {shifts, total_earnings, total_normal_hours}
+      end
+
     render(
       conn,
       @index_html,
-      all_shifts:
-        Api.list(%{
-          where: %{year: today.year, month: today.month},
-          order_by: %{id: :desc}
-        }),
+      total_normal_hours: total_normal_hours,
+      total_earnings: total_earnings,
+      all_shifts: all_shifts,
       new_shift_path: MyPayWeb.Router.Helpers.shift_path(conn, :new)
     )
   end
 
+  @doc false
   def assign_defaults(conn, _) do
     today = Date.utc_today()
 

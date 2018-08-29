@@ -1,10 +1,9 @@
 <span id="earnings-summary__label" class="earnings-summary__label">
-  Total Earnings &nbsp; &nbsp;
-{{ currentMonthYear }}</span>
+  Total Earnings
+{{ currentMonthYear }}    (
+    {{ totalNormalHours }} hours)
+</span>
 
-
-  <span class="earnings-summary__amount">
-    &euro;
-
-        {{ totalEarnings }}
-  </span>
+<span class="earnings-summary__amount">
+  &euro;
+{{ totalEarnings }}</span>

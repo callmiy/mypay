@@ -1,31 +1,29 @@
-<% all_shifts = assigns[:all_shifts] || []  %>
-
-  <div class="main-index">
-    <div class="shift-summaries">
-      <div id="shift__earnings-summary" class="shift__earnings-summary">
-        <%= render_shift_earnings_summary_template(current_month: assigns[:current_month], all_shifts: assigns[:all_shifts] ) || "" %>
-      </div>
-
-      <div class="hours-earnings header">
-        <span>Type (Net)</span>
-        <span>Hours</span>
-        <span>Earning</span>
-      </div>
-
-    </div>
-
-    <div id="index-route-shifts-details" class="index-route-shifts-details">
-      <%= for shift <- all_shifts do %>
-        <%= render("_shift-detail.html", shift: Map.from_struct(shift)) %>
+<div class="main-index">
+  <div class="shift-summaries">
+    <div id="shift__earnings-summary" class="shift__earnings-summary">
+      <%= if assigns[:all_shifts] do %>
+        <%= render("_shift.earnings.summary.html", assigns) %>
           <% end %>
     </div>
 
-    <!-- LINK TO NEW SHIFT -->
-
-    <a id="new-shift-trigger" class="new-shift-trigger" data-off-line-link="true" href="<%= assigns[:new_shift_path] || ~s({{ newShiftPath }}) %>">
-      <span class="">&plus;</span>
-    </a>
-
-    <!-- /LINK TO NEW SHIFT -->
+    <div class="hours-earnings header">
+      <span>Type (Net)</span>
+      <span>Hours</span>
+      <span>Earning</span>
+    </div>
 
   </div>
+
+  <div id="index-route-shifts-details" class="index-route-shifts-details">
+    <%= for shift <- (assigns[:all_shifts] || []) do %>
+      <%= render("_shift-detail.html", shift: Map.from_struct(shift)) %>
+        <% end %>
+  </div>
+
+  <!-- LINK TO NEW SHIFT -->
+  <a id="new-shift-trigger" class="new-shift-trigger" data-off-line-link="true" href="<%= assigns[:new_shift_path] || ~s({{ newShiftPath }}) %>">
+    <span class="">&plus;</span>
+  </a>
+  <!-- /LINK TO NEW SHIFT -->
+
+</div>

@@ -1,16 +1,11 @@
 <span id="earnings-summary__label" class="earnings-summary__label">
-  Total Earnings &nbsp; &nbsp;
+  Total Earnings
   <%= assigns[:current_month] || "{{ currentMonthYear }}" %>
+    (
+    <%= assigns[:total_normal_hours] || "{{ totalNormalHours }}" %> hours)
 </span>
 
-<% all_shifts = assigns[:all_shifts] %>
-
-  <span class="earnings-summary__amount">
-    &euro;
-
-    <%= if all_shifts == [] do %>
-      0.00
-      <% else %>
-        <%= total_earnings(all_shifts) || "{{ totalEarnings }}" %>
-          <% end %>
-  </span>
+<span class="earnings-summary__amount">
+  &euro;
+  <%= assigns[:total_earnings] || "{{ totalEarnings }}" %>
+</span>

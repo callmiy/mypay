@@ -80,22 +80,31 @@ export class IndexController {
     const currentMonthYear = moment(new Date()).format("MMM/YYYY");
     const shifts = await this.getAndSetShiftsFromDb();
 
+    const acc = { totalEarnings: 0, totalNormalHours: 0 };
+
+    const { totalEarnings, totalNormalHours } = shifts.reduce((acc1, b) => {
+      let earnings = 0;
+      let hours = 0;
+
+      if (b && b.totalPay) {
+        earnings = +b.totalPay;
+        hours = +b.normalHours;
+
+        if (isNaN(earnings)) {
+          earnings = 0;
+          hours = 0;
+        }
+      }
+
+      return {
+        totalEarnings: acc1.totalEarnings + earnings,
+        totalNormalHours: acc1.totalNormalHours + hours
+      };
+    }, acc);
+
     this.shiftEarningsSummaryEl.innerHTML = shiftEarningSummaryTemplate({
-      totalEarnings: shifts
-        .reduce((a, b) => {
-          let x = 0;
-
-          if (b && b.totalPay) {
-            x = +b.totalPay;
-
-            if (isNaN(x)) {
-              x = 0;
-            }
-          }
-
-          return a + x;
-        }, 0)
-        .toFixed(2),
+      totalEarnings: totalEarnings.toFixed(2),
+      totalNormalHours: totalNormalHours.toFixed(2),
       currentMonthYear
     });
   };
