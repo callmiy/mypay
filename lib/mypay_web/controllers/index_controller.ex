@@ -99,7 +99,7 @@ defmodule MyPayWeb.IndexController do
               end
             )
 
-          {shifts, total_earnings, total_normal_hours}
+          {shifts, total_earnings, Float.round(total_normal_hours, 2)}
       end
 
     render(
