@@ -11,7 +11,7 @@ import { NEW_SHIFT_URL_TYPENAME } from "../constants";
 import { META_TYPENAME } from "../constants";
 import { Database } from "../database";
 
-export const getShiftsQueryVairable = (): GetInitialSocketDataVariables => {
+export const getShiftsQueryVariable = (): GetInitialSocketDataVariables => {
   const today = new Date();
   return {
     shift: {
@@ -222,15 +222,15 @@ export const writeInitialDataToDb = (
 };
 
 export const camelize = (val: string) => {
-  const splitted = val.split("_").filter(s => !!s);
+  const split = val.split("_").filter(s => !!s);
 
-  if (!splitted.length || splitted.length === 1) {
+  if (!split.length || split.length === 1) {
     return val;
   }
 
   return (
-    splitted[0] +
-    splitted
+    split[0] +
+    split
       .slice(1)
       .map(s => s.charAt(0).toUpperCase() + s.slice(1))
       .join("")

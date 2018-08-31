@@ -76,13 +76,14 @@ defmodule MyPayWeb.IndexController do
 
   @spec index(Plug.Conn.t(), any()) :: Plug.Conn.t()
   def index(conn, _) do
-    today = conn.assigns.today
+    today =
+      Timex.Timezone.Local.lookup()
+      |> Timex.now()
+
+    {shifts, count} = get_latest_shifts(today.year, today.month)
 
     {all_shifts, total_earnings, total_normal_hours} =
-      case Api.list(%{
-             where: %{year: today.year, month: today.month},
-             order_by: %{id: :desc}
-           }) do
+      case shifts do
         [] ->
           {nil, nil, nil}
 
@@ -102,28 +103,30 @@ defmodule MyPayWeb.IndexController do
           {shifts, total_earnings, Float.round(total_normal_hours, 2)}
       end
 
+    today =
+      today
+      |> Timex.shift(months: count)
+
     render(
       conn,
       @index_html,
       total_normal_hours: total_normal_hours,
       total_earnings: total_earnings,
       all_shifts: all_shifts,
-      new_shift_path: MyPayWeb.Router.Helpers.shift_path(conn, :new)
+      new_shift_path: MyPayWeb.Router.Helpers.shift_path(conn, :new),
+      today: today,
+      current_month: Timex.format!(today, "{Mshort}/{YYYY}")
     )
   end
 
   @doc false
-  def assign_defaults(conn, _) do
-    today = Date.utc_today()
-
-    merge_assigns(
-      conn,
-      page_js: @page_js,
-      page_css: @page_css,
-      current_month: Timex.format!(today, "{Mshort}/{YYYY}"),
-      today: today
-    )
-  end
+  def assign_defaults(conn, _),
+    do:
+      merge_assigns(
+        conn,
+        page_js: @page_js,
+        page_css: @page_css
+      )
 
   def index_offline_template,
     do: Phoenix.View.render_to_string(IndexView, @index_html, [])
@@ -178,5 +181,22 @@ defmodule MyPayWeb.IndexController do
       )
 
     json(conn, data)
+  end
+
+  defp get_latest_shifts(year, month), do: get_latest_shifts(year, month, 0, [])
+
+  defp get_latest_shifts(_y, _m, count, [_h | _t] = result),
+    do: {result, -count}
+
+  defp get_latest_shifts(_y, _m, 6 = count, result), do: {result, -count}
+
+  defp get_latest_shifts(year, month, count, []) do
+    result =
+      Api.list(%{
+        where: %{year: year, month: month},
+        order_by: %{id: :desc}
+      })
+
+    get_latest_shifts(year, month - 1, count + 1, result)
   end
 end

@@ -22,11 +22,21 @@
     "tslint.jsEnable": true,
     "cSpell.words": [
       "Ftib",
+      "Metas",
       "Mshort",
+      "camelize",
       "favicon",
+      "gifsicle",
+      "inputevent",
+      "mimetype",
       "mypay",
+      "optipng",
+      "pathinfo",
+      "preload",
       "priv",
-      "snsaa"
+      "referer",
+      "snsaa",
+      "webpacks"
     ]
   }
 }

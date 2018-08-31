@@ -21,7 +21,7 @@ import { DATA_SYNC_IDS } from "./constants";
 import { DB_INDEX_SCHEMA_TYPE_NAME } from "./constants";
 import { SHIFT_TYPENAME } from "./constants";
 import { META_TYPENAME } from "./constants";
-import { getShiftsQueryVairable } from "./routes/utils";
+import { getShiftsQueryVariable } from "./routes/utils";
 import { Database } from "./database";
 import { Emitter } from "./emitter";
 import { Topic } from "./emitter";
@@ -94,7 +94,7 @@ export class AppSocket {
   };
 
   processOfflineDataFromDb = async () => {
-    const docss = await this.props.database.db
+    const docsFromDb = await this.props.database.db
       .find({
         selector: {
           [DB_INDEX_OFFLINE_INSERT_TYPENAME]: OFFLINE_INSERT_TYPENAME
@@ -104,11 +104,11 @@ export class AppSocket {
         return docs;
       });
 
-    if (!docss.length) {
+    if (!docsFromDb.length) {
       return {};
     }
 
-    const grouped = loGroupBy(docss, DB_INDEX_SCHEMA_TYPE_NAME);
+    const grouped = loGroupBy(docsFromDb, DB_INDEX_SCHEMA_TYPE_NAME);
     let metas = grouped[META_TYPENAME] || [];
 
     // tslint:disable-next-line:no-any
@@ -207,7 +207,7 @@ export class AppSocket {
   };
 
   getInitialData = async () => {
-    const variables = getShiftsQueryVairable();
+    const variables = getShiftsQueryVariable();
 
     const initialDataQuery = toRunnableDocument<GetInitialSocketDataVariables>(
       INITIAL_DATA_GQL,
