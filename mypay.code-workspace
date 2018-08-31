@@ -19,6 +19,13 @@
       "build": true,
       ".elixir_ls": true
     },
-    "tslint.jsEnable": true
+    "tslint.jsEnable": true,
+    "cSpell.words": [
+      "Ftib",
+      "favicon",
+      "mypay",
+      "priv",
+      "snsaa"
+    ]
   }
 }

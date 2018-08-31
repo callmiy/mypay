@@ -270,7 +270,6 @@ export class AppSocket {
   };
 
   writeInitialDataToDb = (data: GetInitialSocketData) => {
-    window.appInterface.initialData = data;
     writeInitialIndexDataToDb(this.props.database, data);
 
     this.props.database.db

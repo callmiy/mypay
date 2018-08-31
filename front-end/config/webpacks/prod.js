@@ -71,6 +71,7 @@ module.exports = merge(baseConfig, {
   },
 
   output: {
+    pathinfo: false,
     path: paths.appBuild,
     filename: "[name].js",
     publicPath: "/"

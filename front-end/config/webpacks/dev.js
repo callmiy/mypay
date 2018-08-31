@@ -36,6 +36,7 @@ module.exports = merge(baseConfig, {
   },
 
   output: {
+    pathinfo: false,
     path: paths.appPublic,
     filename: "[name].js",
     publicPath: `${WEBPACK_DEV_SERVER_URL}/`,
