@@ -1,6 +1,7 @@
 import * as moment from "moment";
 import { AppSocket } from "../../socket";
 import lodashGroupBy from "lodash-es/groupBy";
+import lodashUniq from "lodash-es/uniq";
 
 import { NEW_SHIFT_URL_TYPENAME } from "./../../constants";
 import { SHIFT_TYPENAME } from "./../../constants";
@@ -57,7 +58,7 @@ export class IndexController {
       return;
     }
 
-    shifts.forEach(shift => {
+    let parentShiftRows = shifts.map(shift => {
       const shiftRowEl = document.getElementById(
         `shift-detail-row-${shift._id}`
       );
@@ -66,16 +67,45 @@ export class IndexController {
         return;
       }
 
+      const parentShiftRow = shiftRowEl.closest(".shift-row") as HTMLDivElement;
+
       shiftRowEl.id = `shift-detail-row-${shift.id}`;
       shiftRowEl.setAttribute("data-value", JSON.stringify(shift));
       shiftRowEl.innerHTML = shiftDetailRowTemplate({ shift });
+
+      return parentShiftRow;
     });
 
-    // const shiftsFromDOM = Array.from(
-    //   document.querySelectorAll('[id^="shift-detail-row-"]')
-    // ).map(s =>
-    //   JSON.parse(s.getAttribute("data-value") || "{}")
-    // ) as InitialShiftFromDb[];
+    parentShiftRows = lodashUniq(parentShiftRows);
+
+    parentShiftRows.forEach(row => {
+      if (!row) {
+        return;
+      }
+
+      const shiftsFromDOM = Array.from(
+        row.querySelectorAll('[id^="shift-detail-row-"]')
+      ).map(s =>
+        JSON.parse(s.getAttribute("data-value") || "{}")
+      ) as InitialShiftFromDb[];
+
+      const {
+        totalEarnings,
+        totalNormalHours
+      } = this.calculateTotalEarningsAndNormalHours(shiftsFromDOM);
+
+      const earningsEl = row.querySelector(".earnings-summary__earnings");
+
+      if (earningsEl) {
+        earningsEl.textContent = totalEarnings;
+      }
+
+      const hoursEl = row.querySelector(".earnings-summary__hours");
+
+      if (hoursEl) {
+        hoursEl.textContent = totalNormalHours;
+      }
+    });
   };
 
   render = async () => {

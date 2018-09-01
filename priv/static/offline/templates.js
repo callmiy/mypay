@@ -269,10 +269,10 @@ templates['partials/shiftSummaryTemplate'] = template({"compiler":[7,">= 4.0.0"]
 
   return "<span id=\"earnings-summary__label\" class=\"earnings-summary__label\">\n"
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.summary : depth0)) != null ? stack1.date : stack1), depth0))
-    + "    &nbsp;&nbsp;&nbsp;&nbsp; &euro;\n"
+    + "    &nbsp;&nbsp;&nbsp;&nbsp; &euro;\n    <span class=\"earnings-summary__earnings\">"
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.summary : depth0)) != null ? stack1.totalEarnings : stack1), depth0))
-    + "      &nbsp;&nbsp; / &nbsp;&nbsp;\n      "
+    + "</span>\n    &nbsp;&nbsp; / &nbsp;&nbsp;\n    <span class=\"earnings-summary__hours\">"
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.summary : depth0)) != null ? stack1.totalNormalHours : stack1), depth0))
-    + " hours\n</span>\n";
+    + "</span> hours\n</span>\n";
 },"useData":true});
 })();

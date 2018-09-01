@@ -1,5 +1,6 @@
 <span id="earnings-summary__label" class="earnings-summary__label">
 {{ summary.date }}    &nbsp;&nbsp;&nbsp;&nbsp; &euro;
-{{ summary.totalEarnings }}      &nbsp;&nbsp; / &nbsp;&nbsp;
-      {{ summary.totalNormalHours }} hours
+    <span class="earnings-summary__earnings">{{ summary.totalEarnings }}</span>
+    &nbsp;&nbsp; / &nbsp;&nbsp;
+    <span class="earnings-summary__hours">{{ summary.totalNormalHours }}</span> hours
 </span>
