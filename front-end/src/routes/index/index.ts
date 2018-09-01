@@ -208,7 +208,9 @@ export class IndexController {
                 return bb > aa ? 1 : -1;
               })
               .map(a => {
-                const shifts = a[1];
+                const shifts = a[1].sort((c, d) =>
+                  moment(d.date).diff(moment(c.date))
+                );
                 const summary = {
                   date: moment(a[0]).format("MMM/YYYY"),
                   ...this.calculateTotalEarningsAndNormalHours(shifts)
