@@ -126,8 +126,8 @@ defmodule MyPayWeb.ShiftController do
         "newShiftTemplate"
       },
       {
-        Phoenix.View.render_to_string(ShiftView, "menu.html", []),
-        "newShiftMenuTemplate"
+        Phoenix.View.render_to_string(ShiftView, "_menu.html", []),
+        "partials/newShiftMenuTemplate"
       },
       {
         Phoenix.View.render_to_string(ShiftView, "_new-shift-date.html", []),

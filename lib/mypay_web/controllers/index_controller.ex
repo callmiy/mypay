@@ -159,6 +159,14 @@ defmodule MyPayWeb.IndexController do
           []
         ),
         "shiftsForMonthTemplate"
+      },
+      {
+        Phoenix.View.render_to_string(
+          IndexView,
+          "_modal.html",
+          []
+        ),
+        "modalTemplate"
       }
     ]
   end

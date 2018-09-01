@@ -1,13 +1,20 @@
 @import "../../variables";
 
 .new-shift-main {
-  overflow-x: hidden;
-  overflow-y: auto;
-  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.new-shift-route-menu {
+  flex-shrink: 0;
 }
 
 .new-shift-form {
   padding: 5px;
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .new-shift-form__error-main {

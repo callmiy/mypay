@@ -2,8 +2,7 @@ import * as Yup from "yup";
 import { Schema } from "yup";
 import { ValidationError } from "yup";
 
-import { showModal } from "../../components/modals";
-import { dismissModal } from "../../components/modals";
+import { Modal } from "../../components/modals";
 import { NewMeta } from "../../components/new-meta-form/new-meta-form";
 import { CreateMeta_meta } from "../../graphql/gen.types";
 import { GetInitialSocketData_metas } from "../../graphql/gen.types";
@@ -122,6 +121,8 @@ export class ShiftController {
   submitConfirmedEl: HTMLButtonElement;
   editConfirmedEl: HTMLButtonElement;
   selectedMeta: GetInitialSocketData_metas | undefined;
+  fetchNewMetaElModal: Modal | undefined;
+  confirmSubmitModal: Modal | undefined;
 
   // tslint:disable-next-line:no-any
   newShiftToSave: any;
@@ -414,14 +415,13 @@ export class ShiftController {
   };
 
   fetchNewMetaElClickHandler = async () => {
-    showModal({
+    this.fetchNewMetaElModal = new Modal({
       content: newMetaFormTemplate(),
-
-      onShow: () => {
-        this.newMetaForm.setUpDOM();
-        return this.newMetaForm.cleanUp;
-      }
+      onShow: this.newMetaForm.setUpDOM,
+      onDismiss: this.newMetaForm.cleanUp
     });
+
+    this.fetchNewMetaElModal.show();
   };
 
   onMetaCreated = (meta: CreateMeta_meta) => {
@@ -435,7 +435,10 @@ export class ShiftController {
 
     this.selectMetaEl.dispatchEvent(new Event("input"));
 
-    dismissModal(this.newMetaForm.cleanUp);
+    if (this.fetchNewMetaElModal) {
+      this.fetchNewMetaElModal.destroy();
+      this.fetchNewMetaElModal = undefined;
+    }
 
     // We keep the newly created meta as the default so that if user
     // wishes to reset the form, she always gets the latest meta as the
@@ -554,15 +557,17 @@ export class ShiftController {
           saving: true
         });
 
-        showModal({
+        this.confirmSubmitModal = new Modal({
           content: html,
           onShow: () => {
             this.renderSubmitConfirmedEl();
             this.renderEditConfirmedEl();
+          },
 
-            return this.tearDownConfirmedEls;
-          }
+          onDismiss: this.tearDownConfirmedEls
         });
+
+        this.confirmSubmitModal.show();
       })
       .catch(errors => {
         this.submitEl.classList.remove("loading");
@@ -626,7 +631,10 @@ export class ShiftController {
   };
 
   editConfirmedElHandler = () => {
-    dismissModal();
+    if (this.confirmSubmitModal) {
+      this.confirmSubmitModal.destroy();
+      this.confirmSubmitModal = undefined;
+    }
     this.tearDownConfirmedEls();
   };
 
@@ -679,7 +687,11 @@ export class ShiftController {
       this.saveOffline();
     }
 
-    dismissModal();
+    if (this.confirmSubmitModal) {
+      this.confirmSubmitModal.destroy();
+      this.confirmSubmitModal = undefined;
+    }
+
     this.tearDownConfirmedEls();
   };
 
@@ -709,13 +721,15 @@ export class ShiftController {
       topMessage: `<div class="top-error">${OFFLINE_MSG}</div>`
     });
 
-    showModal({
+    const modal = new Modal({
       content: html,
-      onShow: () => {
-        this.cleanUpAfterSave();
-        return () => (window.location.href = "/");
-      }
+
+      onShow: this.cleanUpAfterSave,
+
+      onDismiss: () => (window.location.href = "/")
     });
+
+    modal.show();
   };
 
   saveOnline = () => {
@@ -733,13 +747,15 @@ export class ShiftController {
             shift: createdShift
           });
 
-          showModal({
+          const modal = new Modal({
             content: html,
-            onShow: () => {
-              this.cleanUpAfterSave();
-              return () => (window.location.href = "/");
-            }
+
+            onShow: this.cleanUpAfterSave,
+
+            onDismiss: () => (window.location.href = "/")
           });
+
+          modal.show();
         }
       },
 

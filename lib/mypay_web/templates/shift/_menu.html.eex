@@ -1,10 +1,10 @@
-<div class="ui inverted menu shift-route-menu ">
+<div class="ui inverted menu new-shift-route-menu ">
   <div class="ui container">
     <a id="go-back-from-shift-route" class="item" href="<%= assigns[:go_back_url] || ~s({{#if goBackUrl}}{{ goBackUrl }}{{else}}/{{/if}}) %>">
       <i class="arrow left icon"></i>
     </a>
 
-    <div class="item shift-route-menu__title">
+    <div class="item new-shift-route-menu__title">
       Create New Shift
     </div>
 

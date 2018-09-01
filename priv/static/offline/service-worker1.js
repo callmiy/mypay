@@ -6,9 +6,8 @@ const CACHE_NAME = `${CACHE_PREFIX}-v${CACHE_VERSION}`;
 
 const appShellTemplate = Handlebars.templates.appShellTemplate;
 
-Handlebars.registerPartial(
-  "indexMenuTemplate",
-  Handlebars.templates.indexMenuTemplate
+["indexMenuTemplate", "newShiftMenuTemplate"].forEach(t =>
+  Handlebars.registerPartial(t, Handlebars.templates[t])
 );
 
 // prettier-ignore
@@ -56,8 +55,7 @@ const renderRoutes = {
 
   "/shifts/new": () =>
     renderHtml("shiftNew", {
-      pageMainContent: Handlebars.templates.newShiftTemplate(),
-      pageTopMenu: Handlebars.templates.newShiftMenuTemplate()
+      pageMainContent: Handlebars.templates.newShiftTemplate()
     })
 };
 
