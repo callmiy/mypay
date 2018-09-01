@@ -18,6 +18,14 @@ defmodule MyPayWeb.Schema.Types do
     value(:desc, description: "Sort from largest to smallest")
   end
 
+  @desc "Less than value"
+  input_object :inequality do
+    field(:lt, :float)
+    field(:lteq, :float)
+    field(:eq, :float)
+    field(:gt, :float)
+  end
+
   @spec parse_iso_datetime(Absinthe.Blueprint.Input.String.t(), String.t()) ::
           {:ok, DateTime.t() | NaiveDateTime.t()} | :error
   defp parse_iso_datetime(

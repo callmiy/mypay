@@ -5,7 +5,7 @@
     </a>
 
     <div id="index-route-menu__title" class="item index-route-menu__title">
-      <%= assigns[:current_month] || "{{ currentMonth }}" %>
+      <%= assigns[:shifts_for_month] || "{{ currentMonth }}" %>
     </div>
 
     <div class="right menu">

@@ -112,7 +112,9 @@ defmodule MyPayWeb.Schema.ShiftTest do
                  variables: %{
                    "shift" => %{
                      "where" => %{
-                       "month" => 5,
+                       "month" => %{
+                         "eq" => 5
+                       },
                        "year" => 2014
                      },
                      "orderBy" => %{

@@ -57,13 +57,14 @@ defmodule MyPayWeb.Schema.Shift do
   @desc "Where condition for retrieving a shift"
   input_object :where_condition do
     field(:year, :integer)
-    field(:month, :integer)
+    field(:month, :inequality)
   end
 
   @desc "Inputs for getting shift"
   input_object :get_shift_input do
     field(:where, :where_condition)
     field(:order_by, :sorting)
+    field(:limit, :integer)
   end
 
   @desc "Inputs for updating shift"

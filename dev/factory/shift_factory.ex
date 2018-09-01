@@ -7,7 +7,7 @@ defmodule MyPay.Factory.Shift do
 
   @start_date ~D[1900-01-01]
   @null_time ~T[00:00:00.000000]
-  @one_hr_millsecs 3_600_000_000
+  @one_hr_milli_secs 3_600_000_000
   @date_offset 0..30_000
   @iso_time "{ISOtime}"
   @iso_date "{ISOdate}"
@@ -95,7 +95,7 @@ defmodule MyPay.Factory.Shift do
     time_offset =
       0.0
       |> FactoryUtils.random_float_between(23.99, 6)
-      |> Kernel.*(@one_hr_millsecs)
+      |> Kernel.*(@one_hr_milli_secs)
       |> trunc()
 
     Time.add(@null_time, time_offset, :millisecond)
@@ -107,7 +107,7 @@ defmodule MyPay.Factory.Shift do
     time_offset =
       0.4
       |> FactoryUtils.random_float_between(15.99, 6)
-      |> Kernel.*(@one_hr_millsecs)
+      |> Kernel.*(@one_hr_milli_secs)
       |> trunc()
 
     Time.add(start_time, time_offset, :millisecond)

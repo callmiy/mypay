@@ -30,10 +30,6 @@ form {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-.app-main-menu {
-  flex-shrink: 0;
 
   .ui.menu {
     border-radius: 0;
@@ -47,13 +43,6 @@ form {
 .ui.container {
   margin-left: 0 !important;
   margin-right: 0 !important;
-}
-
-main {
-  flex: 1;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
 }
 
 .ui.dimmer {

@@ -16,9 +16,8 @@ defmodule MyPayWeb.IndexView do
   @doc ~S"""
     Send the top menu to be rendered by the layout view
   """
-  @spec top_menu(%{current_month: String.t()}) :: Plug.Conn.t()
-  def top_menu(%{current_month: month}),
-    do: render("menu.html", current_month: month)
+  def top_menu(%{shifts_for_month: shifts_for_month}),
+    do: render("menu.html", shifts_for_month: shifts_for_month)
 
   def format_week_day_name_month_day(%Date{} = date),
     do: Timex.format!(date, @week_day_name_month_day_format)

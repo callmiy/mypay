@@ -1,0 +1,22 @@
+<div class="shift-row">
+  <div class="shift-summaries">
+    <div id="shift__earnings-summary" class="shift__earnings-summary">
+      <%= if assigns[:summary] do %>
+        <%= render("_shift.earnings.summary.html", assigns[:summary]) %>
+          <% end %>
+    </div>
+
+    <div class="hours-earnings header">
+      <span>Type (Net)</span>
+      <span>Hours</span>
+      <span>Earning</span>
+    </div>
+
+  </div>
+
+  <div id="index-route-shifts-details" class="index-route-shifts-details">
+    <%= for shift <- (assigns[:shifts] || []) do %>
+      <%= render("_shift-detail.html", shift: Map.from_struct(shift)) %>
+        <% end %>
+  </div>
+</div>

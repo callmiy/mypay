@@ -17,7 +17,6 @@ defmodule MyPayWeb.IndexController do
   @page_other_css_handlebar "{{{ pageOtherCss }}}"
   @page_main_js_handlebar "{{{ pageMainJs }}}"
   @page_other_js_handlebar "{{{ pageOtherJs }}}"
-  @page_main_content_handlebar "{{{ pageMainContent }}}"
   @page_top_menu_handlebar "{{{ pageTopMenu }}}"
   @app_html "app.html"
   @index_html "index.html"
@@ -71,6 +70,7 @@ defmodule MyPayWeb.IndexController do
   }
 
   @new_decimal Decimal.new("0.00")
+  @format_mmm_yyyy "{Mshort}/{YYYY}"
 
   plug(:assign_defaults)
 
@@ -80,42 +80,31 @@ defmodule MyPayWeb.IndexController do
       Timex.Timezone.Local.lookup()
       |> Timex.now()
 
-    {shifts, count} = get_latest_shifts(today.year, today.month)
+    largest = today.month
+    least = largest - 5
 
-    {all_shifts, total_earnings, total_normal_hours} =
-      case shifts do
-        [] ->
-          {nil, nil, nil}
-
-        shifts ->
-          {total_earnings, total_normal_hours} =
-            Enum.reduce(
-              shifts,
-              {@new_decimal, 0},
-              fn shift, {earnings, hours} ->
-                {
-                  Decimal.add(shift.total_pay, earnings),
-                  shift.normal_hours + hours
-                }
-              end
-            )
-
-          {shifts, total_earnings, Float.round(total_normal_hours, 2)}
+    shifts =
+      case get_shifts_for_last_six_months(today.year, largest, least) do
+        [] -> nil
+        shifts -> shifts
       end
 
-    today =
+    least_month_str =
       today
-      |> Timex.shift(months: count)
+      |> Timex.shift(months: -5)
+      |> Timex.format!("{Mshort}")
+
+    today_formatted = Timex.format!(today, @format_mmm_yyyy)
+
+    # e.g "Jan-June/2018"
+    shifts_for_month = "#{least_month_str}-#{today_formatted}"
 
     render(
       conn,
       @index_html,
-      total_normal_hours: total_normal_hours,
-      total_earnings: total_earnings,
-      all_shifts: all_shifts,
+      all_shifts: shifts,
       new_shift_path: MyPayWeb.Router.Helpers.shift_path(conn, :new),
-      today: today,
-      current_month: Timex.format!(today, "{Mshort}/{YYYY}")
+      shifts_for_month: shifts_for_month
     )
   end
 
@@ -167,7 +156,6 @@ defmodule MyPayWeb.IndexController do
         page_other_css_handlebar: @page_other_css_handlebar,
         page_main_js_handlebar: @page_main_js_handlebar,
         page_other_js_handlebar: @page_other_js_handlebar,
-        page_main_content_handlebar: @page_main_content_handlebar,
         page_top_menu_handlebar: @page_top_menu_handlebar,
         main_css_handlebar: @main_css_handlebar,
         main_js_handlebar: @main_js_handlebar
@@ -183,20 +171,56 @@ defmodule MyPayWeb.IndexController do
     json(conn, data)
   end
 
-  defp get_latest_shifts(year, month), do: get_latest_shifts(year, month, 0, [])
+  defp calc_total_earnings_normal_hours(shifts) do
+    case shifts do
+      [] ->
+        {nil, nil, nil}
 
-  defp get_latest_shifts(_y, _m, count, [_h | _t] = result),
-    do: {result, -count}
+      shifts ->
+        {total_earnings, total_normal_hours} =
+          Enum.reduce(
+            shifts,
+            {@new_decimal, 0},
+            fn shift, {earnings, hours} ->
+              {
+                Decimal.add(shift.total_pay, earnings),
+                shift.normal_hours + hours
+              }
+            end
+          )
 
-  defp get_latest_shifts(_y, _m, 6 = count, result), do: {result, -count}
+        {shifts, total_earnings, Float.round(total_normal_hours, 2)}
+    end
+  end
 
-  defp get_latest_shifts(year, month, count, []) do
-    result =
-      Api.list(%{
-        where: %{year: year, month: month},
-        order_by: %{id: :desc}
-      })
+  defp get_shifts_for_last_six_months(year, largest, least) do
+    Api.list(%{
+      where: %{
+        year: year,
+        month: %{
+          gt: least,
+          lteq: largest
+        }
+      }
+    })
+    |> Enum.group_by(&Timex.format!(&1.date, "{YYYY}-{M}"), & &1)
+    |> Enum.reverse()
+    |> Enum.map(fn {date, shifts} ->
+      {shifts, total_earnings, total_normal_hours} = calc_total_earnings_normal_hours(shifts)
 
-    get_latest_shifts(year, month - 1, count + 1, result)
+      date =
+        "#{date}-1"
+        |> Timex.parse!("{YYYY}-{M}-{D}")
+        |> Timex.format!(@format_mmm_yyyy)
+
+      [
+        shifts: shifts,
+        summary: [
+          date: date,
+          total_earnings: total_earnings,
+          total_normal_hours: total_normal_hours
+        ]
+      ]
+    end)
   end
 end

@@ -65,61 +65,16 @@
 
 <body>
 
-  <!-- APP SIDEBAR -->
-  <div id="app-sidebar" class="ui left vertical inverted sidebar labeled icon menu">
-    <a class="item">
-      <i class="home icon"></i>
-      Home
-    </a>
-    <a class="item">
-      <i class="block layout icon"></i>
-      Topics
-    </a>
-    <a class="item">
-      <i class="smile icon"></i>
-      Friends
-    </a>
-  </div>
-  <!-- /APP SIDEBAR -->
-
-
-
-  <div id="app-container" class="app-container">
-
-    <!-- TOP MENU (if exported by child) -->
-    <div class="app-main-menu">
-      <%= top_menu(@view_module, assigns) %>
-
-        <%# Handlebar template for app shell %>
-          <%= assigns[:page_top_menu_handlebar] || ""  %>
-    </div>
-    <!-- /TOP MENU -->
-
-    <!-- MAIN CHILD TEMPLATE INSERT -->
-    <main role="main">
-      <%= render_child_main_child_template( assigns[:view_module_] || @view_module, @view_template, assigns) %>
-
-        <%# Handlebar template for app shell %>
-          <%= assigns[:page_main_content_handlebar] || ""  %>
-    </main>
-    <!-- /MAIN CHILD TEMPLATE INSERT -->
-  </div>
-
-  <!-- MODAL CONTAINER -->
-  <div id="body-modal-dimmer" class="ui dimmer modals page transition body-modal-dimmer  body-modal-dismisser">
-
-    <div id="body-modal" class="ui modal transition">
-      <div id="body-modal-content" class="content"></div>
-
-      <div class="actions">
-        <div id="body-modal-dismiss" class="ui cancel button body-modal-dismisser">
-          Dismiss
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- /MODAL CONTAINER -->
-
+  <!-- MAIN CHILD TEMPLATE INSERT -->
+  <main role="main" class="app-container">
+    <%# Presence of offline_token implies server-render %>
+      <%= if assigns[:offline_token] do %>
+        <%= render(@view_module, @view_template, assigns) %>
+          <% else %>
+            {{{ pageMainContent }}}
+            <% end %>
+  </main>
+  <!-- /MAIN CHILD TEMPLATE INSERT -->
   <div class="insert-new-app-available-ui" id="insert-new-app-available-ui"></div>
 
   <script>

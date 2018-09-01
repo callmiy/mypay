@@ -198,13 +198,31 @@ export class IndexController {
               schemaType: { $eq: SHIFT_TYPENAME }
             }
           })
-          .then(({ docs }: { docs: InitialShiftFromDb[] }) =>
-            docs.sort((a, b) => {
+          .then(({ docs }: { docs: InitialShiftFromDb[] }) => {
+            // tslint:disable-next-line:no-console
+            console.log(
+              `
+
+
+              logging starts
+
+
+              docs`,
+              docs,
+              `
+
+              logging ends
+
+
+              `
+            );
+
+            return docs.sort((a, b) => {
               return moment(`${b.date}T${b.startTime}`).diff(
                 moment(`${a.date}T${a.startTime}`)
               );
-            })
-          ));
+            });
+          }));
   };
 }
 
