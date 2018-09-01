@@ -78,11 +78,14 @@ defmodule Mix.Tasks.Deploy do
     :ok = run_cmd("git", ["checkout", "dev"])
     :ok = run_cmd("git", ["merge", "master"])
     :ok = reset_static_folder()
-    Offline.write_cache_static_file(:dev)
-    :ok = run_cmd("git", ["add", "."])
-    :ok = run_cmd("git", ["commit", "-m", "Static folder reset"])
 
     System.delete_env("MIX_ENV")
+    System.put_env("MIX_ENV", "dev")
+    Application.put_env(:mypay, :frontend, asset: :dev)
+    Offline.write_cache_static_file(:dev)
+
+    :ok = run_cmd("git", ["add", "."])
+    :ok = run_cmd("git", ["commit", "-m", "Static folder reset"])
   end
 
   defp process_static_files do

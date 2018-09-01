@@ -105,7 +105,7 @@
     {
       "label": "deploy to heroku",
       "type": "shell",
-      "command": "rimraf _build/prod/lib/mypay/priv/static && mix deploy prod && rimraf _build/prod/lib/mypay/priv/static",
+      "command": "rimraf _build/dev/lib/mypay/priv/static && rimraf _build/prod/lib/mypay/priv/static && mix deploy prod && rimraf _build/prod/lib/mypay/priv/static && rimraf _build/dev/lib/mypay/priv/static",
       "problemMatcher": [],
       "options": {
         "env": {
