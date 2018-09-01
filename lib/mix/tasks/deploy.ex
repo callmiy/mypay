@@ -55,9 +55,6 @@ defmodule Mix.Tasks.Deploy do
   defp deploy(["reset"]), do: reset_static_folder()
 
   defp deploy(["prod"]) do
-    System.put_env("MIX_ENV", "prod")
-    Application.put_env(:mypay, :frontend, asset: :prod)
-
     :ok = run_cmd("git", ["checkout", "dev"])
 
     :ok = reset_static_folder()

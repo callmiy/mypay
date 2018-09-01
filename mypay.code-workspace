@@ -33,6 +33,7 @@
       "favicon",
       "gifsicle",
       "gzipped",
+      "hsts",
       "htmlfy",
       "inputevent",
       "ipybz",

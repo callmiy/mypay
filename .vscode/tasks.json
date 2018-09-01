@@ -105,8 +105,15 @@
     {
       "label": "deploy to heroku",
       "type": "shell",
-      "command": "rimraf _build/dev/lib/mypay/priv/static && mix deploy prod && rimraf _build/dev/lib/mypay/priv/static",
-      "problemMatcher": []
+      "command": "rimraf _build/prod/lib/mypay/priv/static && mix deploy prod && rimraf _build/prod/lib/mypay/priv/static",
+      "problemMatcher": [],
+      "options": {
+        "env": {
+          "MIX_ENV": "prod",
+          "PORT": "443",
+          "SECRET_KEY_BASE": "1"
+        }
+      }
     },
 
     {
