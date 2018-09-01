@@ -54,10 +54,15 @@ defmodule MyPayWeb.Schema.Shift do
     field(:date, :sorting_directive)
   end
 
+  @desc "Inputs for retrieving fields based on inequality"
+  input_object :shift_fields_inequality do
+    field(:date, :string_inequality)
+  end
+
   @desc "Where condition for retrieving a shift"
   input_object :where_condition do
-    field(:year, :integer)
-    field(:month, :inequality)
+    field(:and, :shift_fields_inequality |> list_of())
+    field(:date, :string_inequality)
   end
 
   @desc "Inputs for getting shift"

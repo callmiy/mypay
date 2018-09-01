@@ -18,12 +18,18 @@ defmodule MyPayWeb.Schema.Types do
     value(:desc, description: "Sort from largest to smallest")
   end
 
-  @desc "Less than value"
-  input_object :inequality do
-    field(:lt, :float)
-    field(:lteq, :float)
-    field(:eq, :float)
-    field(:gt, :float)
+  @desc "Inequality enums"
+  enum :inequality do
+    value(:lt, description: "Less than")
+    value(:lte, description: "Less than or equal to")
+    value(:eq, description: "Equal to")
+    value(:gt, description: "Greater than")
+    value(:gte, description: "Greater than or equal to")
+  end
+
+  input_object :string_inequality do
+    field(:key, non_null(:inequality))
+    field(:value, non_null(:string))
   end
 
   @spec parse_iso_datetime(Absinthe.Blueprint.Input.String.t(), String.t()) ::

@@ -1,11 +1,5 @@
 defmodule MyPay.QueryHelper do
-  @extract_month_from_date_eq "extract(month from date) = ?"
-  @extract_month_from_date_gt "extract(month from date) > ?"
-  @extract_month_from_date_lt "extract(month from date) < ?"
-  @extract_month_from_date_lteq "extract(month from date) <= ?"
-  @extract_year_from_date_eq "extract(year from date) = ?"
-
-  import Ecto.Query, warn: false
+  import Ecto.Query
 
   @doc false
   def filter(query, %{} = filter),
@@ -19,10 +13,33 @@ defmodule MyPay.QueryHelper do
         filter(acc, {:order_by, field, directive})
       end)
 
-  def filter(query, {:where, conditions}),
+  def filter(query, {:where, :date, %{key: :eq, value: v}}),
+    do: where(query, [s], s.date == ^v)
+
+  def filter(query, {:where, :date, %{key: :lt, value: v}}),
+    do: where(query, [s], s.date < ^v)
+
+  def filter(query, {:where, :date, %{key: :lte, value: v}}),
+    do: where(query, [s], s.date <= ^v)
+
+  def filter(query, {:where, :date, %{key: :gt, value: v}}),
+    do: where(query, [s], s.date > ^v)
+
+  def filter(query, {:where, :date, %{key: :gte, value: v}}),
+    do: where(query, [s], s.date >= ^v)
+
+  def filter(query, {:where, fields_or_directives}),
     do:
-      Enum.reduce(conditions, query, fn {field, condition}, acc ->
-        filter(acc, {:where, field, condition})
+      fields_or_directives
+      |> Enum.reduce(query, fn {field_or_directive, conditions}, acc ->
+        filter(acc, {:where, field_or_directive, conditions})
+      end)
+
+  def filter(query, {:where, :and, conditions}),
+    do:
+      Enum.reduce(conditions, query, fn field_directive, acc ->
+        [{field, directive}] = Map.to_list(field_directive)
+        filter(acc, {:where, field, directive})
       end)
 
   def filter(query, {:order_by, :date, directive}),
@@ -30,24 +47,6 @@ defmodule MyPay.QueryHelper do
 
   def filter(query, {:order_by, :id, directive}),
     do: order_by(query, [s], {^directive, s.id})
-
-  def filter(query, {:where, :month, %{} = month}),
-    do: Enum.reduce(month, query, &filter(&2, {:where, :month, &1}))
-
-  def filter(query, {:where, :month, {:gt, month}}),
-    do: where(query, [s], fragment(@extract_month_from_date_gt, ^month))
-
-  def filter(query, {:where, :month, {:lt, month}}),
-    do: where(query, [s], fragment(@extract_month_from_date_lt, ^month))
-
-  def filter(query, {:where, :month, {:lteq, month}}),
-    do: where(query, [s], fragment(@extract_month_from_date_lteq, ^month))
-
-  def filter(query, {:where, :month, {:eq, month}}),
-    do: where(query, [s], fragment(@extract_month_from_date_eq, ^month))
-
-  def filter(query, {:where, :year, year}),
-    do: where(query, [s], fragment(@extract_year_from_date_eq, ^year))
 
   def filter(query, _), do: query
 end
