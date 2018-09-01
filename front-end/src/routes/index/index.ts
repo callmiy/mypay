@@ -20,8 +20,8 @@ import shiftsForMonthTemplate from "../../templates/shiftsForMonthTemplate.handl
 interface ShiftFromDbMapped {
   shifts: InitialShiftFromDb[];
   summary: {
-    totalEarnings: number;
-    totalNormalHours: number;
+    totalEarnings: string;
+    totalNormalHours: string;
   };
 }
 
@@ -87,7 +87,7 @@ export class IndexController {
   calculateTotalEarningsAndNormalHours = (shifts: InitialShiftFromDb[]) => {
     const acc = { totalEarnings: 0, totalNormalHours: 0 };
 
-    return shifts.reduce((acc1, b) => {
+    const { totalEarnings, totalNormalHours } = shifts.reduce((acc1, b) => {
       let earnings = 0;
       let hours = 0;
 
@@ -106,6 +106,11 @@ export class IndexController {
         totalNormalHours: acc1.totalNormalHours + hours
       };
     }, acc);
+
+    return {
+      totalEarnings: totalEarnings.toFixed(2),
+      totalNormalHours: totalNormalHours.toFixed(2)
+    };
   };
 
   renderShifts = async () => {
