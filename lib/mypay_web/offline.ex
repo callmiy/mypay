@@ -32,21 +32,13 @@ defmodule MyPayWeb.Offline do
         {MyPayWeb.ShiftController, :new_offline_templates}
       ]
       |> Enum.flat_map(fn {module, templates_fun} ->
-        module
-        |> apply(templates_fun, [])
-        |> Enum.map(fn {template_fun, filename} ->
-          template_string = apply(module, template_fun, [])
-
-          filename =
-            Path.expand(
-              "#{filename}.handlebars",
-              @offline_template_folder
-            )
-
-          [filename, template_string]
-        end)
+        apply(module, templates_fun, [])
       end)
-      |> Enum.map(fn [file, string] -> File.write!(file, string) end)
+      |> Enum.map(fn {string, filename} ->
+        path = Path.expand("#{filename}.handlebars", @offline_template_folder)
+        File.write!(path, string)
+        path
+      end)
 
   def write_cache_static_file(env),
     do: write_cache_static_file_for_asset_env(env)

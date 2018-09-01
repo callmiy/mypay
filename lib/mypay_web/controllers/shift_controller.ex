@@ -7,18 +7,9 @@ defmodule MyPayWeb.ShiftController do
   alias MyPayWeb.ShiftView
 
   @new_shift_html "new-shift.html"
-  @menu_html "menu.html"
   @page_css "routes/shift.css"
   @page_js "routes/shift.js"
   @new_form_css_path "components/new-meta-form.css"
-
-  @new_offline_templates [
-    new_offline_template: "newShiftTemplate",
-    new_offline_menu_template: "newShiftMenuTemplate",
-    new_date_offline_template: "newShiftDateTemplate",
-    new_metas_select_offline_template: "newShiftMetasSelectTemplate",
-    new_meta_offline_template: "newMetaFormTemplate"
-  ]
 
   @months_of_year [
                     "Jan",
@@ -118,31 +109,7 @@ defmodule MyPayWeb.ShiftController do
     )
   end
 
-  def new_offline_template,
-    do: Phoenix.View.render_to_string(ShiftView, @new_shift_html, [])
-
-  def new_offline_menu_template,
-    do: Phoenix.View.render_to_string(ShiftView, @menu_html, [])
-
-  def new_date_offline_template,
-    do: Phoenix.View.render_to_string(ShiftView, "_new-shift-date.html", [])
-
-  def new_metas_select_offline_template,
-    do:
-      Phoenix.View.render_to_string(
-        ShiftView,
-        "_new-shift-metas-select.html",
-        []
-      )
-
-  def new_meta_offline_template,
-    do:
-      Phoenix.View.render_to_string(
-        MyPayWeb.MetaView,
-        "new-meta.html",
-        []
-      )
-
+  @doc false
   def new_offline_template_assigns,
     do: %{
       page_title: "New Shift",
@@ -151,7 +118,39 @@ defmodule MyPayWeb.ShiftController do
       page_other_css: LayoutView.page_css(@new_form_css_path, nil)
     }
 
-  def new_offline_templates, do: @new_offline_templates
+  @doc false
+  def new_offline_templates do
+    [
+      {
+        Phoenix.View.render_to_string(ShiftView, @new_shift_html, []),
+        "newShiftTemplate"
+      },
+      {
+        Phoenix.View.render_to_string(ShiftView, "menu.html", []),
+        "newShiftMenuTemplate"
+      },
+      {
+        Phoenix.View.render_to_string(ShiftView, "_new-shift-date.html", []),
+        "newShiftDateTemplate"
+      },
+      {
+        Phoenix.View.render_to_string(
+          ShiftView,
+          "_new-shift-metas-select.html",
+          []
+        ),
+        "newShiftMetasSelectTemplate"
+      },
+      {
+        Phoenix.View.render_to_string(
+          MyPayWeb.MetaView,
+          "new-meta.html",
+          []
+        ),
+        "newMetaFormTemplate"
+      }
+    ]
+  end
 
   @spec assign_defaults(Plug.Conn.t(), any()) :: Plug.Conn.t()
   def assign_defaults(conn, _),
