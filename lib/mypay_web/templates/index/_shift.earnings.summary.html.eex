@@ -1,7 +1,0 @@
-<span id="earnings-summary__label" class="earnings-summary__label">
-  <%= assigns[:date] || "{{ currentMonthYear }}" %>
-    &nbsp;&nbsp;&nbsp;&nbsp; &euro;
-    <%= assigns[:total_earnings] || "{{ totalEarnings }}" %>
-      &nbsp;&nbsp; / &nbsp;&nbsp;
-      <%= assigns[:total_normal_hours] || "{{ totalNormalHours }}" %> hours
-</span>

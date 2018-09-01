@@ -1,5 +1,6 @@
 import * as moment from "moment";
 import { AppSocket } from "../../socket";
+import lodashGroupBy from "lodash-es/groupBy";
 
 import { NEW_SHIFT_URL_TYPENAME } from "./../../constants";
 import { SHIFT_TYPENAME } from "./../../constants";
@@ -10,12 +11,19 @@ import { docReady } from "../../utils/utils";
 import { isServerRendered } from "../../utils/utils";
 import { Emitter } from "../../emitter";
 import { Topic } from "../../emitter";
-
-import * as shiftDetailTemplate from "../../templates/shiftDetailTemplate.handlebars";
-
-import * as shiftEarningSummaryTemplate from "../../templates/shiftEarningSummaryTemplate.handlebars";
+import { getTodayAndLastSixMonths } from "../utils";
 
 import shiftDetailRowTemplate from "../../templates/partials/shiftDetailRowTemplate.handlebars";
+
+import shiftsForMonthTemplate from "../../templates/shiftsForMonthTemplate.handlebars";
+
+interface ShiftFromDbMapped {
+  shifts: InitialShiftFromDb[];
+  summary: {
+    totalEarnings: number;
+    totalNormalHours: number;
+  };
+}
 
 interface Props {
   database: Database;
@@ -25,13 +33,19 @@ interface Props {
 }
 
 export class IndexController {
-  shiftsDetailsEl: HTMLDivElement;
+  shiftsEl: HTMLDivElement;
   shiftEarningsSummaryEl: HTMLDivElement;
   menuTitleEl: HTMLDivElement;
   newShiftLinkEl: HTMLLinkElement;
-  shiftsFromDb: InitialShiftFromDb[];
+  shiftsFromDb: ShiftFromDbMapped[];
+  todayAndLastSixMonths: {
+    today: moment.Moment;
+    monthEndToday: moment.Moment;
+    startSixMonthsAgo: moment.Moment;
+  };
 
   constructor(private props: Props) {
+    this.todayAndLastSixMonths = getTodayAndLastSixMonths();
     this.render();
     this.props.emitter.listen(Topic.SHIFT_SYNCED_SUCCESS, {
       next: this.shiftDataSyncedCb
@@ -57,51 +71,17 @@ export class IndexController {
       shiftRowEl.innerHTML = shiftDetailRowTemplate({ shift });
     });
 
-    const shiftsFromDOM = Array.from(
-      document.querySelectorAll('[id^="shift-detail-row-"]')
-    ).map(s =>
-      JSON.parse(s.getAttribute("data-value") || "{}")
-    ) as InitialShiftFromDb[];
-
-    this.renderShiftEarningsSummaryEl(shiftsFromDOM);
+    // const shiftsFromDOM = Array.from(
+    //   document.querySelectorAll('[id^="shift-detail-row-"]')
+    // ).map(s =>
+    //   JSON.parse(s.getAttribute("data-value") || "{}")
+    // ) as InitialShiftFromDb[];
   };
 
   render = async () => {
-    this.renderShiftsDetailsEl();
-    this.renderShiftEarningsSummaryEl();
+    this.renderShifts();
     this.renderNewShiftLinkEl();
     this.renderMenuTitleEl();
-  };
-
-  renderShiftEarningsSummaryEl = async (shifts?: InitialShiftFromDb[]) => {
-    this.shiftEarningsSummaryEl = document.getElementById(
-      "shift__earnings-summary"
-    ) as HTMLDivElement;
-
-    if (!this.shiftEarningsSummaryEl) {
-      return;
-    }
-
-    if (this.props.isServerRendered()) {
-      return;
-    }
-
-    const currentMonthYear = moment(new Date()).format("MMM/YYYY");
-
-    if (!shifts) {
-      shifts = await this.getAndSetShiftsFromDb();
-    }
-
-    const {
-      totalEarnings,
-      totalNormalHours
-    } = this.calculateTotalEarningsAndNormalHours(shifts);
-
-    this.shiftEarningsSummaryEl.innerHTML = shiftEarningSummaryTemplate({
-      totalEarnings: totalEarnings.toFixed(2),
-      totalNormalHours: totalNormalHours.toFixed(2),
-      currentMonthYear
-    });
   };
 
   calculateTotalEarningsAndNormalHours = (shifts: InitialShiftFromDb[]) => {
@@ -128,12 +108,12 @@ export class IndexController {
     }, acc);
   };
 
-  renderShiftsDetailsEl = async () => {
-    this.shiftsDetailsEl = document.getElementById(
-      "index-route-shifts-details"
+  renderShifts = async () => {
+    this.shiftsEl = document.getElementById(
+      "shifts-for-months"
     ) as HTMLDivElement;
 
-    if (!this.shiftsDetailsEl) {
+    if (!this.shiftsEl) {
       return;
     }
 
@@ -141,8 +121,8 @@ export class IndexController {
       return;
     }
 
-    const shifts = await this.getAndSetShiftsFromDb();
-    this.shiftsDetailsEl.innerHTML = shiftDetailTemplate({ shifts });
+    const shiftsData = await this.getAndSetShiftsFromDb();
+    this.shiftsEl.innerHTML = shiftsForMonthTemplate({ shiftsData });
   };
 
   renderMenuTitleEl = () => {
@@ -158,7 +138,11 @@ export class IndexController {
       return;
     }
 
-    this.menuTitleEl.textContent = moment(new Date()).format("MMM/YYYY");
+    const { monthEndToday, startSixMonthsAgo } = this.todayAndLastSixMonths;
+
+    this.menuTitleEl.textContent = `${startSixMonthsAgo.format(
+      "MMM"
+    )}-${monthEndToday.format("MMM/YYYY")}`;
   };
 
   renderNewShiftLinkEl = async () => {
@@ -190,38 +174,44 @@ export class IndexController {
   };
 
   getAndSetShiftsFromDb = async () => {
+    const { monthEndToday, startSixMonthsAgo } = this.todayAndLastSixMonths;
+
     return this.shiftsFromDb
       ? this.shiftsFromDb
       : (this.shiftsFromDb = await this.props.database.db
           .find({
             selector: {
-              schemaType: { $eq: SHIFT_TYPENAME }
+              schemaType: { $eq: SHIFT_TYPENAME },
+              $and: [
+                {
+                  date: {
+                    $gte: startSixMonthsAgo.format(moment.HTML5_FMT.DATE)
+                  }
+                },
+                { date: { $lte: monthEndToday.format(moment.HTML5_FMT.DATE) } }
+              ]
             }
           })
           .then(({ docs }: { docs: InitialShiftFromDb[] }) => {
-            // tslint:disable-next-line:no-console
-            console.log(
-              `
+            const docs1 = Object.entries(
+              lodashGroupBy(docs, doc => doc.date.slice(0, 8) + "01")
+            )
+              .sort((a, b) => {
+                const aa = a[0];
+                const bb = b[0];
 
+                return bb > aa ? 1 : -1;
+              })
+              .map(a => {
+                const shifts = a[1];
+                const summary = {
+                  date: moment(a[0]).format("MMM/YYYY"),
+                  ...this.calculateTotalEarningsAndNormalHours(shifts)
+                };
+                return { shifts, summary };
+              });
 
-              logging starts
-
-
-              docs`,
-              docs,
-              `
-
-              logging ends
-
-
-              `
-            );
-
-            return docs.sort((a, b) => {
-              return moment(`${b.date}T${b.startTime}`).diff(
-                moment(`${a.date}T${a.startTime}`)
-              );
-            });
+            return docs1;
           }));
   };
 }

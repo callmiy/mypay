@@ -1,4 +1,5 @@
 import isEqual from "lodash/isEqual";
+import * as moment from "moment";
 
 import { SortingDirective } from "../graphql/gen.types";
 import { GetInitialSocketData_shifts } from "../graphql/gen.types";
@@ -6,18 +7,44 @@ import { GetInitialSocketDataVariables } from "../graphql/gen.types";
 import { GetInitialSocketData } from "../graphql/gen.types";
 import { GetInitialSocketData_newShiftUrl } from "../graphql/gen.types";
 import { GetInitialSocketData_metas } from "../graphql/gen.types";
+import { Inequality } from "../graphql/gen.types";
 import { SHIFT_TYPENAME } from "../constants";
 import { NEW_SHIFT_URL_TYPENAME } from "../constants";
 import { META_TYPENAME } from "../constants";
 import { Database } from "../database";
 
+export const getTodayAndLastSixMonths = () => {
+  const today = moment(new Date());
+  const monthEndToday = moment(today).endOf("month");
+  const startSixMonthsAgo = today.subtract(5, "months").startOf("month");
+
+  return {
+    today,
+    monthEndToday,
+    startSixMonthsAgo
+  };
+};
+
 export const getShiftsQueryVariable = (): GetInitialSocketDataVariables => {
-  const today = new Date();
+  const { monthEndToday, startSixMonthsAgo } = getTodayAndLastSixMonths();
+
   return {
     shift: {
       where: {
-        year: today.getFullYear(),
-        month: today.getMonth() + 1
+        and: [
+          {
+            date: {
+              key: Inequality.GTE,
+              value: startSixMonthsAgo.format(moment.HTML5_FMT.DATE)
+            }
+          },
+          {
+            date: {
+              key: Inequality.LTE,
+              value: monthEndToday.format(moment.HTML5_FMT.DATE)
+            }
+          }
+        ]
       },
 
       orderBy: {

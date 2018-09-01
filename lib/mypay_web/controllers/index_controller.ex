@@ -57,20 +57,26 @@ defmodule MyPayWeb.IndexController do
       Timex.Timezone.Local.lookup()
       |> Timex.now()
 
-    largest = today.month
-    least = largest - 5
+    largest =
+      today
+      |> Timex.end_of_month()
+      |> Timex.format!("{ISOdate}")
+
+    least =
+      today
+      |> Timex.shift(months: -5)
+      |> Timex.beginning_of_month()
 
     shifts =
-      case get_shifts_for_last_six_months(today.year, largest, least) do
+      case get_shifts_for_last_six_months(
+             largest,
+             Timex.format!(least, "{ISOdate}")
+           ) do
         [] -> nil
         shifts -> shifts
       end
 
-    least_month_str =
-      today
-      |> Timex.shift(months: -5)
-      |> Timex.format!("{Mshort}")
-
+    least_month_str = Timex.format!(least, "{Mshort}")
     today_formatted = Timex.format!(today, @format_mmm_yyyy)
 
     # e.g "Jan-June/2018"
@@ -141,10 +147,18 @@ defmodule MyPayWeb.IndexController do
       {
         Phoenix.View.render_to_string(
           IndexView,
-          "_shift.earnings.summary.html",
+          "_shift-summary.html",
           []
         ),
-        "shiftEarningSummaryTemplate"
+        "partials/shiftSummaryTemplate"
+      },
+      {
+        Phoenix.View.render_to_string(
+          IndexView,
+          "_shifts-for-month.html",
+          []
+        ),
+        "shiftsForMonthTemplate"
       }
     ]
   end
@@ -182,14 +196,17 @@ defmodule MyPayWeb.IndexController do
     end
   end
 
-  defp get_shifts_for_last_six_months(year, largest, least) do
+  defp get_shifts_for_last_six_months(largest, least) do
     Api.list(%{
       where: %{
-        year: year,
-        month: %{
-          gt: least,
-          lteq: largest
-        }
+        and: [
+          %{
+            date: %{gte: least}
+          },
+          %{
+            date: %{lte: largest}
+          }
+        ]
       }
     })
     |> Enum.group_by(&Timex.format!(&1.date, "{YYYY}-{M}"), & &1)

@@ -1,22 +1,30 @@
-<div class="shift-row">
-  <div class="shift-summaries">
-    <div id="shift__earnings-summary" class="shift__earnings-summary">
-      <%= if assigns[:summary] do %>
-        <%= render("_shift.earnings.summary.html", assigns[:summary]) %>
-          <% end %>
+<%= if assigns[:shifts], do: "", else: "{{#each shiftsData as |data|}}" %>
+  <div class="shift-row">
+    <div class="shift-summaries">
+      <div id="shift__earnings-summary" class="shift__earnings-summary">
+        <%= if assigns[:summary] do %>
+          <%= render("_shift-summary.html", assigns[:summary]) %>
+            <% else %>
+              {{>shiftSummaryTemplate summary=data.summary}}
+              <% end %>
+      </div>
+
+      <div class="hours-earnings header">
+        <span>Type (Net)</span>
+        <span>Hours</span>
+        <span>Earning</span>
+      </div>
+
     </div>
 
-    <div class="hours-earnings header">
-      <span>Type (Net)</span>
-      <span>Hours</span>
-      <span>Earning</span>
+    <div id="index-route-shifts-details" class="index-route-shifts-details">
+      <%= if assigns[:shifts] do %>
+        <%= for shift <- assigns[:shifts] do %>
+          <%= render("_shift-detail.html", shift: Map.from_struct(shift)) %>
+            <% end %>
+              <% else %>
+                {{#each data.shifts as |shift| }} {{>shiftDetailTemplate shift=shift}} {{/each}}
+                <% end %>
     </div>
-
   </div>
-
-  <div id="index-route-shifts-details" class="index-route-shifts-details">
-    <%= for shift <- (assigns[:shifts] || []) do %>
-      <%= render("_shift-detail.html", shift: Map.from_struct(shift)) %>
-        <% end %>
-  </div>
-</div>
+  <%= if assigns[:shifts], do: "", else: "{{/each}}" %>

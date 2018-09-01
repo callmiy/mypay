@@ -1,0 +1,19 @@
+{{#each shiftsData as |data|}}  <div class="shift-row">
+    <div class="shift-summaries">
+      <div id="shift__earnings-summary" class="shift__earnings-summary">
+              {{>shiftSummaryTemplate summary=data.summary}}
+      </div>
+
+      <div class="hours-earnings header">
+        <span>Type (Net)</span>
+        <span>Hours</span>
+        <span>Earning</span>
+      </div>
+
+    </div>
+
+    <div id="index-route-shifts-details" class="index-route-shifts-details">
+                {{#each data.shifts as |shift| }} {{>shiftDetailTemplate shift=shift}} {{/each}}
+    </div>
+  </div>
+{{/each}}

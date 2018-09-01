@@ -218,6 +218,15 @@ export enum SortingDirective {
   DESC = "DESC",
 }
 
+// Inequality enums
+export enum Inequality {
+  EQ = "EQ",
+  GT = "GT",
+  GTE = "GTE",
+  LT = "LT",
+  LTE = "LTE",
+}
+
 // Inputs for creating a meta
 export interface CreateMetaInput {
   breakTimeSecs?: number | null;
@@ -237,6 +246,7 @@ export interface CreateShiftInput {
 
 // Inputs for getting shift
 export interface GetShiftInput {
+  limit?: number | null;
   orderBy?: Sorting | null;
   where?: WhereCondition | null;
 }
@@ -249,8 +259,19 @@ export interface Sorting {
 
 // Where condition for retrieving a shift
 export interface WhereCondition {
-  month?: number | null;
-  year?: number | null;
+  and?: (ShiftFieldsInequality | null)[] | null;
+  date?: StringInequality | null;
+}
+
+// Inputs for retrieving fields based on inequality
+export interface ShiftFieldsInequality {
+  date?: StringInequality | null;
+}
+
+// null
+export interface StringInequality {
+  key: Inequality;
+  value: string;
 }
 
 // Inputs for getting meta

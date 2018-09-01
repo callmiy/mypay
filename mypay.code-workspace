@@ -32,6 +32,7 @@
       "dismisser",
       "favicon",
       "gifsicle",
+      "gzipped",
       "inputevent",
       "ipybz",
       "lteq",
@@ -45,7 +46,9 @@
       "priv",
       "queryable",
       "referer",
+      "slte",
       "snsaa",
+      "sockjs",
       "stringify",
       "webpacks"
     ]

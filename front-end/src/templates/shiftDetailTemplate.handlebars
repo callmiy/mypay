@@ -1,9 +1,5 @@
 
-    {{#each shifts as |shift|}}
-
     <div id="shift-detail-row-{{#if shift.id }}{{shift.id}}{{else}}{{shift._id}}{{/if}}" class="shift-detail-row" data-value="{{jsonStringify shift}}">
       {{> shiftDetailRowTemplate shift=shift }}
     </div>
-
-    {{/each}}
 
