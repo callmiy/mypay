@@ -1,6 +1,7 @@
 // tslint:disable:object-literal-sort-keys
 
 // production config
+const autoprefixer = require("autoprefixer");
 const merge = require("webpack-merge");
 const path = require("path");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
@@ -93,7 +94,26 @@ module.exports = merge(baseConfig, {
             }
           },
 
-          "postcss-loader"
+          {
+            loader: "postcss-loader",
+            options: {
+              // Necessary for external CSS imports to work
+              // https://github.com/facebookincubator/create-react-app/issues/2677
+              ident: "postcss",
+              plugins: () => [
+                require("postcss-flexbugs-fixes"),
+                autoprefixer({
+                  browsers: [
+                    ">1%",
+                    "last 4 versions",
+                    "Firefox ESR",
+                    "not ie < 9" // React doesn't support IE8 anyway
+                  ],
+                  flexbox: "no-2009"
+                })
+              ]
+            }
+          }
         ]
       },
 
@@ -101,8 +121,35 @@ module.exports = merge(baseConfig, {
         test: /\.less$/,
         use: [
           MiniCssExtractPlugin.loader,
-          "css-loader",
-          "postcss-loader",
+          {
+            loader: "css-loader",
+            options: {
+              importLoaders: 1,
+              minimize: true,
+              sourceMap: true
+            }
+          },
+
+          {
+            loader: "postcss-loader",
+            options: {
+              // Necessary for external CSS imports to work
+              // https://github.com/facebookincubator/create-react-app/issues/2677
+              ident: "postcss",
+              plugins: () => [
+                require("postcss-flexbugs-fixes"),
+                autoprefixer({
+                  browsers: [
+                    ">1%",
+                    "last 4 versions",
+                    "Firefox ESR",
+                    "not ie < 9" // React doesn't support IE8 anyway
+                  ],
+                  flexbox: "no-2009"
+                })
+              ]
+            }
+          },
           "less-loader"
         ]
       },
@@ -111,8 +158,35 @@ module.exports = merge(baseConfig, {
         test: /\.s(css|ass)$/,
         loaders: [
           MiniCssExtractPlugin.loader,
-          "css-loader",
-          "postcss-loader",
+          {
+            loader: "css-loader",
+            options: {
+              importLoaders: 1,
+              minimize: true,
+              sourceMap: true
+            }
+          },
+
+          {
+            loader: "postcss-loader",
+            options: {
+              // Necessary for external CSS imports to work
+              // https://github.com/facebookincubator/create-react-app/issues/2677
+              ident: "postcss",
+              plugins: () => [
+                require("postcss-flexbugs-fixes"),
+                autoprefixer({
+                  browsers: [
+                    ">1%",
+                    "last 4 versions",
+                    "Firefox ESR",
+                    "not ie < 9" // React doesn't support IE8 anyway
+                  ],
+                  flexbox: "no-2009"
+                })
+              ]
+            }
+          },
           "sass-loader"
         ]
       }
@@ -140,9 +214,40 @@ module.exports = merge(baseConfig, {
   optimization: {
     minimizer: [
       new UglifyJsPlugin({
-        cache: true,
+        uglifyOptions: {
+          parse: {
+            // we want uglify-js to parse ecma 8 code. However we want it to output
+            // ecma 5 compliant code, to avoid issues with older browsers, this is
+            // whey we put `ecma: 5` to the compress and output section
+            // https://github.com/facebook/create-react-app/pull/4234
+            ecma: 8
+          },
+          compress: {
+            ecma: 5,
+            warnings: false,
+            // Disabled because of an issue with Uglify breaking seemingly valid code:
+            // https://github.com/facebook/create-react-app/issues/2376
+            // Pending further investigation:
+            // https://github.com/mishoo/UglifyJS2/issues/2011
+            comparisons: false
+          },
+          mangle: {
+            safari10: true
+          },
+          output: {
+            ecma: 5,
+            comments: false,
+            // Turned on because emoji and regex is not minified properly using default
+            // https://github.com/facebook/create-react-app/issues/2488
+            ascii_only: true
+          }
+        },
+        // Use multi-process parallel running to improve the build speed
+        // Default number of concurrent runs: os.cpus().length - 1
         parallel: true,
-        sourceMap: true // set to true if you want JS source maps
+        // Enable file caching
+        cache: true,
+        sourceMap: true
       }),
 
       new OptimizeCSSAssetsPlugin({
