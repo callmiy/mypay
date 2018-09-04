@@ -13,6 +13,8 @@ defmodule MyPay.Shift.Api do
   alias MyPay.Meta
   alias MyPay.Meta.Api, as: MetaApi
 
+  @new_decimal Decimal.new("0.00")
+
   @doc """
   Returns the list of ShiftApi.
 
@@ -164,7 +166,76 @@ defmodule MyPay.Shift.Api do
     queryable
   end
 
+  @doc false
   def meta_id_not_found_error(id), do: ~s(meta with ID "#{id}" not found)
 
+  @doc false
   def meta_id_blank_error, do: ~s(meta ID can not be blank)
+
+  @spec group_and_summarize(shifts :: [%{}]) ::
+          nil
+          | [
+              %{
+                shifts: [],
+                summary: %{
+                  date: String.t(),
+                  totalEarnings: Float.t(),
+                  totalNormalHours: Float.t()
+                }
+              }
+            ]
+  def group_and_summarize([]), do: nil
+
+  def group_and_summarize(shifts),
+    do:
+      shifts
+      |> Enum.group_by(&String.slice(&1["date"], 0, 7), & &1)
+      |> Enum.reverse()
+      |> Enum.map(fn {date, shifts} ->
+        {shifts, total_earnings, total_normal_hours} = calc_total_earnings_normal_hours(shifts)
+
+        date =
+          "#{date}-1"
+          |> Timex.parse!("{YYYY}-{M}-{D}")
+          |> Timex.format!("{Mshort}/{YYYY}")
+
+        %{
+          shifts: shifts,
+          summary: %{
+            date: date,
+            totalEarnings: total_earnings,
+            totalNormalHours: total_normal_hours
+          }
+        }
+      end)
+
+  defp calc_total_earnings_normal_hours(shifts) do
+    {total_earnings, total_normal_hours} =
+      Enum.reduce(
+        shifts,
+        {@new_decimal, 0},
+        fn shift, {earnings, hours} ->
+          {
+            shift["totalPay"]
+            |> Decimal.new()
+            |> Decimal.add(earnings),
+            shift["normalHours"] + hours
+          }
+        end
+      )
+
+    shifts =
+      shifts
+      |> Enum.sort(
+        &(&2["date"]
+          |> Kernel.<>(&2["startTime"])
+          |> Kernel.<(&1["date"] <> &1["startTime"]))
+      )
+
+    {
+      shifts,
+      Decimal.to_float(total_earnings),
+      Float.round(total_normal_hours, 2)
+    }
+  end
 end

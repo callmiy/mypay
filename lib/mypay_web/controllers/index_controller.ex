@@ -1,11 +1,18 @@
 defmodule MyPayWeb.IndexController do
   use Phoenix.Controller
 
-  @dialyzer {:no_return, get_offline_template_assigns: 2}
+  @dialyzer {
+    :no_return,
+    [
+      get_offline_template_assigns: 2,
+      get_shifts_for_last_six_months_gql: 2,
+      index: 2
+    ]
+  }
 
-  alias MyPay.Shift.Api
   alias MyPayWeb.LayoutView
   alias MyPayWeb.IndexView
+  alias MyPay.Shift.Api
 
   @page_js "routes/index.js"
   @page_css "routes/index.css"
@@ -46,7 +53,35 @@ defmodule MyPayWeb.IndexController do
     }
   }
 
-  @new_decimal Decimal.new("0.00")
+  @recent_six_months_shift_query """
+    query GetShiftsForLastSixMonths($shift: GetShiftInput) {
+      shifts(shift: $shift) {
+        ...ShiftFragment
+      }
+    }
+
+    fragment ShiftFragment on Shift {
+      id
+      _id
+      date
+      dateWeekShortDay
+      startTime
+      endTime
+      hoursGross
+      normalHours
+      normalPay
+      nightHours
+      nightSupplPay
+      sundayHours
+      sundaySupplPay
+      totalPay
+      meta {
+        id
+      }
+      schemaType
+    }
+  """
+
   @format_mmm_yyyy "{Mshort}/{YYYY}"
 
   plug(:assign_defaults)
@@ -68,13 +103,10 @@ defmodule MyPayWeb.IndexController do
       |> Timex.beginning_of_month()
 
     shifts =
-      case get_shifts_for_last_six_months(
-             largest,
-             Timex.format!(least, "{ISOdate}")
-           ) do
-        [] -> nil
-        shifts -> shifts
-      end
+      get_shifts_for_last_six_months_gql(
+        largest,
+        Timex.format!(least, "{ISOdate}")
+      )
 
     least_month_str = Timex.format!(least, "{Mshort}")
     today_formatted = Timex.format!(today, @format_mmm_yyyy)
@@ -182,59 +214,34 @@ defmodule MyPayWeb.IndexController do
     json(conn, data)
   end
 
-  defp calc_total_earnings_normal_hours(shifts) do
-    case shifts do
-      [] ->
-        {nil, nil, nil}
-
-      shifts ->
-        {total_earnings, total_normal_hours} =
-          Enum.reduce(
-            shifts,
-            {@new_decimal, 0},
-            fn shift, {earnings, hours} ->
-              {
-                Decimal.add(shift.total_pay, earnings),
-                shift.normal_hours + hours
+  defp get_shifts_for_last_six_months_gql(largest, least) do
+    variables = %{
+      "shift" => %{
+        "where" => %{
+          "and" => [
+            %{
+              "date" => %{
+                "value" => least,
+                "key" => "GTE"
               }
-            end
-          )
-
-        {shifts, total_earnings, Float.round(total_normal_hours, 2)}
-    end
-  end
-
-  defp get_shifts_for_last_six_months(largest, least) do
-    Api.list(%{
-      where: %{
-        and: [
-          %{
-            date: %{gte: least}
-          },
-          %{
-            date: %{lte: largest}
-          }
-        ]
+            },
+            %{
+              "date" => %{
+                "value" => largest,
+                "key" => "LTE"
+              }
+            }
+          ]
+        }
       }
-    })
-    |> Enum.group_by(&Timex.format!(&1.date, "{YYYY}-{M}"), & &1)
-    |> Enum.reverse()
-    |> Enum.map(fn {date, shifts} ->
-      {shifts, total_earnings, total_normal_hours} = calc_total_earnings_normal_hours(shifts)
+    }
 
-      date =
-        "#{date}-1"
-        |> Timex.parse!("{YYYY}-{M}-{D}")
-        |> Timex.format!(@format_mmm_yyyy)
+    {:ok, %{data: %{"shifts" => shifts}}} =
+      MyPayWeb.Schema.run_query(
+        @recent_six_months_shift_query,
+        variables
+      )
 
-      [
-        shifts: shifts,
-        summary: [
-          date: date,
-          total_earnings: total_earnings,
-          total_normal_hours: total_normal_hours
-        ]
-      ]
-    end)
+    Api.group_and_summarize(shifts)
   end
 end

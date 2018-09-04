@@ -18,8 +18,19 @@ defmodule MyPayWeb.Schema.Shift do
     end
 
     field(:date, non_null(:date))
-    field(:start_time, non_null(:time))
-    field(:end_time, non_null(:time))
+
+    @desc "date formatted as e.g Wed, 8 i.e. week short, day"
+    field :date_week_short_day, :string do
+      resolve(fn shift, _, _ ->
+        {
+          :ok,
+          Timex.format!(shift.date, "{WDshort}, {D}")
+        }
+      end)
+    end
+
+    field(:start_time, non_null(:twenty_four_hr_min_time))
+    field(:end_time, non_null(:twenty_four_hr_min_time))
     field(:hours_gross, non_null(:float))
     field(:normal_hours, non_null(:float))
     field(:night_hours, non_null(:float))

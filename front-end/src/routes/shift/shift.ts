@@ -528,11 +528,11 @@ export class ShiftController {
 
         shift.startTime = `${this.pad(shift.startTimeHr)}:${this.pad(
           shift.startTimeMin
-        )}:00`;
+        )}`;
 
         shift.endTime = `${this.pad(shift.endTimeHr)}:${this.pad(
           shift.endTimeMin
-        )}:00`;
+        )}`;
 
         [
           "dayOfMonth",

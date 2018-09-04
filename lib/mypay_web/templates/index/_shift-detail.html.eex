@@ -1,12 +1,12 @@
-<%= if assigns[:shift] do %>
-  <div id="shift-detail-row-<%= assigns[:shift].id  %>" class="shift-detail-row">
-    <%= render("_shift-detail-row.html", shift: assigns[:shift]) %>
-  </div>
+<% shift = assigns[:shift] %>
+  <% shift_id = if shift, do: shift["id"], else: "{{#if shift.id }}{{shift.id}}{{else}}{{shift._id}}{{/if}}" %>
 
-  <% else %>
+    <% data_value = if shift, do: Poison.encode!(shift), else: "{{jsonStringify shift}}"  %>
 
-    <div id="shift-detail-row-{{#if shift.id }}{{shift.id}}{{else}}{{shift._id}}{{/if}}" class="shift-detail-row" data-value="{{jsonStringify shift}}">
-      {{> shiftDetailRowTemplate shift=shift }}
-    </div>
-
-    <% end %>
+      <div id="shift-detail-row-<%= shift_id %>" class="shift-detail-row" data-value="<%= data_value %>">
+        <%= if shift do %>
+          <%= render("_shift-detail-row.html", shift: shift) %>
+            <% else %>
+              {{> shiftDetailRowTemplate shift=shift }}
+              <% end %>
+      </div>

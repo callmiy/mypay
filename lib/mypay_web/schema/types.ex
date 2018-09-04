@@ -6,10 +6,22 @@ defmodule MyPayWeb.Schema.Types do
   use Timex
 
   @iso_datetime_format "{ISO:Extended:Z}"
+  @twenty_four_hr_min_time_format "{h24}:{m}"
 
   scalar :iso_datetime, name: "ISODatime" do
     parse(fn value -> parse_iso_datetime(value, @iso_datetime_format) end)
     serialize(&Timex.format!(&1, @iso_datetime_format))
+  end
+
+  scalar :twenty_four_hr_min_time, name: "TwentyFourHrMinTime" do
+    parse(fn value ->
+      parse_iso_datetime(
+        value,
+        @twenty_four_hr_min_time_format
+      )
+    end)
+
+    serialize(&Timex.format!(&1, @twenty_four_hr_min_time_format))
   end
 
   @desc "Sorting directive"

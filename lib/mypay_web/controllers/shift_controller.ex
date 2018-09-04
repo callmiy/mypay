@@ -187,7 +187,7 @@ defmodule MyPayWeb.ShiftController do
     end
   end
 
-  defp go_back_url(conn) do
+  def go_back_url(conn) do
     index_path = MyPayWeb.Router.Helpers.index_path(conn, :index)
     this_path = MyPayWeb.Router.Helpers.shift_path(conn, :new)
 

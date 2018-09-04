@@ -10,7 +10,7 @@
       </div>
 
       <div class="hours-earnings header">
-        <span>Type (Net)</span>
+        <span>Type</span>
         <span>Hours</span>
         <span>Earning</span>
       </div>
@@ -20,7 +20,7 @@
     <div id="index-route-shifts-details" class="index-route-shifts-details">
       <%= if assigns[:shifts] do %>
         <%= for shift <- assigns[:shifts] do %>
-          <%= render("_shift-detail.html", shift: Map.from_struct(shift)) %>
+          <%= render("_shift-detail.html", shift: shift) %>
             <% end %>
               <% else %>
                 {{#each data.shifts as |shift| }} {{>shiftDetailTemplate shift=shift}} {{/each}}
