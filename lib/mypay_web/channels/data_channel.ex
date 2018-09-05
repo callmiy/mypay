@@ -66,17 +66,6 @@ defmodule MyPayWeb.DataChannel do
         offline_fields: offline_attrs
       })
 
-    IO.puts("""
-
-
-
-    result:
-        #{inspect(result)}
-
-
-
-    """)
-
     result
   end
 
