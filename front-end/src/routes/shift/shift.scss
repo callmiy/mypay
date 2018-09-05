@@ -48,6 +48,12 @@
 .form__field {
   &.segment.select-meta {
     margin-top: 0;
+    padding: 0.3em;
+
+    select {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
   }
 }
 
@@ -110,4 +116,11 @@
   color: #fff;
   padding-left: 6px;
   font-weight: 600;
+}
+
+.form__show-new-meta-form-button {
+  &.ui {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
 }

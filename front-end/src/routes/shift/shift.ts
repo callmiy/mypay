@@ -22,7 +22,6 @@ import { isServerRendered } from "../../utils/utils";
 import { Database } from "../../database";
 import { prepForOfflineSave } from "../../database";
 import { META_TYPENAME, SHIFT_TYPENAME } from "../../constants";
-import { OFFLINE_MSG } from "../../constants";
 
 import * as newShiftDateTemplate from "../../templates/newShiftDateTemplate.handlebars";
 
@@ -124,10 +123,12 @@ export class ShiftController {
   fetchNewMetaElModal: Modal | undefined;
   confirmSubmitModal: Modal | undefined;
 
+  form = document.getElementById("new-shift-form") as HTMLFormElement;
+
   // tslint:disable-next-line:no-any
   newShiftToSave: any;
 
-  formElements: { [k: string]: HTMLSelectElement | HTMLInputElement };
+  formElements: { [k: string]: HTMLSelectElement | HTMLInputElement } = {};
   formErrors = {} as FormThingsError;
   // tslint:disable-next-line:no-any
   schema: Schema<any>;
@@ -176,30 +177,16 @@ export class ShiftController {
       "end-time-min"
     ) as HTMLInputElement;
 
-    this.dayOfMonthEl = document.getElementById(
-      "day-of-month"
-    ) as HTMLSelectElement;
-
-    this.monthOfYearEl = document.getElementById(
-      "month-of-year"
-    ) as HTMLSelectElement;
-
-    this.yearEl = document.getElementById("year") as HTMLSelectElement;
-
-    this.formElements = {
-      [this.selectMetaEl.name]: this.selectMetaEl,
-      [this.dayOfMonthEl.name]: this.dayOfMonthEl,
-      [this.monthOfYearEl.name]: this.monthOfYearEl,
-      [this.yearEl.name]: this.yearEl,
-      [this.startTimeHrEl.name]: this.startTimeHrEl,
-      [this.startTimeMinEl.name]: this.startTimeMinEl,
-      [this.endTimeHrEl.name]: this.endTimeHrEl,
-      [this.endTimeMinEl.name]: this.endTimeMinEl
-    };
-
-    Object.values(this.formElements).forEach(element =>
-      element.addEventListener("input", this.validateEl)
-    );
+    [
+      this.selectMetaEl,
+      this.startTimeHrEl,
+      this.startTimeMinEl,
+      this.endTimeHrEl,
+      this.endTimeMinEl
+    ].forEach(element => {
+      element.addEventListener("input", this.validateEl);
+      this.formElements[element.name] = element;
+    });
 
     this.startTimeHrEl.addEventListener(
       "keypress",
@@ -336,8 +323,10 @@ export class ShiftController {
       return;
     }
 
+    const metas = await this.getMetasFromDb();
+
     this.selectMetaEl.innerHTML = newShiftMetasSelectTemplate({
-      metas: await this.getMetasFromDb()
+      metas
     });
   };
 
@@ -350,7 +339,14 @@ export class ShiftController {
       return;
     }
 
-    if (this.props.isServerRendered() && !reRender) {
+    const serverRendered = this.props.isServerRendered();
+
+    // this.dateSegmentEl.innerHTML would have been rendered by server
+    if (serverRendered) {
+      this.renderDayMonthYearEls();
+    }
+
+    if (serverRendered && !reRender) {
       return;
     }
 
@@ -364,6 +360,26 @@ export class ShiftController {
       daysOfMonth,
       monthOfYear,
       years
+    });
+
+    this.renderDayMonthYearEls();
+  };
+
+  renderDayMonthYearEls = () => {
+    this.dayOfMonthEl = document.getElementById(
+      "day-of-month"
+    ) as HTMLSelectElement;
+
+    this.monthOfYearEl = document.getElementById(
+      "month-of-year"
+    ) as HTMLSelectElement;
+
+    this.yearEl = document.getElementById("year") as HTMLSelectElement;
+
+    [this.dayOfMonthEl, this.monthOfYearEl, this.yearEl].forEach(element => {
+      element.addEventListener("input", this.validateEl);
+
+      this.formElements[element.name] = element;
     });
   };
 
@@ -606,10 +622,14 @@ export class ShiftController {
     this.renderSelectMetaEl(true);
     this.renderDateSegmentEl(true);
     setMainErrorClass(this.mainErrorContainer, "hide");
-    this.submitEl.disabled = false;
-    this.submitEl.classList.remove("loading");
-    this.formErrors = {};
     this.mainErrorContainer.innerHTML = "";
+
+    if (this.form) {
+      this.form.scrollTop = 0;
+    }
+
+    this.resetFormButtons();
+    this.formErrors = {};
   };
 
   renderEditConfirmedEl = () => {
@@ -657,8 +677,6 @@ export class ShiftController {
   };
 
   tearDownConfirmedEls = () => {
-    this.resetEl.disabled = false;
-
     if (this.submitConfirmedEl) {
       this.submitConfirmedEl.removeEventListener(
         "click",
@@ -710,15 +728,14 @@ export class ShiftController {
       ...prepForOfflineSave(SHIFT_TYPENAME)
     };
 
-    // We delete the id because we can _id to be the id for offline purpose
+    // We delete the id because we take _id to be the id for offline purpose
     delete offlineShift.id;
 
     await this.props.database.db.put(offlineShift);
 
     const html = newShiftConfirmTemplate({
       meta: this.selectedMeta,
-      shift: offlineShift,
-      topMessage: `<div class="top-error">${OFFLINE_MSG}</div>`
+      shift: offlineShift
     });
 
     const modal = new Modal({
@@ -768,18 +785,28 @@ export class ShiftController {
         );
 
         setMainErrorClass(this.mainErrorContainer, "show");
+
+        if (this.form) {
+          this.form.scrollTop = 0;
+        }
+
+        this.resetFormButtons();
       },
 
       onTimeout: this.saveOffline
     });
   };
 
-  cleanUpAfterSave = () => {
-    this.selectedMeta = undefined;
-    this.newShiftToSave = undefined;
+  resetFormButtons = () => {
     this.submitEl.classList.remove("loading");
     this.submitEl.disabled = false;
     this.resetEl.disabled = false;
+  };
+
+  cleanUpAfterSave = () => {
+    this.selectedMeta = undefined;
+    this.newShiftToSave = undefined;
+    this.resetFormButtons();
   };
 
   /**
