@@ -230,19 +230,22 @@ export class IndexController {
               lodashGroupBy(docs, doc => doc.date.slice(0, 8) + "01")
             )
               .sort((a, b) => {
-                const aa = a[0];
-                const bb = b[0];
+                // a,b = [stringDate, Array<PouchDBDoc>]
 
-                return bb > aa ? 1 : -1;
+                return b[0] > a[0] ? 1 : -1;
               })
               .map(a => {
                 const shifts = a[1].sort((c, d) =>
-                  moment(d.date).diff(moment(c.date))
+                  moment(`${d.date}T${d.startTime}`).diff(
+                    moment(`${c.date}T${c.startTime}`)
+                  )
                 );
+
                 const summary = {
                   date: moment(a[0]).format("MMM/YYYY"),
                   ...this.calculateTotalEarningsAndNormalHours(shifts)
                 };
+
                 return { shifts, summary };
               });
 
