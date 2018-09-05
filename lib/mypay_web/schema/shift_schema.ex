@@ -54,8 +54,8 @@ defmodule MyPayWeb.Schema.Shift do
   input_object :create_shift_input do
     field(:meta_id, :id)
     field(:date, non_null(:date))
-    field(:start_time, non_null(:time))
-    field(:end_time, non_null(:time))
+    field(:start_time, non_null(:twenty_four_hr_min_time))
+    field(:end_time, non_null(:twenty_four_hr_min_time))
     field(:meta, :create_meta_input)
   end
 
