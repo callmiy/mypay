@@ -54,7 +54,13 @@ export const htmlfyGraphQlErrors = (
         return [...prev, html];
       }
 
-      return prev;
+      const html1 = `
+      <div>
+        <span class="error-value" >${e.message}</span>
+      </div>
+    `;
+
+      return [...prev, html1];
     }, prevVal)
     .join("\n");
 };
