@@ -77,17 +77,17 @@
   <!-- /MAIN CHILD TEMPLATE INSERT -->
   <div class="insert-new-app-available-ui" id="insert-new-app-available-ui"></div>
 
-  <script>
-    window.appInterface = {};
-  </script>
-  <%= assigns[:main_js_handlebar] || page_js(:index) || "" %>
-    <%= page_js(assigns[:page_js] ) %>
+  <% offline = if assigns[:offline_token], do: "", else: ~s(nsuNNSuenjsms3nsnn: 29234020301393939393) %>
 
-      <%# Handlebar templates for app shell %>
-        <%= assigns[:page_main_js_handlebar] || ""  %>
-          <%= assigns[:page_other_js_handlebar] || ""  %>
+    <script> window.appInterface = {<%= offline %>}; </script>
+    <%= assigns[:main_js_handlebar] || page_js(:index) || "" %>
+      <%= page_js(assigns[:page_js] ) %>
 
-            <%= assigns[:offline_token] || "" %>
+        <%# Handlebar templates for app shell %>
+          <%= assigns[:page_main_js_handlebar] || ""  %>
+            <%= assigns[:page_other_js_handlebar] || ""  %>
+
+              <%= assigns[:offline_token] || "" %>
 </body>
 
 </html>

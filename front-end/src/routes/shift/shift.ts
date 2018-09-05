@@ -18,7 +18,6 @@ import { setMainErrorClass } from "../../utils/form-things";
 import { FormThingsError } from "../../utils/form-things";
 import { AppSocket } from "../../socket";
 import { docReady } from "../../utils/utils";
-import { isServerRendered } from "../../utils/utils";
 import { Database } from "../../database";
 import { prepForOfflineSave } from "../../database";
 import { META_TYPENAME, SHIFT_TYPENAME } from "../../constants";
@@ -53,7 +52,6 @@ interface MonthDaysYearMonth {
 interface Props {
   getMonthDaysYearMonth: () => MonthDaysYearMonth;
   socket: AppSocket;
-  isServerRendered: () => boolean;
   database: Database;
 }
 
@@ -319,7 +317,7 @@ export class ShiftController {
       return;
     }
 
-    if (this.props.isServerRendered() && !reRender) {
+    if (!window.appInterface.offlineRendered && !reRender) {
       return;
     }
 
@@ -339,7 +337,7 @@ export class ShiftController {
       return;
     }
 
-    const serverRendered = this.props.isServerRendered();
+    const serverRendered = !window.appInterface.offlineRendered;
 
     // this.dateSegmentEl.innerHTML would have been rendered by server
     if (serverRendered) {
@@ -823,7 +821,6 @@ docReady(
     new ShiftController({
       socket: window.appInterface.socket,
       database: window.appInterface.db,
-      getMonthDaysYearMonth,
-      isServerRendered
+      getMonthDaysYearMonth
     })
 );

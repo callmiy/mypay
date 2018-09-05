@@ -13,11 +13,11 @@ templates['appShellTemplate'] = template({"compiler":[7,">= 4.0.0"],"main":funct
     + ((stack1 = ((helper = (helper = helpers.pageOtherCss || (depth0 != null ? depth0.pageOtherCss : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"pageOtherCss","hash":{},"data":data}) : helper))) != null ? stack1 : "")
     + "\n\n\n\n\n</head>\n\n<body>\n\n  <!-- MAIN CHILD TEMPLATE INSERT -->\n  <main role=\"main\" class=\"app-container\">\n            "
     + ((stack1 = ((helper = (helper = helpers.pageMainContent || (depth0 != null ? depth0.pageMainContent : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"pageMainContent","hash":{},"data":data}) : helper))) != null ? stack1 : "")
-    + "\n  </main>\n  <!-- /MAIN CHILD TEMPLATE INSERT -->\n  <div class=\"insert-new-app-available-ui\" id=\"insert-new-app-available-ui\"></div>\n\n  <script>\n    window.appInterface = {};\n  </script>\n"
+    + "\n  </main>\n  <!-- /MAIN CHILD TEMPLATE INSERT -->\n  <div class=\"insert-new-app-available-ui\" id=\"insert-new-app-available-ui\"></div>\n\n\n    <script> window.appInterface = {nsuNNSuenjsms3nsnn: 29234020301393939393}; </script>\n"
     + ((stack1 = ((helper = (helper = helpers.mainJs || (depth0 != null ? depth0.mainJs : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"mainJs","hash":{},"data":data}) : helper))) != null ? stack1 : "")
-    + "    \n\n"
+    + "      \n\n"
     + ((stack1 = ((helper = (helper = helpers.pageMainJs || (depth0 != null ? depth0.pageMainJs : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"pageMainJs","hash":{},"data":data}) : helper))) != null ? stack1 : "")
-    + "          "
+    + "            "
     + ((stack1 = ((helper = (helper = helpers.pageOtherJs || (depth0 != null ? depth0.pageOtherJs : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"pageOtherJs","hash":{},"data":data}) : helper))) != null ? stack1 : "")
     + "\n\n</body>\n\n</html>\n";
 },"useData":true});

@@ -17,6 +17,10 @@ declare global {
       initialData: GetInitialSocketData | null;
 
       emitter: Emitter;
+
+      nsuNNSuenjsms3nsnn: number;
+
+      offlineRendered: boolean;
     };
   }
 }
@@ -58,6 +62,8 @@ const processSidebar = () => {
     emitter
   });
 
+  window.appInterface.offlineRendered =
+    window.appInterface.nsuNNSuenjsms3nsnn === 29234020301393939393;
   window.appInterface.db = db;
   window.appInterface.socket = socket;
   window.appInterface.emitter = emitter;

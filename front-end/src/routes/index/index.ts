@@ -9,7 +9,6 @@ import { InitialShiftFromDb } from "../../constants";
 import { InitialUrlFromDb } from "../../constants";
 import { Database } from "../../database";
 import { docReady } from "../../utils/utils";
-import { isServerRendered } from "../../utils/utils";
 import { Emitter } from "../../emitter";
 import { Topic } from "../../emitter";
 import { getTodayAndLastSixMonths } from "../utils";
@@ -28,7 +27,6 @@ interface ShiftFromDbMapped {
 
 interface Props {
   database: Database;
-  isServerRendered: () => boolean;
   socket: AppSocket;
   emitter: Emitter;
 }
@@ -152,7 +150,7 @@ export class IndexController {
       return;
     }
 
-    if (this.props.isServerRendered()) {
+    if (!window.appInterface.offlineRendered) {
       return;
     }
 
@@ -169,7 +167,7 @@ export class IndexController {
       return;
     }
 
-    if (this.props.isServerRendered()) {
+    if (!window.appInterface.offlineRendered) {
       return;
     }
 
@@ -189,7 +187,7 @@ export class IndexController {
       return;
     }
 
-    if (this.props.isServerRendered()) {
+    if (!window.appInterface.offlineRendered) {
       return;
     }
 
@@ -260,7 +258,6 @@ docReady(
     new IndexController({
       database: window.appInterface.db,
       socket: window.appInterface.socket,
-      emitter: window.appInterface.emitter,
-      isServerRendered
+      emitter: window.appInterface.emitter
     })
 );
