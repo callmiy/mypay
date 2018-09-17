@@ -1,46 +1,46 @@
-  <input type="hidden" style="display: none" id="{{shift._id}}">
-  <div class="date-times">
-    <span>
-{{formatWeekDayMonthNum shift.date }}    </span>
+<input type="hidden" style="display: none" id="{{shift._id}}">
+<div class="date-times">
+  <span>
+{{formatWeekDayMonthNum shift.date }}  </span>
 
-    <div class="times">
-      <span>
-{{shift.startTime}}      </span>
-      -
-      <span>
-{{shift.endTime}}      </span>
-    </div>
-
+  <div class="times">
     <span>
-            {{#if shift.hoursGross }} ({{ shift.hoursGross }} hrs) {{/if}}
-    </span>
+{{shift.startTime}}    </span>
+    -
+    <span>
+{{shift.endTime}}    </span>
   </div>
 
-  <div class="hours-earnings-container">
-    <div class="hours-earnings detail">
-      <span>Normal</span>
-      <span>
-{{ shift.normalHours }}      </span>
-      <span>&euro;
-{{ shift.normalPay }}      </span>
-    </div>
+  <span>
+    {{#if shift.hoursGross }} ({{ shift.hoursGross }} hrs) {{/if}}
+  </span>
+</div>
 
-    <div class="hours-earnings detail">
-      <span>Night</span>
-      <span>
-{{ shift.nightHours }}      </span>
-      <span>&euro;
-{{ shift.nightSupplPay }}      </span>
-    </div>
-
-    <div class="hours-earnings detail">
-      <span>Sunday</span>
-      <span>
-{{ shift.sundayHours }}      </span>
-      <span>&euro;
-{{ shift.sundaySupplPay }}      </span>
-    </div>
+<div class="hours-earnings-container">
+  <div class="hours-earnings detail">
+    <span>Regular</span>
+    <span>
+{{ shift.normalHours }}    </span>
+    <span>&euro;
+{{ shift.normalPay }}    </span>
   </div>
 
-  <div class="total-earning"> Total: &euro;
-{{ shift.totalPay }}  </div>
+  <div class="hours-earnings detail">
+    <span>Night</span>
+    <span>
+{{ shift.nightHours }}    </span>
+    <span>&euro;
+{{ shift.nightSupplPay }}    </span>
+  </div>
+
+  <div class="hours-earnings detail">
+    <span>Sunday</span>
+    <span>
+{{ shift.sundayHours }}    </span>
+    <span>&euro;
+{{ shift.sundaySupplPay }}    </span>
+  </div>
+</div>
+
+<div class="total-earning"> Total: &euro;
+{{ shift.totalPay }}</div>

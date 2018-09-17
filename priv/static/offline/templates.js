@@ -238,31 +238,31 @@ templates['partials/shiftDetailRowTemplate'] = template({"1":function(container,
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, alias1=container.lambda, alias2=container.escapeExpression, alias3=depth0 != null ? depth0 : (container.nullContext || {});
 
-  return "  <input type=\"hidden\" style=\"display: none\" id=\""
+  return "<input type=\"hidden\" style=\"display: none\" id=\""
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.shift : depth0)) != null ? stack1._id : stack1), depth0))
-    + "\">\n  <div class=\"date-times\">\n    <span>\n"
+    + "\">\n<div class=\"date-times\">\n  <span>\n"
     + alias2((helpers.formatWeekDayMonthNum || (depth0 && depth0.formatWeekDayMonthNum) || helpers.helperMissing).call(alias3,((stack1 = (depth0 != null ? depth0.shift : depth0)) != null ? stack1.date : stack1),{"name":"formatWeekDayMonthNum","hash":{},"data":data}))
-    + "    </span>\n\n    <div class=\"times\">\n      <span>\n"
+    + "  </span>\n\n  <div class=\"times\">\n    <span>\n"
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.shift : depth0)) != null ? stack1.startTime : stack1), depth0))
-    + "      </span>\n      -\n      <span>\n"
+    + "    </span>\n    -\n    <span>\n"
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.shift : depth0)) != null ? stack1.endTime : stack1), depth0))
-    + "      </span>\n    </div>\n\n    <span>\n            "
+    + "    </span>\n  </div>\n\n  <span>\n    "
     + ((stack1 = helpers["if"].call(alias3,((stack1 = (depth0 != null ? depth0.shift : depth0)) != null ? stack1.hoursGross : stack1),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "\n    </span>\n  </div>\n\n  <div class=\"hours-earnings-container\">\n    <div class=\"hours-earnings detail\">\n      <span>Normal</span>\n      <span>\n"
+    + "\n  </span>\n</div>\n\n<div class=\"hours-earnings-container\">\n  <div class=\"hours-earnings detail\">\n    <span>Regular</span>\n    <span>\n"
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.shift : depth0)) != null ? stack1.normalHours : stack1), depth0))
-    + "      </span>\n      <span>&euro;\n"
+    + "    </span>\n    <span>&euro;\n"
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.shift : depth0)) != null ? stack1.normalPay : stack1), depth0))
-    + "      </span>\n    </div>\n\n    <div class=\"hours-earnings detail\">\n      <span>Night</span>\n      <span>\n"
+    + "    </span>\n  </div>\n\n  <div class=\"hours-earnings detail\">\n    <span>Night</span>\n    <span>\n"
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.shift : depth0)) != null ? stack1.nightHours : stack1), depth0))
-    + "      </span>\n      <span>&euro;\n"
+    + "    </span>\n    <span>&euro;\n"
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.shift : depth0)) != null ? stack1.nightSupplPay : stack1), depth0))
-    + "      </span>\n    </div>\n\n    <div class=\"hours-earnings detail\">\n      <span>Sunday</span>\n      <span>\n"
+    + "    </span>\n  </div>\n\n  <div class=\"hours-earnings detail\">\n    <span>Sunday</span>\n    <span>\n"
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.shift : depth0)) != null ? stack1.sundayHours : stack1), depth0))
-    + "      </span>\n      <span>&euro;\n"
+    + "    </span>\n    <span>&euro;\n"
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.shift : depth0)) != null ? stack1.sundaySupplPay : stack1), depth0))
-    + "      </span>\n    </div>\n  </div>\n\n  <div class=\"total-earning\"> Total: &euro;\n"
+    + "    </span>\n  </div>\n</div>\n\n<div class=\"total-earning\"> Total: &euro;\n"
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.shift : depth0)) != null ? stack1.totalPay : stack1), depth0))
-    + "  </div>\n";
+    + "</div>\n";
 },"useData":true});
 templates['partials/shiftSummaryTemplate'] = template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, alias1=container.lambda, alias2=container.escapeExpression;

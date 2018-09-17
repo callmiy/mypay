@@ -1,62 +1,62 @@
 <% shift = assigns[:shift] || %{} %>
-  <input type="hidden" style="display: none" id="<%= shift[~s(id)] || ~s({{shift._id}}) %>">
-  <div class="date-times">
+<input type="hidden" style="display: none" id="<%= shift[~s(id)] || ~s({{shift._id}}) %>">
+<div class="date-times">
+  <span>
+    <%= shift["dateWeekShortDay"] || "{{formatWeekDayMonthNum shift.date }}" %>
+  </span>
+
+  <div class="times">
     <span>
-      <%= shift["dateWeekShortDay"] || "{{formatWeekDayMonthNum shift.date }}" %>
+      <%= shift["startTime"] || "{{shift.startTime}}" %>
     </span>
-
-    <div class="times">
-      <span>
-        <%= shift["startTime"] || "{{shift.startTime}}" %>
-      </span>
-      -
-      <span>
-        <%= shift["endTime"] || "{{shift.endTime}}" %>
-      </span>
-    </div>
-
+    -
     <span>
-      <%= if shift["hoursGross"] do %>
-        (
-        <%= shift["hoursGross"] %> hrs)
-          <% else %>
-            {{#if shift.hoursGross }} ({{ shift.hoursGross }} hrs) {{/if}}
-            <% end %>
+      <%= shift["endTime"] || "{{shift.endTime}}" %>
     </span>
   </div>
 
-  <div class="hours-earnings-container">
-    <div class="hours-earnings detail">
-      <span>Normal</span>
-      <span>
-        <%= shift["normalHours"] || "{{ shift.normalHours }}" %>
-      </span>
-      <span>&euro;
-        <%= shift["normalPay"] || "{{ shift.normalPay }}" %>
-      </span>
-    </div>
+  <span>
+    <%= if shift["hoursGross"] do %>
+    (
+    <%= shift["hoursGross"] %> hrs)
+    <% else %>
+    {{#if shift.hoursGross }} ({{ shift.hoursGross }} hrs) {{/if}}
+    <% end %>
+  </span>
+</div>
 
-    <div class="hours-earnings detail">
-      <span>Night</span>
-      <span>
-        <%= shift["nightHours"] || "{{ shift.nightHours }}" %>
-      </span>
-      <span>&euro;
-        <%= shift["nightSupplPay"] || "{{ shift.nightSupplPay }}" %>
-      </span>
-    </div>
-
-    <div class="hours-earnings detail">
-      <span>Sunday</span>
-      <span>
-        <%= shift["sundayHours"] || "{{ shift.sundayHours }}" %>
-      </span>
-      <span>&euro;
-        <%= shift["sundaySupplPay"] || "{{ shift.sundaySupplPay }}" %>
-      </span>
-    </div>
+<div class="hours-earnings-container">
+  <div class="hours-earnings detail">
+    <span>Regular</span>
+    <span>
+      <%= shift["normalHours"] || "{{ shift.normalHours }}" %>
+    </span>
+    <span>&euro;
+      <%= shift["normalPay"] || "{{ shift.normalPay }}" %>
+    </span>
   </div>
 
-  <div class="total-earning"> Total: &euro;
-    <%= shift["totalPay"] || "{{ shift.totalPay }}" %>
+  <div class="hours-earnings detail">
+    <span>Night</span>
+    <span>
+      <%= shift["nightHours"] || "{{ shift.nightHours }}" %>
+    </span>
+    <span>&euro;
+      <%= shift["nightSupplPay"] || "{{ shift.nightSupplPay }}" %>
+    </span>
   </div>
+
+  <div class="hours-earnings detail">
+    <span>Sunday</span>
+    <span>
+      <%= shift["sundayHours"] || "{{ shift.sundayHours }}" %>
+    </span>
+    <span>&euro;
+      <%= shift["sundaySupplPay"] || "{{ shift.sundaySupplPay }}" %>
+    </span>
+  </div>
+</div>
+
+<div class="total-earning"> Total: &euro;
+  <%= shift["totalPay"] || "{{ shift.totalPay }}" %>
+</div>
