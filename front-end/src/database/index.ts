@@ -4,7 +4,6 @@ import PouchdbDebug from "pouchdb-debug";
 
 import { GetInitialSocketData_shifts } from "../graphql/gen.types";
 import { GetInitialSocketData_newShiftUrl } from "../graphql/gen.types";
-import { GetInitialSocketData_offlineToken } from "../graphql/gen.types";
 import { GetInitialSocketData_metas } from "../graphql/gen.types";
 import { DB_INDEX_SCHEMA_TYPE_NAME } from "../constants";
 import { DB_INDEX_OFFLINE_INSERT_TYPENAME } from "../constants";
@@ -13,11 +12,10 @@ import { OFFLINE_INSERT_TYPENAME } from "../constants";
 type DatabaseContent =
   | GetInitialSocketData_shifts
   | GetInitialSocketData_newShiftUrl
-  | GetInitialSocketData_offlineToken
   | GetInitialSocketData_metas;
 
-const POUCH_DB_OLD_VERSION = 2;
-const POUCH_DB_CURRENT_VERSION = 3;
+const POUCH_DB_OLD_VERSION = 3;
+const POUCH_DB_CURRENT_VERSION = 4;
 
 export class Database {
   db: PouchDB.Database<DatabaseContent>;

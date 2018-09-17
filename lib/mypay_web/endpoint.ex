@@ -1,17 +1,6 @@
 defmodule MyPayWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :mypay
 
-  @offline_token_id :mypay
-                    |> Application.get_env(:frontend)
-                    |> Keyword.fetch!(:token_id)
-
-  @offline_token_value :mypay
-                       |> Application.get_env(:frontend)
-                       |> Keyword.fetch!(:token_value)
-
-  @input_hidden ~s(<input type="hidden" id="#{@offline_token_id}" value="#{@offline_token_value}" style="display: none" name="3snsaaPmwVPzy6mFtib" />)
-                |> Phoenix.HTML.raw()
-
   socket("/socket", MyPayWeb.UserSocket)
 
   plug(:put_service_worker_allowed_header)
@@ -75,7 +64,7 @@ defmodule MyPayWeb.Endpoint do
     signing_salt: "AL7ymQAm"
   )
 
-  plug(:put_offline_token)
+  plug(:put_server_rendered_token)
   plug(MyPayWeb.Router)
 
   @doc """
@@ -99,6 +88,6 @@ defmodule MyPayWeb.Endpoint do
   def put_service_worker_allowed_header(conn, _),
     do: put_resp_header(conn, "Service-Worker-Allowed", "/")
 
-  def put_offline_token(conn, _),
-    do: assign(conn, :offline_token, @input_hidden)
+  def put_server_rendered_token(conn, _),
+    do: assign(conn, :server_rendered_token, true)
 end

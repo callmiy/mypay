@@ -10,14 +10,6 @@ defmodule MyPayWeb.Schema.Adhoc do
   alias MyPayWeb.ShiftController
   alias MyPayWeb.Schema
 
-  @offline_token_id :mypay
-                    |> Application.get_env(:frontend)
-                    |> Keyword.fetch!(:token_id)
-
-  @offline_token_value :mypay
-                       |> Application.get_env(:frontend)
-                       |> Keyword.fetch!(:token_value)
-
   @desc "New shift URL"
   object :new_shift_url do
     field :_id, non_null(:id) do
@@ -35,27 +27,6 @@ defmodule MyPayWeb.Schema.Adhoc do
           MyPayWeb.Router.Helpers.shift_path(Endpoint, :new)
         }
       end)
-    end
-  end
-
-  @desc "Offline Token"
-  object :offline_token do
-    field :id, non_null(:id) do
-      resolve(fn _, _, _ -> {:ok, @offline_token_id} end)
-    end
-
-    field :_id, non_null(:string) do
-      resolve(fn _, _, _ -> {:ok, Schema.get_datetime_id("off-line-token")} end)
-    end
-
-    field(
-      :value,
-      non_null(:string),
-      do: resolve(fn _, _, _ -> {:ok, @offline_token_value} end)
-    )
-
-    field :schema_type, non_null(:string) do
-      resolve(fn _, _, _ -> {:ok, "OfflineToken"} end)
     end
   end
 
@@ -116,9 +87,6 @@ defmodule MyPayWeb.Schema.Adhoc do
   object :adhoc_query do
     @desc "Get New shift URL"
     field(:new_shift_url, type: :new_shift_url, resolve: &get_empty/3)
-
-    @desc "Get Offline Token"
-    field(:offline_token, type: :offline_token, resolve: &get_empty/3)
 
     @desc "Get main app child template assigns"
     field :main_child_template_assigns, type: :main_child_template_assigns do

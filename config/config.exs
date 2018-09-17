@@ -23,10 +23,6 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-config :mypay, :frontend,
-  token_id: "jIVgOfNGqsrykk6M4ytTAv60aeT0Uj3poEHghgbRA1BbvGVVkGI",
-  token_value: "hjXt6YqWSMs1mW1KG9QlOsEITkp6zrZQnSxxGbX5BirtEqagAcifHKkii37dnlpw"
-
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

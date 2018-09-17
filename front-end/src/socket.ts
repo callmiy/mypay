@@ -8,11 +8,10 @@ import { GetInitialSocketDataVariables } from "./graphql/gen.types";
 import { GetInitialSocketData } from "./graphql/gen.types";
 import CREATE_SHIFT_GQL from "./graphql/create-shift.mutation";
 import CREATE_META_GQL from "./graphql/create-meta.mutation";
-import { GetInitialSocketData_offlineToken } from "./graphql/gen.types";
 import { CreateShiftInput } from "./graphql/gen.types";
 import { CreateMetaInput } from "./graphql/gen.types";
-import { OFFLINE_TOKEN_TYPENAME, OFFLINE_ID_KEY } from "./constants";
 import { DATA_CHANNEL_TOPIC_GRAPHQL } from "./constants";
+import { OFFLINE_ID_KEY } from "./constants";
 import { DB_INDEX_OFFLINE_INSERT_TYPENAME } from "./constants";
 import { OFFLINE_INSERT_TYPENAME } from "./constants";
 import { OfflineDataFromDb } from "./constants";
@@ -271,49 +270,6 @@ export class AppSocket {
 
   writeInitialDataToDb = (data: GetInitialSocketData) => {
     writeInitialIndexDataToDb(this.props.database, data);
-
-    this.props.database.db
-      .find({
-        selector: {
-          schemaType: { $eq: OFFLINE_TOKEN_TYPENAME }
-        }
-      }) // tslint:disable-next-line:no-any
-      .then(({ docs }: { docs: any }) => {
-        const offlineToken = data.offlineToken as GetInitialSocketData_offlineToken;
-
-        if (!offlineToken) {
-          return;
-        }
-
-        const offlineTokens = docs as GetInitialSocketData_offlineToken[];
-
-        // this is our first insert = happy
-        if (!offlineTokens.length) {
-          this.props.database.db.put(offlineToken);
-          return;
-        }
-
-        const offlineTokenFromDoc = offlineTokens[0];
-
-        // we only care about the id and value fields.
-        // If we got one with these values, we bail
-        if (
-          offlineTokenFromDoc.id === offlineToken.id &&
-          offlineTokenFromDoc.value === offlineToken.value
-        ) {
-          return;
-        }
-
-        // ok we have a new token - update existing doc so we
-        // only have 1 copy
-        this.props.database.db.get(offlineTokenFromDoc._id).then(doc => {
-          return this.props.database.db.put({
-            ...offlineToken,
-            _id: doc._id,
-            _rev: doc._rev
-          });
-        });
-      });
   };
 
   queryGraphQl = (params: ChannelMessageNoTopic) =>

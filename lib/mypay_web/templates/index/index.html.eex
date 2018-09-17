@@ -1,18 +1,18 @@
 <div class="main-index">
-  <%= if assigns[:offline_token] do %>
-    <%= render("_menu.html", assigns) %>
-      <% else %> {{>indexMenuTemplate}}
-        <% end %>
+  <%= if assigns[:server_rendered_token] do %>
+  <%= render("_menu.html", assigns) %>
+  <% else %> {{>indexMenuTemplate}}
+  <% end %>
 
-          <div id="shifts-for-months" class="shifts-for-months">
-            <%= for shifts_for_month <- (assigns[:all_shifts] || []) do %>
-              <%= render("_shifts-for-month.html", shifts_for_month) %>
-                <% end %>
-          </div>
+  <div id="shifts-for-months" class="shifts-for-months">
+    <%= for shifts_for_month <- (assigns[:all_shifts] || []) do %>
+    <%= render("_shifts-for-month.html", shifts_for_month) %>
+    <% end %>
+  </div>
 
-          <!-- LINK TO NEW SHIFT -->
-          <a id="new-shift-trigger" class="new-shift-trigger" data-off-line-link="true" href="<%= assigns[:new_shift_path] || ~s({{ newShiftPath }}) %>">
-            <span class="">&plus;</span>
-          </a>
-          <!-- /LINK TO NEW SHIFT -->
+  <!-- LINK TO NEW SHIFT -->
+  <a id="new-shift-trigger" class="new-shift-trigger" data-off-line-link="true" href="<%= assigns[:new_shift_path] || ~s({{ newShiftPath }}) %>">
+    <span class="">&plus;</span>
+  </a>
+  <!-- /LINK TO NEW SHIFT -->
 </div>

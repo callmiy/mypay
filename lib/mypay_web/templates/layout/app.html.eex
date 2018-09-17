@@ -37,7 +37,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="wages shift work clocks clock wage pay salary">
 
-
   <title>
     <%= assigns[:page_title] || "My Pay" %>
   </title>
@@ -60,15 +59,12 @@
                     <%= for {:js, href} <- (assigns[:preload_resources] || []) do %>
                       <link rel="preload" href="<%=href%>" as="script" onload="const script = document.createElement('script'); script.src = this.href; document.body.appendChild(script);">
                       <%end%>
-
 </head>
 
 <body>
-
   <!-- MAIN CHILD TEMPLATE INSERT -->
   <main role="main" class="app-container">
-    <%# Presence of offline_token implies server-render %>
-      <%= if assigns[:offline_token] do %>
+      <%= if assigns[:server_rendered_token] do %>
         <%= render(@view_module, @view_template, assigns) %>
           <% else %>
             {{{ pageMainContent }}}
@@ -77,7 +73,7 @@
   <!-- /MAIN CHILD TEMPLATE INSERT -->
   <div class="insert-new-app-available-ui" id="insert-new-app-available-ui"></div>
 
-  <% offline = if assigns[:offline_token], do: "", else: ~s(nsuNNSuenjsms3nsnn: 29234020301393939393) %>
+  <% offline = if assigns[:server_rendered_token], do: "", else: ~s(nsuNNSuenjsms3nsnn: 29234020301393939393) %>
 
     <script> window.appInterface = {<%= offline %>}; </script>
     <%= assigns[:main_js_handlebar] || page_js(:index) || "" %>
@@ -86,8 +82,5 @@
         <%# Handlebar templates for app shell %>
           <%= assigns[:page_main_js_handlebar] || ""  %>
             <%= assigns[:page_other_js_handlebar] || ""  %>
-
-              <%= assigns[:offline_token] || "" %>
 </body>
-
 </html>
